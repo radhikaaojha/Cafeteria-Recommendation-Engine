@@ -22,7 +22,8 @@ namespace Data_Access_Layer
             {
                 new Entities.FoodItemAvailabilityStatus { Id = 1, Name = Status.OutOfStock.ToString() },
                 new Entities.FoodItemAvailabilityStatus { Id = 2, Name = Common.Enums.Status.Available.ToString() },
-                new Entities.FoodItemAvailabilityStatus { Id = 3, Name = Common.Enums.Status.OnHold.ToString() }
+                new Entities.FoodItemAvailabilityStatus { Id = 3, Name = Common.Enums.Status.OnHold.ToString() },
+                new Entities.FoodItemAvailabilityStatus { Id = 4, Name = Common.Enums.Status.Unavailable.ToString() }
             };
         }
 

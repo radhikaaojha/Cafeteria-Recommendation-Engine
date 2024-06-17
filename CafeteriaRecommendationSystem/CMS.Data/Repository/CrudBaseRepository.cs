@@ -42,7 +42,19 @@ namespace Data_Access_Layer.Repository
 
             if (!string.IsNullOrEmpty(include))
             {
-                query = query.Include(include);
+                string[] includedList = include.Split(",");
+
+                foreach (var item in includedList)
+                {
+                    string[] parts = item.Split(".");
+                    var prop = typeof(T).GetProperties().Where(p => p.Name.ToLower() == parts[0].ToLower().Trim()).FirstOrDefault();
+
+                    if (prop != null)
+                    {
+                        parts[0] = prop.Name;
+                        query = query.Include(string.Join('.', parts));
+                    }
+                }
             }
 
 /*            if (!string.IsNullOrEmpty(filter))

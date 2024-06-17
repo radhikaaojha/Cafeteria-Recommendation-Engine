@@ -1,4 +1,5 @@
-﻿using CafeteriaRecommendationSystem.Services;
+﻿using AutoMapper;
+using CafeteriaRecommendationSystem.Services;
 using CMS.Data.Services.Interfaces;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
@@ -7,7 +8,7 @@ namespace CMS.Data.Services
 {
     public class FoodItemService : CrudBaseService<FoodItem>, IFoodItemService
     {
-        public FoodItemService(ICrudBaseRepository<FoodItem> repository) : base(repository)
+        public FoodItemService(ICrudBaseRepository<FoodItem> repository, IMapper mapper) : base(repository, mapper)
         {
         }
 

@@ -25,15 +25,12 @@ namespace CMS.Data.Services
                 case (int)Role.Chef:
                     _chefService.ViewFunctionalities();
                     return null;
-                    break;
                 case (int)Role.Employee:
                     _employeeService.ViewFunctionalities();
                     return null;
-                    break;
                 default:
                     Console.WriteLine("Unknown role.");
                     return null;
-                    break;
             }
         }
     }

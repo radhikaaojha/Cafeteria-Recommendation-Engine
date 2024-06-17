@@ -1,4 +1,5 @@
-﻿using CafeteriaRecommendationSystem.Services;
+﻿using AutoMapper;
+using CafeteriaRecommendationSystem.Services;
 using CMS.Data.Services.Interfaces;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
@@ -8,7 +9,7 @@ namespace CMS.Data.Services
     public class NotificationService : CrudBaseService<Notification>, INotificationService
     {
         private readonly IUserRepository _userRepository;
-        public NotificationService(ICrudBaseRepository<Notification> repository, IUserRepository userRepository) : base(repository)
+        public NotificationService(ICrudBaseRepository<Notification> repository, IUserRepository userRepository, IMapper mapper) : base(repository, mapper)
         {
             _userRepository = userRepository;
         }

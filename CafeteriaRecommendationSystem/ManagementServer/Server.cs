@@ -1,8 +1,10 @@
 ﻿using CafeteriaRecommendationSystem.Services;
 using CafeteriaRecommendationSystem.Services.Interfaces;
+using CMS.Common.Exceptions;
 using CMS.Common.Models;
 using CMS.Data.Services;
 using CMS.Data.Services.Interfaces;
+using Common;
 using Common.Enums;
 using Common.Models;
 using Data_Access_Layer;
@@ -11,6 +13,7 @@ using Data_Access_Layer.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -23,23 +26,30 @@ namespace ManagementServer
     {
         private static List<TcpClient> _authenticatedClients = new List<TcpClient>();
         private static IServiceProvider _serviceProvider;
-
         public static async Task Main(string[] args)
         {
-            var services = new ServiceCollection();
-            //var startup = new Startup();
-            //startup.ConfigureServices(services);
-            var host = Host.CreateDefaultBuilder()
-              .ConfigureServices((context, services) =>
-              {
-                  // Configure services
-                  ConfigureServices(services);
-              })
-              .Build();
-            _serviceProvider = host.Services;
-            var roleBasedMenuService = _serviceProvider.GetRequiredService<IRoleBasedMenuService>();
-            List<string> menuOptions = await roleBasedMenuService.ViewOptions(1);
-            Console.ReadLine();
+            try
+            {
+                var services = new ServiceCollection();
+                var host = Host.CreateDefaultBuilder()
+                  .ConfigureServices((context, services) =>
+                  {
+                      ConfigureServices(services);
+                  })
+                  .Build();
+                _serviceProvider = host.Services;
+                var roleBasedMenuService = _serviceProvider.GetRequiredService<IRoleBasedMenuService>();
+                List<string> menuOptions = await roleBasedMenuService.ViewOptions(1);
+                Console.ReadLine();
+            }
+            catch(InvalidInputException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
             /*var roleBasedMenuService = _serviceProvider.GetRequiredService<IRoleBasedMenuService>();
             var dbContext = _serviceProvider.GetRequiredService<CMSDbContext>();
             var userRepository = _serviceProvider.GetRequiredService<IUserRepository>();
@@ -60,8 +70,7 @@ namespace ManagementServer
 
         private static IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CMSDbContext>(options => options.UseSqlServer("Data Source=ITT-RADHIKA-O;Initial Catalog=CafeteriaManagementSystem;Integrated Security=True"));
-            //services.AddScoped<CMSDbContext>();
+            services.AddDbContext<CMSDbContext>(options => options.UseSqlServer(AppConstants.ConnectionString));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped(typeof(ICrudBaseRepository<>), typeof(CrudBaseRepository<>));
             services.AddScoped(typeof(ICrudBaseService<>), typeof(CrudBaseService<>));
@@ -87,8 +96,6 @@ namespace ManagementServer
                     byte[] buffer = new byte[4096];
                     int bytesRead = 0;
                     StringBuilder requestBuilder = new StringBuilder();
-
-                    // Read the full request
                     do
                     {
                         bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);

@@ -4,6 +4,7 @@
     {
         OutOfStock = 1,
         Available,
-        OnHold
+        OnHold,
+        Unavailable
     }
 }

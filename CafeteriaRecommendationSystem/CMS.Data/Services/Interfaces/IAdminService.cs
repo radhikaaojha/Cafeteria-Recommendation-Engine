@@ -12,8 +12,9 @@ namespace CMS.Data.Services.Interfaces
     {
         Task<List<string>> ViewFunctionalities();
         Task AddFoodItem();
-        Task UpdateFoodItem();
         Task RemoveFoodItem();
+        Task UpdateAvailabilityStatusForFoodItem();
+        Task UpdatePriceForFoodItem();
         Task BrowseTodayMenu();
         Task BrowseMenu();
     }

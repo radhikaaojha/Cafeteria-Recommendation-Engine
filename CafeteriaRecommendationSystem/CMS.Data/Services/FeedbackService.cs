@@ -1,4 +1,5 @@
-﻿using CafeteriaRecommendationSystem.Services;
+﻿using AutoMapper;
+using CafeteriaRecommendationSystem.Services;
 using CMS.Data.Services.Interfaces;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
@@ -13,7 +14,8 @@ namespace CMS.Data.Services
 {
     public class FeedbackService : CrudBaseService<FoodItemFeedback>, IFeedbackService
     {
-        public FeedbackService(ICrudBaseRepository<FoodItemFeedback> repository) : base(repository)
+        private IMapper mapper;
+        public FeedbackService(ICrudBaseRepository<FoodItemFeedback> repository, IMapper mapper) : base(repository, mapper)
         {
         }
 

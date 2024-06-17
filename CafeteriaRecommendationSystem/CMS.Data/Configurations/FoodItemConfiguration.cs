@@ -11,6 +11,8 @@ namespace CMS.Data.Configurations
             base.Configure(builder);
             builder.HasKey(x => x.Id);
 
+            builder.HasIndex(x => x.Name).IsUnique();
+
             builder.HasMany(e => e.FoodItemFeedback)
            .WithOne(a => a.FoodItem)
            .HasForeignKey(e => e.FoodItemId)
