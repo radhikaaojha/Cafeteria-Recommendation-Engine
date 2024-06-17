@@ -29,7 +29,7 @@ namespace CafeteriaRecommendationSystem.Services
                     Message = AppConstants.LoginSuccess
                 };
             }
-            return new LoginResponse { IsAuthenticated = false , Message = AppConstants.LoginFail };
+            return new LoginResponse { IsAuthenticated = false , Message = AppConstants.LoginFailed };
         } 
     }
 

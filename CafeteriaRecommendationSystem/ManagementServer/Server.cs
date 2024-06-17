@@ -3,6 +3,7 @@ using CafeteriaRecommendationSystem.Services.Interfaces;
 using CMS.Common.Models;
 using CMS.Data.Services;
 using CMS.Data.Services.Interfaces;
+using Common.Enums;
 using Common.Models;
 using Data_Access_Layer;
 using Data_Access_Layer.Repository;
@@ -10,6 +11,7 @@ using Data_Access_Layer.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -34,6 +36,9 @@ namespace ManagementServer
                   ConfigureServices(services);
               })
               .Build();
+            _serviceProvider = host.Services;
+            var roleBasedMenuService = _serviceProvider.GetRequiredService<IRoleBasedMenuService>();
+            List<string> menuOptions = await roleBasedMenuService.ViewOptions(1);
             Console.ReadLine();
             /*var roleBasedMenuService = _serviceProvider.GetRequiredService<IRoleBasedMenuService>();
             var dbContext = _serviceProvider.GetRequiredService<CMSDbContext>();
@@ -55,7 +60,6 @@ namespace ManagementServer
 
         private static IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            
             services.AddDbContext<CMSDbContext>(options => options.UseSqlServer("Data Source=ITT-RADHIKA-O;Initial Catalog=CafeteriaManagementSystem;Integrated Security=True"));
             //services.AddScoped<CMSDbContext>();
             services.AddScoped<IUserRepository, UserRepository>();
@@ -70,7 +74,7 @@ namespace ManagementServer
             services.AddScoped<IFoodItemService, FoodItemService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IWeeklyMenuService, WeeklyMenuService>();
-
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             return services.BuildServiceProvider();
         }
 
@@ -118,7 +122,7 @@ namespace ManagementServer
                             _authenticatedClients.Add(client);
 
                             var roleBasedMenuService = _serviceProvider.GetRequiredService<IRoleBasedMenuService>();
-                            List<string> menuOptions = roleBasedMenuService.ViewOptions(loginResponse.RoleId);
+                            List<string> menuOptions = await roleBasedMenuService.ViewOptions(loginResponse.RoleId);
                             responsePayload = JsonSerializer.Serialize(new { loginResponse, menuOptions });
                         }
 

@@ -19,7 +19,7 @@ namespace Data_Access_Layer.Entities
         public decimal Price { get; set; }
         public int FoodItemTypeId {  get; set; }
         [Column(TypeName = "varchar(200)")]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         public decimal SentimentScore { get; set; }
         public FoodItemAvailabilityStatus FoodItemAvailabilityStatus { get; set; }
         public FoodItemType FoodItemType { get; set; }

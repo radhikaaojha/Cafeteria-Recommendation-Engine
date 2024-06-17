@@ -16,12 +16,12 @@ namespace CMS.Data.Services
             _employeeService = employeeService;
         }
 
-        public List<string> ViewOptions(int roleId)
+        public async Task<List<string>> ViewOptions(int roleId)
         {
             switch (roleId)
             {
                 case (int)Role.Admin:
-                    return _adminService.ViewFunctionalities();
+                    return await _adminService.ViewFunctionalities();
                 case (int)Role.Chef:
                     _chefService.ViewFunctionalities();
                     return null;
@@ -35,7 +35,6 @@ namespace CMS.Data.Services
                     return null;
                     break;
             }
-            return new List<string> { "hmm"};
         }
     }
 }

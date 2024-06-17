@@ -81,7 +81,7 @@ public class Client
     {
         var (loginResponse, menuOptions) = response;
 
-        if (loginResponse.IsSuccess)
+        if (loginResponse.IsAuthenticated)
         {
             Console.WriteLine("Login successful!");
             Console.WriteLine($"Menu Options: {menuOptions}");

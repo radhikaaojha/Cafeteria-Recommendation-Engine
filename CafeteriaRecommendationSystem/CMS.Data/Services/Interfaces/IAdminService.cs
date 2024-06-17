@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 namespace CMS.Data.Services.Interfaces
 {
     public interface IAdminService
-    { 
-        List<string> ViewFunctionalities();
+    {
+        Task<List<string>> ViewFunctionalities();
         Task AddFoodItem();
         Task UpdateFoodItem();
         Task RemoveFoodItem();

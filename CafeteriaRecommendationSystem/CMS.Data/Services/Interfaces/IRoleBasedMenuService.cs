@@ -8,6 +8,6 @@ namespace CMS.Data.Services.Interfaces
 {
     public interface IRoleBasedMenuService
     {
-        List<string> ViewOptions(int roleId);
+        Task<List<string>> ViewOptions(int roleId);
     }
 }
