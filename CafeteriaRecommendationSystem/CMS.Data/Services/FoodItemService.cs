@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CafeteriaRecommendationSystem.Services;
+using CMS.Data.Repository.Interfaces;
 using CMS.Data.Services.Interfaces;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
@@ -8,8 +9,10 @@ namespace CMS.Data.Services
 {
     public class FoodItemService : CrudBaseService<FoodItem>, IFoodItemService
     {
-        public FoodItemService(ICrudBaseRepository<FoodItem> repository, IMapper mapper) : base(repository, mapper)
+        private readonly IFoodItemRepository _foodItemRepository;
+        public FoodItemService(IFoodItemRepository foodItemRepository,ICrudBaseRepository<FoodItem> repository, IMapper mapper) : base(repository, mapper)
         {
+            _foodItemRepository = foodItemRepository;
         }
 
         public Task UpdateMealType(int foodItemId, int newMealTypeId)
@@ -27,6 +30,11 @@ namespace CMS.Data.Services
         public Task UpdateStatus(int foodItemId, int newStatusId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> DoesFoodItemWithSameNameExists(string name)
+        {
+            return await _foodItemRepository.DoesFoodItemWithSameNameExists(name);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace CMS.Data.Services
         private IUserRepository _userRepository;
         private IWeeklyMenuService _weeklyMenuService;
         private readonly IMapper _mapper;
-        //private ILogger _logger;
+
         public AdminService(INotificationService notificationService, IFoodItemService foodItemService, IUserRepository userRepository, IWeeklyMenuService weeklyMenuService, IMapper mapper)
         {
             _userRepository = userRepository;
@@ -54,36 +54,27 @@ namespace CMS.Data.Services
             {
                 throw new InvalidInputException(AppConstants.InvalidInputMessage);
             }
+            if(await _foodItemService.DoesFoodItemWithSameNameExists(foodItem.Name))
+            {
+                throw new FoodItemExistsException("Food item with same name already exists!");
+            }
             await _foodItemService.Add(foodItem);
+            await _notificationService.SendBatchNotifications(AppConstants.FoodItemAdded, AppConstants.ChefAndEmployeeRoles);
             Console.WriteLine("Food item added to menu succesfully!");
         }
 
         public async Task UpdateAvailabilityStatusForFoodItem()
         {
-            Console.WriteLine("Enter the Id of the Food Item:");
-            if (int.TryParse(Console.ReadLine(), out int Id))
-            {
-                var foodItem = await _foodItemService.GetById<FoodItem>(Id);
-                if (foodItem == null)
-                {
-                    throw new FoodItemNotFoundException(AppConstants.FoodItemNotFoundMessage);
-                }
-                Console.WriteLine("Enter the StatusId you wish to set for food item : ");
-                if (Int32.TryParse(Console.ReadLine(), out int statusId))
-                {
-                    foodItem.StatusId = statusId;
-                    await _foodItemService.Update(foodItem.Id, foodItem);
-                    Console.WriteLine("Food item status updated successfully");
-                }
-                else
-                {
-                    throw new InvalidInputException(AppConstants.InvalidInputMessage);
-                }
-            }
-            else
+            var foodItem = await GetFoodItemByIdAsync();
+
+            Console.WriteLine("Enter the StatusId you wish to set for the food item:");
+            if (!int.TryParse(Console.ReadLine(), out int statusId))
             {
                 throw new InvalidInputException(AppConstants.InvalidInputMessage);
             }
+
+            foodItem.StatusId = statusId;
+            await UpdateFoodItemAsync(foodItem,string.Format(AppConstants.FoodItemStatusUpdated,foodItem.Name));
         }
 
         public async Task<List<string>> ViewFunctionalities()
@@ -136,22 +127,9 @@ namespace CMS.Data.Services
 
         public async Task RemoveFoodItem()
         {
-            Console.WriteLine("Enter the Id of the food item:");
-            if (int.TryParse(Console.ReadLine(), out int Id))
-            {
-                var foodItem = await _foodItemService.GetById<FoodItem>(Id);
-                if (foodItem == null)
-                {
-                    throw new FoodItemNotFoundException(AppConstants.FoodItemNotFoundMessage);
-                }
-                foodItem.StatusId =(int)Status.Unavailable;
-                await _foodItemService.Update(foodItem.Id, foodItem);
-                Console.WriteLine("Food item status removed successfully");
-            }
-            else
-            {
-                throw new InvalidInputException(AppConstants.InvalidInputMessage);
-            }
+            var foodItem = await GetFoodItemByIdAsync();
+            foodItem.StatusId = (int)Status.Unavailable;
+            await UpdateFoodItemAsync(foodItem, string.Format(AppConstants.FoodItemRemoved, foodItem.Name));
         }
 
         public async Task BrowseTodayMenu()
@@ -171,30 +149,40 @@ namespace CMS.Data.Services
 
         public async Task UpdatePriceForFoodItem()
         {
-            Console.WriteLine("Enter the Id of the Food Item:");
-            if (int.TryParse(Console.ReadLine(), out int Id))
-            {
-                var foodItem = await _foodItemService.GetById<FoodItem>(Id);
-                if (foodItem == null)
-                {
-                    throw new FoodItemNotFoundException(AppConstants.FoodItemNotFoundMessage);
-                }
-                Console.WriteLine("Enter the price you wish to set for food item : ");
-                if (Decimal.TryParse(Console.ReadLine(), out decimal price))
-                {
-                    foodItem.Price = price;
-                    await _foodItemService.Update(foodItem.Id, foodItem);
-                    Console.WriteLine("Food item price updated successfully");
-                }
-                else
-                {
-                    throw new InvalidInputException(AppConstants.InvalidInputMessage);
-                }
-            }
-            else
+            var foodItem = await GetFoodItemByIdAsync();
+
+            Console.WriteLine("Enter the price you wish to set for the food item:");
+            if (!decimal.TryParse(Console.ReadLine(), out decimal price))
             {
                 throw new InvalidInputException(AppConstants.InvalidInputMessage);
             }
+
+            foodItem.Price = price;
+            await UpdateFoodItemAsync(foodItem, string.Format(AppConstants.FoodItemPriceUpdated, foodItem.Name));
+        }
+
+        private async Task<FoodItem> GetFoodItemByIdAsync()
+        {
+            Console.WriteLine("Enter the Id of the Food Item:");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                throw new InvalidInputException(AppConstants.InvalidInputMessage);
+            }
+
+            var foodItem = await _foodItemService.GetById<FoodItem>(id);
+            if (foodItem == null)
+            {
+                throw new FoodItemNotFoundException(AppConstants.FoodItemNotFoundMessage);
+            }
+
+            return foodItem;
+        }
+
+        private async Task UpdateFoodItemAsync(FoodItem foodItem, string notificationMessage)
+        {
+            await _foodItemService.Update(foodItem.Id, foodItem);
+            await _notificationService.SendBatchNotifications(notificationMessage, AppConstants.ChefAndEmployeeRoles);
+            Console.WriteLine("Food item details have been updated successfully");
         }
     }
 }

@@ -13,5 +13,6 @@ namespace CMS.Data.Services.Interfaces
         Task UpdatePrice(int foodItemId, decimal newPrice);
         Task UpdateMealType(int foodItemId, int newMealType);
         Task UpdateStatus(int foodItemId, int newStatus);
+        Task<bool> DoesFoodItemWithSameNameExists(string name);
     }
 }
