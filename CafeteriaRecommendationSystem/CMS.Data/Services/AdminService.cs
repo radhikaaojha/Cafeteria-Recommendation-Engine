@@ -6,8 +6,9 @@ using Common;
 using Common.Enums;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
-using Microsoft.Extensions.Logging;
-using System.Linq.Expressions;
+using System.IO;
+using System.Net.Sockets;
+using System.Text;
 
 namespace CMS.Data.Services
 {
@@ -17,139 +18,145 @@ namespace CMS.Data.Services
         private INotificationService _notificationService;
         private IUserRepository _userRepository;
         private IWeeklyMenuService _weeklyMenuService;
-        private readonly IMapper _mapper;
 
-        public AdminService(INotificationService notificationService, IFoodItemService foodItemService, IUserRepository userRepository, IWeeklyMenuService weeklyMenuService, IMapper mapper)
+        public AdminService(INotificationService notificationService, IFoodItemService foodItemService, IUserRepository userRepository, IWeeklyMenuService weeklyMenuService)
         {
             _userRepository = userRepository;
             _notificationService = notificationService;
             _weeklyMenuService = weeklyMenuService;
             _foodItemService = foodItemService;
-            _mapper = mapper;
         }
 
-        public async Task AddFoodItem()
+        public async Task<string> AddFoodItem(string input)
         {
+            //1 - Name : "" Price : "" FoodItemTypeId : ""
             var foodItem = new AddFoodItem();
 
-            Console.WriteLine("Enter the name of the food item :");
-            foodItem.Name = Console.ReadLine();
+            /*await SendMessageAsync(stream, "Enter the name of the food item:");
+            foodItem.Name = await ReceiveMessageAsync(stream);
 
-            Console.WriteLine("Enter the price of the food item :");
-            if (decimal.TryParse(Console.ReadLine(), out decimal price))
+            await SendMessageAsync(stream, "Enter the price of the food item:");
+            if (decimal.TryParse(await ReceiveMessageAsync(stream), out decimal price))
             {
                 foodItem.Price = price;
             }
             else
             {
-                throw new InvalidInputException(AppConstants.InvalidInputMessage);
+                await SendMessageAsync(stream, AppConstants.InvalidInputMessage);
+                return;
             }
 
-            Console.WriteLine("Enter the food item type Id :");
-            if (int.TryParse(Console.ReadLine(), out int foodItemTypeId))
+            await SendMessageAsync(stream, "Enter the food item type Id:");
+            if (int.TryParse(await ReceiveMessageAsync(stream), out int foodItemTypeId))
             {
                 foodItem.FoodItemTypeId = foodItemTypeId;
             }
             else
             {
-                throw new InvalidInputException(AppConstants.InvalidInputMessage);
+                await SendMessageAsync(stream, AppConstants.InvalidInputMessage);
+                return;
             }
-            if(await _foodItemService.DoesFoodItemWithSameNameExists(foodItem.Name))
+
+            if (await _foodItemService.DoesFoodItemWithSameNameExists(foodItem.Name))
             {
-                throw new FoodItemExistsException("Food item with same name already exists!");
+                await SendMessageAsync(stream, "Food item with the same name already exists!");
+                return;
             }
+
             await _foodItemService.Add(foodItem);
             await _notificationService.SendBatchNotifications(AppConstants.FoodItemAdded, AppConstants.ChefAndEmployeeRoles);
-            Console.WriteLine("Food item added to menu succesfully!");
+            await SendMessageAsync(stream, "Food item added to menu successfully!");*/
+            return "";
         }
 
-        public async Task UpdateAvailabilityStatusForFoodItem()
+        public async Task<string> UpdateAvailabilityStatusForFoodItem()
         {
-            var foodItem = await GetFoodItemByIdAsync();
+            //var foodItem = await GetFoodItemById(networkStream);
 
             Console.WriteLine("Enter the StatusId you wish to set for the food item:");
             if (!int.TryParse(Console.ReadLine(), out int statusId))
             {
                 throw new InvalidInputException(AppConstants.InvalidInputMessage);
             }
-
-            foodItem.StatusId = statusId;
-            await UpdateFoodItemAsync(foodItem,string.Format(AppConstants.FoodItemStatusUpdated,foodItem.Name));
+            return "";
+            // foodItem.StatusId = statusId;
+            // await UpdateFoodItemAsync(foodItem, string.Format(AppConstants.FoodItemStatusUpdated, foodItem.Name));
         }
 
-        public async Task<List<string>> ViewFunctionalities()
+        public async Task<string> HandleChoice(string input)
         {
-            while (true)
+            //1-Price:50 Name:Pizza
+            string[] choices = input.Split("-");
+            string userChoice = choices[0];
+            string requestedInput = choices[1];
+            switch (userChoice)
             {
-                ShowAdminMenu();
-                var choice = Console.ReadLine();
-                switch (choice)
-                {
-                    case "1":
-                        await AddFoodItem();
-                        break;
-                    case "2":
-                        await RemoveFoodItem();
-                        break;
-                    case "3":
-                        await BrowseTodayMenu();
-                        break;
-                    case "4":
-                        await UpdatePriceForFoodItem();
-                        break;
-                    case "5":
-                        await UpdateAvailabilityStatusForFoodItem();
-                        break;
-                    case "6":
-                        await BrowseMenu();
-                        break;
-                    case "7":
-                        Environment.Exit(0);
-                        break;
-                    default:
-                        throw new InvalidInputException(AppConstants.InvalidInputMessage);
-                }
+                case "1":
+                    return await AddFoodItem(requestedInput);
+                case "2":
+                    return await RemoveFoodItem();
+                case "3":
+                    return await BrowseTodayMenu();
+                case "4":
+                    return await UpdatePriceForFoodItem();
+                case "5":
+                    return await UpdateAvailabilityStatusForFoodItem();
+                case "6":
+                    return await BrowseMenu();
+                    break;
+                case "7":
+                    // await SendMessageAsync(stream, "Logging out...");
+                    // stream.Close();
+                    return "";
+                    break;
+                default:
+                    //  await SendMessageAsync(stream, "Invalid input. Please try again.");
+                    return "";
+
             }
         }
 
-        public static void ShowAdminMenu()
+        public string ShowAdminMenu()
         {
-            Console.WriteLine("\nSelect an option from the following:");
-            Console.WriteLine("1. Add a new food item");
-            Console.WriteLine("2. Remove food item");
-            Console.WriteLine("3. View the daily menu");
-            Console.WriteLine("4. Update the price of a food item");
-            Console.WriteLine("5. Update the availability status of a food item");
-            Console.WriteLine("6. Browse Menu of Cafeteria");
-            Console.WriteLine("7. Logout");
-            Console.WriteLine("Enter the number corresponding to your choice:");
+            return "\nSelect an option from the following:\n" +
+                      "1. Add a new food item\n" +
+                      "2. Remove food item\n" +
+                      "3. View the daily menu\n" +
+                      "4. Update the price of a food item\n" +
+                      "5. Update the availability status of a food item\n" +
+                      "6. Browse Menu of Cafeteria\n" +
+                      "7. Logout\n" +
+                      "Enter the number corresponding to your choice in the format: Admin 1-Name:Fries ";
         }
 
-        public async Task RemoveFoodItem()
+        public async Task<string> RemoveFoodItem()
         {
-            var foodItem = await GetFoodItemByIdAsync();
-            foodItem.StatusId = (int)Status.Unavailable;
-            await UpdateFoodItemAsync(foodItem, string.Format(AppConstants.FoodItemRemoved, foodItem.Name));
+            // var foodItem = await GetFoodItemById(networkStream);
+            // foodItem.StatusId = (int)Status.Unavailable;
+            //await UpdateFoodItemAsync(foodItem, string.Format(AppConstants.FoodItemRemoved, foodItem.Name));
+            return "";
         }
 
-        public async Task BrowseTodayMenu()
+        public async Task<string> BrowseTodayMenu()
         {
             await _weeklyMenuService.GetDailyMenu();
+            return "";
         }
 
-        public async Task BrowseMenu()
+        public async Task<string> BrowseMenu()
         {
-            var foodItems = await _foodItemService.GetList<FoodItem>("MealType, FoodItemAvailabilityStatus, FoodItemType", null,null, 0, 0, null); 
-            foreach(var foodItem in foodItems)
+            var foodItems = await _foodItemService.GetList<FoodItem>("MealType, FoodItemAvailabilityStatus, FoodItemType", null, null, 0, 0, null);
+            foreach (var foodItem in foodItems)
             {
                 Console.WriteLine($"Item : {foodItem.Name} \nFoodItemType : {foodItem.FoodItemType.Name} \nPrice : {foodItem.Price} \nFeedback : {foodItem.Description} \nStatus : {foodItem.FoodItemAvailabilityStatus.Name}");
                 Console.WriteLine("\n");
             }
+            return "";
         }
 
-        public async Task UpdatePriceForFoodItem()
+        public async Task<string> UpdatePriceForFoodItem()
         {
-            var foodItem = await GetFoodItemByIdAsync();
+            //var foodItem = await GetFoodItemById(networkStream);
 
             Console.WriteLine("Enter the price you wish to set for the food item:");
             if (!decimal.TryParse(Console.ReadLine(), out decimal price))
@@ -157,11 +164,12 @@ namespace CMS.Data.Services
                 throw new InvalidInputException(AppConstants.InvalidInputMessage);
             }
 
-            foodItem.Price = price;
-            await UpdateFoodItemAsync(foodItem, string.Format(AppConstants.FoodItemPriceUpdated, foodItem.Name));
+            // foodItem.Price = price;
+            //await UpdateFoodItemAsync(foodItem, string.Format(AppConstants.FoodItemPriceUpdated, foodItem.Name));
+            return "";
         }
 
-        private async Task<FoodItem> GetFoodItemByIdAsync()
+        private async Task<FoodItem> GetFoodItemById()
         {
             Console.WriteLine("Enter the Id of the Food Item:");
             if (!int.TryParse(Console.ReadLine(), out int id))

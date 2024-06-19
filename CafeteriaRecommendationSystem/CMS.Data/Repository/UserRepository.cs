@@ -18,7 +18,8 @@ namespace Data_Access_Layer.Repository
 
         public async Task<User> AuthenticateUser(UserLogin userLogin)
         {
-            return await _context.Users.Where(u=>u.Id == userLogin.EmployeeId && u.Name == userLogin.Name).FirstOrDefaultAsync();
+            int.TryParse(userLogin.EmployeeId, out int id);
+            return await _context.Users.Where(u=>u.Id == id && u.Name == userLogin.Name).FirstOrDefaultAsync();
         }
 
     }

@@ -1,5 +1,7 @@
 ﻿using CMS.Data.Services.Interfaces;
 using Common.Enums;
+using System.Net.Sockets;
+using System.Text;
 
 namespace CMS.Data.Services
 {
@@ -16,21 +18,22 @@ namespace CMS.Data.Services
             _employeeService = employeeService;
         }
 
-        public async Task<List<string>> ViewOptions(int roleId)
+        public async Task<string> ViewOptions(int roleId)
         {
             switch (roleId)
             {
                 case (int)Role.Admin:
-                    return await _adminService.ViewFunctionalities();
+                     return _adminService.ShowAdminMenu();
+                    break;
                 case (int)Role.Chef:
-                    _chefService.ViewFunctionalities();
-                    return null;
+                    return _chefService.ViewMenu();
+                    break;
                 case (int)Role.Employee:
-                    _employeeService.ViewFunctionalities();
-                    return null;
+                    return _employeeService.ViewMenu();
+                    break;
                 default:
-                    Console.WriteLine("Unknown role.");
-                    return null;
+                    return "";
+                    break;
             }
         }
     }

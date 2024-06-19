@@ -33,7 +33,7 @@ namespace CMS.Data.Services
             throw new NotImplementedException();
         }
 
-        public void ViewFunctionalities()
+        public string ViewMenu()
         {
             //switch menu
             throw new NotImplementedException();

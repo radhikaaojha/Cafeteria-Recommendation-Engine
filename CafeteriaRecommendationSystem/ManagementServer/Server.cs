@@ -1,20 +1,17 @@
 ﻿using CafeteriaRecommendationSystem.Services;
 using CafeteriaRecommendationSystem.Services.Interfaces;
-using CMS.Common.Exceptions;
 using CMS.Common.Models;
+using CMS.Common.Utils;
 using CMS.Data.Services;
 using CMS.Data.Services.Interfaces;
 using Common;
-using Common.Enums;
-using Common.Models;
 using Data_Access_Layer;
 using Data_Access_Layer.Repository;
 using Data_Access_Layer.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -22,146 +19,98 @@ using System.Text.Json;
 
 namespace ManagementServer
 {
-    class Server
+    public class Server
     {
-        private static List<TcpClient> _authenticatedClients = new List<TcpClient>();
-        private static IServiceProvider _serviceProvider;
-        public static async Task Main(string[] args)
+        private const int PORT = 8000;
+        private ClientRequestProcessor clientRequestProcessor;
+
+        public Server(ClientRequestProcessor clientRequestProcessor)
         {
-            try
-            {
-                var services = new ServiceCollection();
-                var host = Host.CreateDefaultBuilder()
-                  .ConfigureServices((context, services) =>
-                  {
-                      ConfigureServices(services);
-                  })
-                  .Build();
-                _serviceProvider = host.Services;
-                var roleBasedMenuService = _serviceProvider.GetRequiredService<IRoleBasedMenuService>();
-                List<string> menuOptions = await roleBasedMenuService.ViewOptions(1);
-                Console.ReadLine();
-            }
-            catch(InvalidInputException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            /*var roleBasedMenuService = _serviceProvider.GetRequiredService<IRoleBasedMenuService>();
-            var dbContext = _serviceProvider.GetRequiredService<CMSDbContext>();
-            var userRepository = _serviceProvider.GetRequiredService<IUserRepository>();
-            var authenticateService = _serviceProvider.GetRequiredService<IAuthenticateService>();
-
-            TcpListener server = new TcpListener(IPAddress.Any, 8888);
-            server.Start();
-
-            Console.WriteLine("Server started...");
-
-            while (true)
-            {
-                var client = await server.AcceptTcpClientAsync();
-                //_connectedClients.Add(client);
-                _ = Task.Run(() => HandleClientAsync(client));// authenticateService, roleBasedMenuService));
-            }*/
+            this.clientRequestProcessor = clientRequestProcessor;
         }
 
-        private static IServiceProvider ConfigureServices(IServiceCollection services)
+        public async Task StartServer()
         {
-            services.AddDbContext<CMSDbContext>(options => options.UseSqlServer(AppConstants.ConnectionString));
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped(typeof(ICrudBaseRepository<>), typeof(CrudBaseRepository<>));
-            services.AddScoped(typeof(ICrudBaseService<>), typeof(CrudBaseService<>));
-            services.AddScoped<IRoleBasedMenuService, RoleBasedMenuService>();
-            services.AddScoped<IAuthenticateService, AuthenticateService>();
-            services.AddScoped<IAdminService, AdminService>();
-            services.AddScoped<IChefService, ChefService>();
-            services.AddScoped<IEmployeeService, EmployeeService>();
-            services.AddScoped<IFeedbackService, FeedbackService>();
-            services.AddScoped<IFoodItemService, FoodItemService>();
-            services.AddScoped<INotificationService, NotificationService>();
-            services.AddScoped<IWeeklyMenuService, WeeklyMenuService>();
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            return services.BuildServiceProvider();
-        }
-
-        private static async Task HandleClientAsync(TcpClient client)
-        {
+            TcpListener server = null;
             try
             {
-                using (var stream = client.GetStream())
+                
+                IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
+                server = new TcpListener(ipAddress, PORT);
+                server.Start();
+                Console.WriteLine($"Echo server started on {ipAddress}:{PORT}");
+                while (true)
                 {
-                    byte[] buffer = new byte[4096];
-                    int bytesRead = 0;
-                    StringBuilder requestBuilder = new StringBuilder();
-                    do
-                    {
-                        bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
-                        requestBuilder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
-                    }
-                    while (stream.DataAvailable);
+                    Console.WriteLine("Waiting for a client connection...");
+                    TcpClient client = server.AcceptTcpClient();
+                    Console.WriteLine("Client connected");
 
-                    string requestJson = requestBuilder.ToString();
-                    Console.WriteLine($"Received JSON: {requestJson}");
+                    Task.Run(() => HandleClientRequest(client));
+                }
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine($"SocketException: {e}");
+            }
+            finally
+            {
+                if (server != null)
+                    server.Stop();
+            }
+        }
 
-                    CustomProtocolDTO protocolMessage;
-                    try
+        private async Task HandleClientRequest(TcpClient client)
+        {
+            try
+            {
+                using (NetworkStream stream = client.GetStream())
+                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true })
+                {
+                    while (true)
                     {
-                        protocolMessage = JsonSerializer.Deserialize<CustomProtocolDTO>(requestJson);
-                    }
-                    catch (JsonException ex)
-                    {
-                        Console.WriteLine($"Failed to deserialize protocol message: {ex.Message}");
-                        return;
-                    }
-
-                    if (protocolMessage.ProtocolType == "Auth")
-                    {
-                        var loginRequest = JsonSerializer.Deserialize<UserLogin>(protocolMessage.Payload);
-                        var authenticateService = _serviceProvider.GetRequiredService<IAuthenticateService>();
-                        var loginResponse = await authenticateService.Login(loginRequest);
-
-                        string responsePayload = JsonSerializer.Serialize(loginResponse);
-                        if (loginResponse.IsAuthenticated)
+                        while (!reader.EndOfStream && !stream.DataAvailable)
                         {
-                            _authenticatedClients.Add(client);
-
-                            var roleBasedMenuService = _serviceProvider.GetRequiredService<IRoleBasedMenuService>();
-                            List<string> menuOptions = await roleBasedMenuService.ViewOptions(loginResponse.RoleId);
-                            responsePayload = JsonSerializer.Serialize(new { loginResponse, menuOptions });
+                            await Task.Delay(10); // Wait for a short period before checking again
                         }
 
-                        var responseProtocolMessage = new CustomProtocolDTO
+                        if (!stream.DataAvailable && stream.CanRead && stream.CanWrite)
                         {
-                            SourceIp = "Server IP",
-                            DestinationIp = "Client IP",
-                            ProtocolType = "AuthResponse",
-                            Payload = responsePayload
-                        };
+                            // Client disconnected
+                            Console.WriteLine("Client disconnected.");
+                            break;
+                        }
 
-                        string responseJson = JsonSerializer.Serialize(responseProtocolMessage);
-                        Console.WriteLine($"Sending JSON: {responseJson}");
-                        byte[] responseBytes = Encoding.UTF8.GetBytes(responseJson);
-                        await stream.WriteAsync(responseBytes, 0, responseBytes.Length);
-                    }
-                    else if (_authenticatedClients.Contains(client))
-                    {
-                        // Handle other protocol types here
-                    }
-                    else
-                    {
-                        Console.WriteLine("Unauthenticated client trying to make a request.");
-                        client.Close();
+                        string lengthString = await reader.ReadLineAsync();
+                        if (string.IsNullOrWhiteSpace(lengthString))
+                        {
+                            continue;
+                        }
+                        int dataLength = int.Parse(lengthString);
+                        char[] dataBuffer = new char[dataLength];
+                        await reader.ReadBlockAsync(dataBuffer, 0, dataLength);
+                        string requestString = new string(dataBuffer);
+
+                        var request = DeserializeRequest(requestString);
+                        var response = await clientRequestProcessor.ProcessClientRequest(request);
+
+                        byte[] responseBytes = Encoding.UTF8.GetBytes(response);
+                        //BASE 64 RESPONSE -and size of response client validates 
+                        await writer.WriteLineAsync(responseBytes.Length.ToString());
+                        await writer.WriteLineAsync(response);
+                        await writer.FlushAsync();
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Console.WriteLine($"Exception handling client: {ex.Message}");
-                client.Close();
+                Console.WriteLine($"Exception: {e}");
             }
+        }
+
+        private CustomProtocolDTO DeserializeRequest(string message)
+        {
+            return JsonSerializer.Deserialize<CustomProtocolDTO>(message);
         }
     }
 }

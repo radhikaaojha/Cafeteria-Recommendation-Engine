@@ -9,7 +9,7 @@ namespace CMS.Data.Services.Interfaces
     public interface IChefService
     {
         Task BrowseTodayMenu();
-        void ViewFunctionalities();
+        string ViewMenu();
         Task FinalizeMenuItems();
         Task NotifyEmployeesForFinalizeedMenu();    
         Task NotifyEmployeesForPlannedMenu();    
