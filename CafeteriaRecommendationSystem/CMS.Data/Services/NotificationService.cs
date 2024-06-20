@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using CafeteriaRecommendationSystem.Services;
+using CMS.Common.Models;
 using CMS.Data.Services.Interfaces;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
+using System.Linq.Expressions;
 
 namespace CMS.Data.Services
 {
@@ -33,12 +35,22 @@ namespace CMS.Data.Services
             throw new NotImplementedException();
         }
 
-        public Task SendBatchNotifications(string message, List<int> roleId)
+        public async Task SendBatchNotifications(string message, List<int> roleIds, int notificationTypeId)
         {
-            //_userRepository.GetList() with predicate of role id
-            //model for notification
-            //base.AddRange(noti);
-            throw new NotImplementedException();
+            Expression<Func<User, bool>> predicate = data => roleIds.Contains(data.RoleId);
+            var users = await _userRepository.GetList(null,null,null,0,0,predicate);
+            List<AddNotification> addNotifications = new();
+            foreach(var user in users)
+            {
+                addNotifications.Add(new AddNotification
+                {
+                    Message = "New Food item added",
+                    IsRead = false,
+                    UserId = user.Id,
+                    NotificationTypeId = 1
+                });
+            }
+            await base.AddRange(addNotifications);
         }
     }
 }

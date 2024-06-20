@@ -10,9 +10,8 @@ namespace CMS.Data.Services.Interfaces
 {
     public interface IFoodItemService : ICrudBaseService<FoodItem>
     {
-        Task UpdatePrice(int foodItemId, decimal newPrice);
-        Task UpdateMealType(int foodItemId, int newMealType);
-        Task UpdateStatus(int foodItemId, int newStatus);
+        Task<FoodItem> UpdatePrice(int foodItemId, decimal newPrice);
+        Task<FoodItem> UpdateStatus(int foodItemId, int newStatus);
         Task<bool> DoesFoodItemWithSameNameExists(string name);
     }
 }

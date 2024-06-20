@@ -30,7 +30,8 @@ namespace Client
                         {
                             case "1":
                                 var request = await AdminService.ShowMenuForAdmin(writer, reader);
-                                await SendRequestAsync(writer, reader, request);
+                                var result = await SendRequestAsync(writer, reader, request);
+                                Console.WriteLine($"{result}");
                                 break;
                             case "2":
                                 break;
@@ -72,12 +73,14 @@ namespace Client
 
         private static async Task<string> SendRequestAsync(StreamWriter writer, StreamReader reader, CustomProtocolDTO request)
         {
+            string requestString = JsonSerializer.Serialize(request, new JsonSerializerOptions
             {
-                string requestString = JsonSerializer.Serialize(request);
-                await writer.WriteLineAsync(requestString.Length.ToString());
+                ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve,
+                MaxDepth = 128
+            });
+            await writer.WriteLineAsync(requestString.Length.ToString());
                 await writer.WriteLineAsync(requestString);
                 return await HandleServerResponse(reader);
-            }
         }
 
         private static async Task<string> HandleServerResponse(StreamReader reader)
@@ -107,8 +110,12 @@ namespace Client
                 string responseData = new string(buffer);
                 try
                 {
+                    var options = new JsonSerializerOptions
+                    {
+                        ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve,
+                        MaxDepth = 128
+                    };
                     CustomProtocolDTO response = JsonSerializer.Deserialize<CustomProtocolDTO>(responseData);
-                    Console.WriteLine($"Response: {response.Response}");
                     return response.Response;
                 }
                 catch (JsonException ex)

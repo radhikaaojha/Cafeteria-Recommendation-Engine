@@ -11,13 +11,10 @@ namespace CMS.Data.Services.Interfaces
 {
     public interface IAdminService
     {
-        Task<string> HandleChoice(string choice);
         Task<string> AddFoodItem(string input);
-        Task<string> RemoveFoodItem();
-        Task<string> UpdateAvailabilityStatusForFoodItem();
-        Task<string> UpdatePriceForFoodItem();
-        Task<string> BrowseTodayMenu();
+        Task<string> RemoveFoodItem(int foodItemId);
+        Task<string> UpdateAvailabilityStatusForFoodItem(string request);
+        Task<string> UpdatePriceForFoodItem(string request);
         Task<string> BrowseMenu();
-        string ShowAdminMenu();
     }
 }

@@ -13,6 +13,6 @@ namespace CMS.Common.Enums
         RemoveFoodItem,
         UpdateFoodItemPrice,
         UpdateFoodItemStatus,
-        BrowseFullMenu
+        BrowseMenu
     }
 }

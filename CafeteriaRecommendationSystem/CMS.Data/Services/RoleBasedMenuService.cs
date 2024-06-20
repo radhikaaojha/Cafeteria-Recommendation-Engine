@@ -23,18 +23,19 @@ namespace CMS.Data.Services
             switch (roleId)
             {
                 case (int)Role.Admin:
-                     return _adminService.ShowAdminMenu();
+                    // return _adminService.ShowAdminMenu();
                     break;
                 case (int)Role.Chef:
-                    return _chefService.ViewMenu();
+                    //return _chefService.ViewMenu();
                     break;
                 case (int)Role.Employee:
-                    return _employeeService.ViewMenu();
+                   // return _employeeService.ViewMenu();
                     break;
                 default:
                     return "";
                     break;
             }
+            return "";
         }
     }
 }

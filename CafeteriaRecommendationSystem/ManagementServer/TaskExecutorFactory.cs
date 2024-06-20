@@ -21,6 +21,7 @@ namespace CMS.Common.Utils
                 { Actions.RemoveFoodItem.ToString(), new AdminTaskExecutor(adminService) },
                 { Actions.UpdateFoodItemPrice.ToString(), new AdminTaskExecutor(adminService) },
                 { Actions.UpdateFoodItemStatus.ToString(), new AdminTaskExecutor(adminService) },
+                { Actions.BrowseMenu.ToString(), new AdminTaskExecutor(adminService) }
            // { "AdminActions", new AdminTaskExecutor() }
         };
         }
@@ -112,20 +113,17 @@ namespace CMS.Common.Utils
                     response = await adminService.AddFoodItem(request);
                     break;
                 case "RemoveFoodItem":
-                   // return await adminService.RemoveFoodItem(request);
-                case "3":
-                   // return await adminService.BrowseTodayMenu(request);
-                case "4":
-                   // return await adminService.UpdatePriceForFoodItem();
-                case "5":
-                  //  return await UpdateAvailabilityStatusForFoodItem();
-                case "6":
-                  //  return await BrowseMenu();
-                  //  break;
-                case "7":
-                default:
-                    break; 
-
+                    response = await adminService.RemoveFoodItem(int.Parse(request));
+                    break;
+                case "UpdateFoodItemPrice":
+                    response = await adminService.UpdatePriceForFoodItem(request);
+                    break;
+                case "UpdateFoodItemStatus":
+                    response = await adminService.UpdateAvailabilityStatusForFoodItem(request);
+                    break;
+                case "BrowseMenu":
+                    response = await adminService.BrowseMenu();
+                    break;
             }
             return CreateSuccessResponse(response);
         }

@@ -1,4 +1,5 @@
-﻿using CMS.Common.Models;
+﻿using CMS.Common.Enums;
+using CMS.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,25 +17,36 @@ namespace Client
             Console.WriteLine("\nSelect an option from the following:\n" +
                          "1. Add a new food item\n" +
                          "2. Remove food item\n" +
-                         "3. View the daily menu\n" +
+                         "3. Browse Menu of Cafeteria\n" +
                          "4. Update the price of a food item\n" +
                          "5. Update the availability status of a food item\n" +
-                         "6. Browse Menu of Cafeteria\n" +
-                         "7. Logout\n" +
+                         "6. Logout\n" +
                          "Enter the number corresponding to your choice ");
             var requestString = Console.ReadLine();
 
             switch (requestString)
             {
                 case "1":
-                    request.Action = "AddFoodItem";
+                    request.Action = Actions.AddFoodItem.ToString();
                     request.Payload = JsonSerializer.Serialize(GetInputForAddMenuItem());
                     break;
                 case "2":
-                    request.Action = "RemoveFoodItem";
+                    request.Action = Actions.RemoveFoodItem.ToString() ;
                     request.Payload = JsonSerializer.Serialize(GetInputForRemoveFoodItem());
                     break;
-                case "7":
+                case "3":
+                    request.Action = Actions.BrowseMenu.ToString();
+                    request.Payload = "";
+                    break;
+                case "4":
+                    request.Action = Actions.UpdateFoodItemPrice.ToString();
+                    request.Payload = JsonSerializer.Serialize(GetInputForUpdateFoodItemPrice());
+                    break;
+                case "5":
+                    request.Action = Actions.UpdateFoodItemStatus.ToString();
+                    request.Payload = JsonSerializer.Serialize(GetInputForUpdateFoodItemStatus());
+                    break;
+                case "6":
                     Environment.Exit(0);
                     break;
                 default:
@@ -43,6 +55,26 @@ namespace Client
 
             }
             return request;
+        }
+
+        private static object GetInputForUpdateFoodItemStatus()
+        {
+            FoodItemStatusUpdate foodItemStatusUpdate = new();
+            Console.WriteLine("Enter id of food item you wish to update status of");
+            foodItemStatusUpdate.FoodItemId = int.Parse(Console.ReadLine());
+            Console.WriteLine("Enter status id");
+            foodItemStatusUpdate.StatusId = int.Parse(Console.ReadLine());
+            return foodItemStatusUpdate;
+        }
+
+        private static object GetInputForUpdateFoodItemPrice()
+        {
+            FoodItemPriceUpdate foodItemPriceUpdate = new();
+            Console.WriteLine("Enter id of food item you wish to update price of");
+            foodItemPriceUpdate.FoodItemId = int.Parse(Console.ReadLine());
+            Console.WriteLine("Enter price");
+            foodItemPriceUpdate.Price = decimal.Parse(Console.ReadLine());
+            return foodItemPriceUpdate;
         }
 
         private static string GetInputForRemoveFoodItem()

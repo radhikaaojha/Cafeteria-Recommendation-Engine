@@ -15,21 +15,20 @@ namespace CMS.Data.Services
             _foodItemRepository = foodItemRepository;
         }
 
-        public Task UpdateMealType(int foodItemId, int newMealTypeId)
+        public async Task<FoodItem> UpdatePrice(int foodItemId, decimal newPrice)
         {
-            //base.GetById(foodItemId);
-            //set newMealTypeId
-            throw new NotImplementedException();
+            var foodItem = await base.GetById<FoodItem>(foodItemId);
+            foodItem.Price = newPrice;
+            await base.Update(foodItem.Id,foodItem);
+            return foodItem;
         }
 
-        public Task UpdatePrice(int foodItemId, decimal newPrice)
+        public async Task<FoodItem> UpdateStatus(int foodItemId, int newStatusId)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateStatus(int foodItemId, int newStatusId)
-        {
-            throw new NotImplementedException();
+            var foodItem = await base.GetById<FoodItem>(foodItemId);
+            foodItem.StatusId = newStatusId;
+            await base.Update(foodItem.Id, foodItem);
+            return foodItem;
         }
 
         public async Task<bool> DoesFoodItemWithSameNameExists(string name)
