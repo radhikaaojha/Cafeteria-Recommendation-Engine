@@ -42,12 +42,9 @@ namespace ManagementServer
                 Console.WriteLine($"Server started on {ipAddress}:{PORT}");
                 while (true)
                 {
-                    //Console.WriteLine("Waiting for a client connection...");
                     TcpClient client = server.AcceptTcpClient();
-                    //Console.WriteLine("Client connected");
-                    //string clientId = client.Client.RemoteEndPoint.ToString();
-                    //connectedClients.TryAdd(clientId, client);
-                    //Console.WriteLine($"Client {clientId} connected");
+                    connectedClients.TryAdd(client.Client.RemoteEndPoint.ToString(), client);
+                    Console.WriteLine($"Client {client.Client.RemoteEndPoint.ToString()} connected");
                     Task.Run(() => HandleClientRequest(client));
                 }
             }
@@ -87,17 +84,19 @@ namespace ManagementServer
                         var response = await clientRequestProcessor.ProcessClientRequest(request);
 
                         byte[] responseBytes = Encoding.UTF8.GetBytes(response);
-                        //BASE 64 RESPONSE -and size of response client validates 
                         await writer.WriteLineAsync(responseBytes.Length.ToString());
                         await writer.WriteLineAsync(response);
                         await writer.FlushAsync();
                     }
                 }
             }
+            catch (IOException e)
+            {
+                Console.WriteLine($"Client {client.Client.RemoteEndPoint} disconnected: {e.Message}");
+                connectedClients.TryRemove(client.Client.RemoteEndPoint.ToString(), out _);
+            }
             catch (Exception e)
             {
-                Console.WriteLine($"Client {client.Client} disconnected: {e.Message}");
-                //connectedClients.TryRemove(clientId, out _);
                 Console.WriteLine($"Exception: {e}");
             }
         }
