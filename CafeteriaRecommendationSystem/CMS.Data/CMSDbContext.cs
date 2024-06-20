@@ -15,16 +15,16 @@ namespace Data_Access_Layer
         {
         }
 
-        public DbSet<FoodItem> FoodItems { get; set; }
-        public DbSet<FoodItemAvailabilityStatus> FoodItemAvailabilityStatuses { get; set; }
-        public DbSet<FoodItemFeedback> FoodItemFeedbacks { get; set; }
-        public DbSet<FoodItemType> FoodItemTypes { get; set; }
-        public DbSet<MealType> MealTypes { get; set; }
-        public DbSet<Notification> Notifications { get; set; }
-        public DbSet<NotificationType> NotificationTypes { get; set; }
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<User> Users { get; set; }
-        public DbSet<WeeklyMenu> WeeklyMenus { get; set; }
+        public DbSet<FoodItem> FoodItem { get; set; }
+        public DbSet<FoodItemAvailabilityStatus> FoodItemAvailabilityStatus { get; set; }
+        public DbSet<FoodItemFeedback> FoodItemFeedback { get; set; }
+        public DbSet<FoodItemType> FoodItemType { get; set; }
+        public DbSet<MealType> MealType { get; set; }
+        public DbSet<Notification> Notification { get; set; }
+        public DbSet<NotificationType> NotificationType { get; set; }
+        public DbSet<Role> Role { get; set; }
+        public DbSet<User> User { get; set; }
+        public DbSet<WeeklyMenu> WeeklyMenu { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -43,7 +43,8 @@ namespace Data_Access_Layer
             modelBuilder.Entity<MealType>().HasData(SeedData.GetMealTypes());
             modelBuilder.Entity<FoodItemAvailabilityStatus>().HasData(SeedData.GetFoodItemAvailabilityStatus());
             modelBuilder.Entity<FoodItemType>().HasData(SeedData.GetFoodItemTypes());
-            //base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<User>().HasData(SeedData.GetUsers());
+            modelBuilder.Entity<FoodItem>().HasData(SeedData.GetFoodItems());
         }
 
         private void SetAuditProperties()
