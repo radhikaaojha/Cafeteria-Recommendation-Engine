@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace CMS.Common.Models
 {
-    public class AddNotification
+    public class ViewNotification
     {
         public string Message { get; set; }
-        public bool IsRead { get; set; } 
         public int UserId { get; set; }
         public int NotificationTypeId { get; set; }
     }

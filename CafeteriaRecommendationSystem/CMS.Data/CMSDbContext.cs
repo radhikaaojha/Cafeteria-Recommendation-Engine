@@ -71,25 +71,6 @@ namespace Data_Access_Layer
             SetAuditProperties();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
-
-        public class DateTimeToLocalConverter : ValueConverter<DateTime, DateTime>
-        {
-            public DateTimeToLocalConverter() : base(Serialize, Deserialize, null)
-            {
-            }
-
-            private static Expression<Func<DateTime, DateTime>> Deserialize =
-                    x => x.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(x, DateTimeKind.Local) : x;
-
-            private static Expression<Func<DateTime, DateTime>> Serialize = x => x.ToUniversalTime();
-        }
-
-        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-        {
-            configurationBuilder
-                .Properties<DateTime>()
-                .HaveConversion<DateTimeToLocalConverter>();
-        }
     }
 
 }

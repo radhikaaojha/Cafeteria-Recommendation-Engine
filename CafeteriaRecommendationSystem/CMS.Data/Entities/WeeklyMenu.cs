@@ -12,7 +12,7 @@ namespace Data_Access_Layer.Entities
     {
         [Key]
         public int Id { get; set; }
-        public bool IsSelected { get; set; }    
+        public bool IsSelected { get; set; } 
         public int NumberOfVotes { get; set; }
         public int MealTypeId { get; set; }
         public int FoodItemId { get; set; }

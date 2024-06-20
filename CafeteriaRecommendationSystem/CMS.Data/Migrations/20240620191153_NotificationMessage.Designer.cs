@@ -4,6 +4,7 @@ using Data_Access_Layer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CMS.Data.Migrations
 {
     [DbContext(typeof(CMSDbContext))]
-    partial class CMSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240620191153_NotificationMessage")]
+    partial class NotificationMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,12 +35,12 @@ namespace CMS.Data.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<DateTime>("ModifiedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -104,7 +106,7 @@ namespace CMS.Data.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -116,7 +118,7 @@ namespace CMS.Data.Migrations
                     b.Property<DateTime>("ModifiedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -516,12 +518,12 @@ namespace CMS.Data.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<DateTime>("ModifiedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -577,7 +579,7 @@ namespace CMS.Data.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<int>("FoodItemId")
                         .HasColumnType("int");
@@ -585,7 +587,7 @@ namespace CMS.Data.Migrations
                     b.Property<DateTime>("ModifiedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -613,12 +615,12 @@ namespace CMS.Data.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<DateTime>("ModifiedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -684,12 +686,12 @@ namespace CMS.Data.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<DateTime>("ModifiedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -734,19 +736,19 @@ namespace CMS.Data.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("varchar(250)");
 
                     b.Property<DateTime>("ModifiedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<int>("NotificationTypeId")
                         .HasColumnType("int");
@@ -774,12 +776,12 @@ namespace CMS.Data.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<DateTime>("ModifiedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -824,7 +826,7 @@ namespace CMS.Data.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -833,7 +835,7 @@ namespace CMS.Data.Migrations
                     b.Property<DateTime>("ModifiedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -864,9 +866,9 @@ namespace CMS.Data.Migrations
                             Email = "admin1@example.com",
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Admin",
-                            Password = "eYTiNwG9FJY6Xhhle6bKiWWxVkTHtBUmC3NoyJJgcOA=",
+                            Password = "d+CcEFoy6pZir640MEREf9bzspJaD7bMV3L2SYvSQ8U=",
                             RoleId = 1,
-                            Salt = "OuD6yNagyk5m/Y9p0c7HKg=="
+                            Salt = "lLySdtfvTWFDBZ/bZGFK9w=="
                         },
                         new
                         {
@@ -875,9 +877,9 @@ namespace CMS.Data.Migrations
                             Email = "admin2@example.com",
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Admin",
-                            Password = "/rADvVlLUvUpUGuPSAg9Sm7c6ld+C7/SFb16kO0j/fk=",
+                            Password = "ZASFHaXWrELjl0JGYA1Z5yhFLFWKF33O8pLTd9bZ5Oc=",
                             RoleId = 1,
-                            Salt = "oqocVNItMkkyG7RH60THOQ=="
+                            Salt = "ZpC6Rs4A3j3cu0o+OAD+XQ=="
                         },
                         new
                         {
@@ -886,9 +888,9 @@ namespace CMS.Data.Migrations
                             Email = "admin3@example.com",
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Admin",
-                            Password = "M9sWP+yXBME/nEHAzzSi6I3Wiq8qy0pB9EWrOTonE60=",
+                            Password = "8WXdCkc19dMu1TIVTqPdThjw27+k/3K2bqH88VOd7hA=",
                             RoleId = 1,
-                            Salt = "0rwU6MpsgI9SWtNvboicUA=="
+                            Salt = "2LVy0H0E7jwRIl/Lc5Vx2w=="
                         },
                         new
                         {
@@ -897,9 +899,9 @@ namespace CMS.Data.Migrations
                             Email = "user1@example.com",
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Radhika",
-                            Password = "9c+VTJkzSI0yLhbUQfjlaP1ZOGv14XjJNIlKpgp0bCo=",
+                            Password = "gv60Gmd2qKCwW651v8Fhyv+8R7nvfEMwms+7mioKD4s=",
                             RoleId = 2,
-                            Salt = "4D9MJoDl/6atOFo7A6qCYg=="
+                            Salt = "jL+XJCxx1q3VPF/PWk0/Tg=="
                         },
                         new
                         {
@@ -908,9 +910,9 @@ namespace CMS.Data.Migrations
                             Email = "user2@example.com",
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Raghvendra",
-                            Password = "r/UlXA4IL1dOMicF/QLnU4Mp2QTdmNW8BFxn1PpcWHw=",
+                            Password = "sjbvewZQbwBqCZwCTJ9slA8KprHSfg7CSK01ktuFjjc=",
                             RoleId = 2,
-                            Salt = "ulcWz8x+zabdpKr1G92XuA=="
+                            Salt = "kvK+UhZe5nbfKB2k/5P+NA=="
                         },
                         new
                         {
@@ -919,9 +921,9 @@ namespace CMS.Data.Migrations
                             Email = "user3@example.com",
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Rakshita",
-                            Password = "17uymNtAbOWPCvV1adFvccnoLFMkv3nnFFSW3gcf5x0=",
+                            Password = "mehUIgeDpJpbCm2M7xiA2ZuAU4NU6NQ17C3/cxMLOFQ=",
                             RoleId = 2,
-                            Salt = "cJ4RtImpHIedYUj+89BudA=="
+                            Salt = "KVXH8awcq2pB37yGnYL0rQ=="
                         },
                         new
                         {
@@ -930,9 +932,9 @@ namespace CMS.Data.Migrations
                             Email = "user4@example.com",
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Mukul",
-                            Password = "jUgfAXN6HnQbBwbMrcazlclgf7O1EylnsxHKyrHNJ3g=",
+                            Password = "lvip6syt0XEKSvzm1AGl5GsgSVB8JCax/V4dad6/gW0=",
                             RoleId = 2,
-                            Salt = "Et0wMnXdk584tKT9+5Jhjg=="
+                            Salt = "0bF8d3qMaaGTnUwPjSbbRA=="
                         },
                         new
                         {
@@ -941,9 +943,9 @@ namespace CMS.Data.Migrations
                             Email = "chef1@example.com",
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Amit",
-                            Password = "w/voO+/XZlgxIKGpDn/gqrC5Lfw5G0+VlNGn4QN58lQ=",
+                            Password = "XDTCjlIcvAAYSPPNULfZ0JfJjGJyxlWdBSVkEHqamYw=",
                             RoleId = 3,
-                            Salt = "bCOuecbf/UmAr7uuA0FgXA=="
+                            Salt = "pa3EF20J2ojCqa532a85sg=="
                         },
                         new
                         {
@@ -952,9 +954,9 @@ namespace CMS.Data.Migrations
                             Email = "chef2@example.com",
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Ashit",
-                            Password = "weDqMjBylCYxMdWtf2nCmmy48WhwmE+bqr2lY8S5wqI=",
+                            Password = "71yJtNMJwxuLfqOTktmCJl1AE9L9mv0I8adR4JtJsQE=",
                             RoleId = 3,
-                            Salt = "M8n347xqiX/XfWFxCB4Rgg=="
+                            Salt = "lD1UAaGhRpHZ15tDMHYKLg=="
                         },
                         new
                         {
@@ -963,9 +965,9 @@ namespace CMS.Data.Migrations
                             Email = "chef3@example.com",
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Ankit",
-                            Password = "4CfuYM07BbfGKQORggjseYB/oh0z7zlgI/oqzeZNRuE=",
+                            Password = "lKGimeRlMaOAbbUu+L+uJcqhWE9U48NMYzXGJMWyXXE=",
                             RoleId = 3,
-                            Salt = "zocDTimyS8Cdtu5dIuxV/w=="
+                            Salt = "Xd9NH+xb7N4RPDeSAw2prg=="
                         });
                 });
 
@@ -980,7 +982,7 @@ namespace CMS.Data.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<int>("FoodItemId")
                         .HasColumnType("int");
@@ -994,7 +996,7 @@ namespace CMS.Data.Migrations
                     b.Property<DateTime>("ModifiedDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<int>("NumberOfVotes")
                         .HasColumnType("int");

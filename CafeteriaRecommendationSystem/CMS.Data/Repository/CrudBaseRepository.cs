@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,18 +58,15 @@ namespace Data_Access_Layer.Repository
                 }
             }
 
-/*            if (!string.IsNullOrEmpty(filter))
+            if (!string.IsNullOrEmpty(filter))
             {
                 query = query.Where(filter);
             }
 
-            if (sort != null)
+            if (sort != null && sort.Count > 0)
             {
-                foreach (var sortField in sort)
-                {
-                    query = query.OrderBy(sortField);
-                }
-            }*/
+                query = query.OrderBy(string.Join(", ", sort));
+            }
 
             if (limit > 0)
             {

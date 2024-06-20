@@ -18,7 +18,7 @@ namespace ManagementServer
 
         private string SerializeResponse(CustomProtocolDTO response)
         {
-            // Implement serialization logic here
+
             return JsonSerializer.Serialize(response);
         }
     }

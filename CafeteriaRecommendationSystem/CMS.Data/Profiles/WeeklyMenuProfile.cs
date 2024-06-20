@@ -9,12 +9,11 @@ using System.Threading.Tasks;
 
 namespace CMS.Data.Profiles
 {
-    public class NotificationProfile : Profile
+    public class WeeklyMenuProfile : Profile
     {
-        public NotificationProfile() {
-            CreateMap<AddNotification, Notification>().ReverseMap();
-            CreateMap<ViewNotification, Notification>().ReverseMap();
+        public WeeklyMenuProfile() { 
+            CreateMap<WeeklyMenu, WeeklyMenuRequest>().ReverseMap();
+            CreateMap<WeeklyMenu, EmployeeVotingView>().ReverseMap();
         }
-
     }
 }

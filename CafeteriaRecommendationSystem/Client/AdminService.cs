@@ -13,48 +13,51 @@ namespace Client
     {
         public static async Task<CustomProtocolDTO> ShowMenuForAdmin(StreamWriter writer, StreamReader reader)
         {
-            CustomProtocolDTO request = new CustomProtocolDTO();
-            Console.WriteLine("\nSelect an option from the following:\n" +
-                         "1. Add a new food item\n" +
-                         "2. Remove food item\n" +
-                         "3. Browse Menu of Cafeteria\n" +
-                         "4. Update the price of a food item\n" +
-                         "5. Update the availability status of a food item\n" +
-                         "6. Logout\n" +
-                         "Enter the number corresponding to your choice ");
-            var requestString = Console.ReadLine();
-
-            switch (requestString)
+            while(true)
             {
-                case "1":
-                    request.Action = Actions.AddFoodItem.ToString();
-                    request.Payload = JsonSerializer.Serialize(GetInputForAddMenuItem());
-                    break;
-                case "2":
-                    request.Action = Actions.RemoveFoodItem.ToString() ;
-                    request.Payload = JsonSerializer.Serialize(GetInputForRemoveFoodItem());
-                    break;
-                case "3":
-                    request.Action = Actions.BrowseMenu.ToString();
-                    request.Payload = "";
-                    break;
-                case "4":
-                    request.Action = Actions.UpdateFoodItemPrice.ToString();
-                    request.Payload = JsonSerializer.Serialize(GetInputForUpdateFoodItemPrice());
-                    break;
-                case "5":
-                    request.Action = Actions.UpdateFoodItemStatus.ToString();
-                    request.Payload = JsonSerializer.Serialize(GetInputForUpdateFoodItemStatus());
-                    break;
-                case "6":
-                    Environment.Exit(0);
-                    break;
-                default:
-                    Console.WriteLine("No such option");
-                    break;
+                CustomProtocolDTO request = new CustomProtocolDTO();
+                Console.WriteLine("\nSelect an option from the following:\n" +
+                             "1. Add a new food item\n" +
+                             "2. Remove food item\n" +
+                             "3. Browse Menu of Cafeteria\n" +
+                             "4. Update the price of a food item\n" +
+                             "5. Update the availability status of a food item\n" +
+                             "6. Logout\n" +
+                             "Enter the number corresponding to your choice ");
+                var requestString = Console.ReadLine();
 
-            }
-            return request;
+                switch (requestString)
+                {
+                    case "1":
+                        request.Action = Actions.AddFoodItem.ToString();
+                        request.Payload = JsonSerializer.Serialize(GetInputForAddMenuItem());
+                        break;
+                    case "2":
+                        request.Action = Actions.RemoveFoodItem.ToString();
+                        request.Payload = JsonSerializer.Serialize(GetInputForRemoveFoodItem());
+                        break;
+                    case "3":
+                        request.Action = Actions.BrowseMenu.ToString();
+                        request.Payload = "";
+                        break;
+                    case "4":
+                        request.Action = Actions.UpdateFoodItemPrice.ToString();
+                        request.Payload = JsonSerializer.Serialize(GetInputForUpdateFoodItemPrice());
+                        break;
+                    case "5":
+                        request.Action = Actions.UpdateFoodItemStatus.ToString();
+                        request.Payload = JsonSerializer.Serialize(GetInputForUpdateFoodItemStatus());
+                        break;
+                    case "6":
+                        request.Action = Actions.Logout.ToString();
+                        break;
+                    default:
+                        Console.WriteLine("No such option");
+                        break;
+
+                }
+                return request;
+            }           
         }
 
         private static object GetInputForUpdateFoodItemStatus()

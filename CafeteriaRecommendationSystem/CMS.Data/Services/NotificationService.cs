@@ -16,23 +16,24 @@ namespace CMS.Data.Services
             _userRepository = userRepository;
         }
 
-        public Task CleanupReadNotifications()
+        public async Task<List<Notification>> GetNotificationsForUser(int userId)
         {
-            //base.UpdateRange(); CRON JOB? at eod
-            throw new NotImplementedException();
+            Expression<Func<Notification, bool>> predicate = data => data.UserId == userId && !data.IsRead;
+            var notifications = await base.GetList<Notification>(null, null, null, 0, 0, predicate);
+            if(notifications.Count != 0)
+            {
+                await MarkNotificationsAsRead(notifications);
+            }           
+            return notifications;
         }
 
-        public Task<List<Notification>> GetNotificationsForUser(int userId)
+        public async Task MarkNotificationsAsRead(List<Notification> notifications)
         {
-            //base.GetList() WITH PREDICATE OF USERID
-            //MarkNotificationsAsRead();
-            throw new NotImplementedException();
-        }
-
-        public Task MarkNotificationsAsRead()
-        {
-            // isRead = true For userID AND BASE.UPDATE RANGE
-            throw new NotImplementedException();
+            foreach(var notification in notifications)
+            {
+                notification.IsRead = true;
+            }
+            await base.UpdateRange(notifications);
         }
 
         public async Task SendBatchNotifications(string message, List<int> roleIds, int notificationTypeId)
@@ -44,10 +45,10 @@ namespace CMS.Data.Services
             {
                 addNotifications.Add(new AddNotification
                 {
-                    Message = "New Food item added",
+                    Message = message,
                     IsRead = false,
                     UserId = user.Id,
-                    NotificationTypeId = 1
+                    NotificationTypeId = notificationTypeId
                 });
             }
             await base.AddRange(addNotifications);

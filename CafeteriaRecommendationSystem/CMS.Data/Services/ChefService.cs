@@ -1,10 +1,19 @@
-﻿using CafeteriaRecommendationSystem.Services.Interfaces;
+﻿using AutoMapper;
+using CafeteriaRecommendationSystem.Services.Interfaces;
+using CMS.Common.Enums;
+using CMS.Common.Models;
 using CMS.Data.Services.Interfaces;
+using Common;
+using Common.Enums;
+using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace CMS.Data.Services
@@ -16,8 +25,10 @@ namespace CMS.Data.Services
         private INotificationService _notificationService;
         private IWeeklyMenuService _weeklyMenuService;
         private IUserRepository _userRepository;
+        private IMapper mapper;
         public ChefService(IFeedbackService feedbackService, INotificationService notificationService,
             IFoodItemService foodItemService, IWeeklyMenuService weeklyMenuService,
+            IMapper mapper,
             IUserRepository userRepository) 
         {
             _feedbackService = feedbackService;
@@ -25,63 +36,175 @@ namespace CMS.Data.Services
             _foodItemService = foodItemService;
             _weeklyMenuService = weeklyMenuService;
             _userRepository = userRepository;
+            this.mapper = mapper;
         }
 
-        public Task FinalizeMenuItems()
+        public async Task<string> FinalizeMenuItems(string request)
         {
-            //_weeklyMenuService.UpdateRange() set isShortlisted for date to true
-            //NotifyEmployeesForFinalizeedMenu();
-            throw new NotImplementedException();
+            var dailyMenuRequest = JsonSerializer.Deserialize<DailyMenuInput>(request);
+            foreach (var item in dailyMenuRequest.Breakfast)
+            {
+                Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == DateTime.Now.Date && data.FoodItemId == int.Parse(item);
+                var breakfastItem = (await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate))
+                        .FirstOrDefault();
+                breakfastItem.IsSelected = true;
+                await _weeklyMenuService.Update(breakfastItem.Id,breakfastItem);
+            }
+            foreach (var item in dailyMenuRequest.Lunch)
+            {
+                Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == DateTime.Now.Date && data.FoodItemId == int.Parse(item);
+                var lunchItem = (await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate))
+                        .FirstOrDefault();
+                lunchItem.IsSelected = true;
+                await _weeklyMenuService.Update(lunchItem.Id, lunchItem);
+            }
+            foreach (var item in dailyMenuRequest.Dinner)
+            {
+                Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == DateTime.Now.Date && data.FoodItemId == int.Parse(item);
+                var dinnerItem = (await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate))
+                        .FirstOrDefault();
+                dinnerItem.IsSelected = true;
+                await _weeklyMenuService.Update(dinnerItem.Id, dinnerItem);
+            }
+            await NotifyEmployeesForPlannedMenu(dailyMenuRequest);
+            return "Notifications for finalized menu has been sent successfully!";
         }
 
-        public Task NotifyEmployeesForFinalizeedMenu()
+        public async Task NotifyEmployeesForFinalizeedMenu(DailyMenuInput finalMenu)
         {
-            //_notificationService.SendBatchNotifications(); to emp
-            throw new NotImplementedException();
+            var message = new System.Text.StringBuilder();
+            message.AppendLine("The final menu for tomorrow has been finalized!");
+            if (finalMenu.Breakfast.Count > 0)
+            {
+                message.AppendLine("\nThe following items are decided to be made for breakfast:");
+                message.AppendLine(string.Join(", ", finalMenu.Breakfast));
+                message.AppendLine();
+            }
+
+            if (finalMenu.Lunch.Count > 0)
+            {
+                message.AppendLine("\nThe following items are decided to be made for lunch:");
+                message.AppendLine(string.Join(", ", finalMenu.Lunch));
+                message.AppendLine();
+            }
+
+            if (finalMenu.Dinner.Count > 0)
+            {
+                message.AppendLine("\nThe following items are decided to be made for dinner:");
+                message.AppendLine(string.Join(", ", finalMenu.Dinner));
+                message.AppendLine();
+            }
+            
+            await _notificationService.SendBatchNotifications(message.ToString(), AppConstants.Employee, (int)NotificationType.FinalMenu);
         }
 
-        public Task NotifyEmployeesForPlannedMenu()
+        public async Task NotifyEmployeesForPlannedMenu(DailyMenuInput plannedMenu)
         {
-            //_notificationService.SendBatchNotifications();
-            throw new NotImplementedException();
+            var message = new System.Text.StringBuilder();
+            if (plannedMenu.Breakfast.Count > 0)
+            {
+                message.AppendLine("The following items are decided to be made for breakfast:");
+                message.AppendLine(string.Join(", ", plannedMenu.Breakfast));
+                message.AppendLine();
+            }
+
+            if (plannedMenu.Lunch.Count > 0)
+            {
+                message.AppendLine("\nThe following items are decided to be made for lunch:");
+                message.AppendLine(string.Join(", ", plannedMenu.Lunch));
+                message.AppendLine();
+            }
+
+            if (plannedMenu.Dinner.Count > 0)
+            {
+                message.AppendLine("\nThe following items are decided to be made for dinner:");
+                message.AppendLine(string.Join(", ", plannedMenu.Dinner));
+                message.AppendLine();
+            }
+            message.AppendLine("\nPlease don't forget to vote for your favourite dishes to have your opinion counted!");
+            var finalMessage = message.ToString().Trim();
+            await _notificationService.SendBatchNotifications(message.ToString(), AppConstants.Employee, (int)NotificationType.FoodItemVoting);
         }
 
-        public Task PlanDailyMenu()
+        public async Task<string> PlanDailyMenu(string request)
         {
-            //BrowseMenu();
-           // _weeklyMenuService.Add(); further func for breakfast/lunch/dinner
-           //NotifyEmployeesForPlannedMenu();
-            throw new NotImplementedException();
+            var dailyMenuRequest = JsonSerializer.Deserialize<DailyMenuInput>(request);
+            foreach(var item in dailyMenuRequest.Breakfast)
+            {
+                var weeklyMenuRequest = new WeeklyMenuRequest
+                {
+                    FoodItemId = int.Parse(item),
+                    MealTypeId = 1
+                };
+                await _weeklyMenuService.Add(weeklyMenuRequest);
+            }
+            foreach (var item in dailyMenuRequest.Lunch)
+            {
+                var weeklyMenuRequest = new WeeklyMenuRequest
+                {
+                    FoodItemId = int.Parse(item),
+                    MealTypeId = 2
+                };
+                await _weeklyMenuService.Add(weeklyMenuRequest);
+            }
+            foreach (var item in dailyMenuRequest.Dinner)
+            {
+                var weeklyMenuRequest = new WeeklyMenuRequest
+                {
+                    FoodItemId = int.Parse(item),
+                    MealTypeId = 3
+                };
+                await _weeklyMenuService.Add(weeklyMenuRequest);
+            }
+            await NotifyEmployeesForPlannedMenu(dailyMenuRequest);
+            return "Notifications to vote for planned menu has been sent!";
         }
 
-        public Task ViewFeedbackReport()
+        public async Task<string> ViewNotifications(int userId)
         {
-           // _feedbackService.GetFeedbackReport();
-            throw new NotImplementedException();
+            var notificationModel = mapper.Map<List<ViewNotification>>(await _notificationService.GetNotificationsForUser(userId));
+            return JsonSerializer.Serialize(notificationModel);
         }
 
-        public Task ViewNotifications(int userId)
+        public async Task<string> GetTopRecommendations()
         {
-            //_notificationService.GetNotificationsForUser(userId);
-            throw new NotImplementedException();
+            Expression<Func<FoodItem, bool>> predicate = data => data.StatusId == (int)Status.Available;
+            var sort = new List<string> { "SentimentScore DESC" };
+            var foodItems = await _foodItemService.GetList<FoodItem>("FoodItemAvailabilityStatus, FoodItemType", null, sort, 10, 0, predicate);
+            var foodItemDtos = foodItems.Select(fi => new BrowseMenu
+            {
+                Id = fi.Id,
+                Name = fi.Name,
+                Price = fi.Price,
+                Description = fi.Description,
+                SentimentScore = fi.SentimentScore,
+                AvailabilityStatus = fi.FoodItemAvailabilityStatus?.Name,
+                FoodItemType = fi.FoodItemType?.Name
+            }).ToList();
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                MaxDepth = 128
+            };
+            return JsonSerializer.Serialize(foodItemDtos);
         }
 
-        Task IChefService.BrowseTodayMenu()
+        public async Task<string> GetEmployeeVotes()
         {
-            //_weeklyMenuService.GetDailyMenu();
-            throw new NotImplementedException();
-        }
-
-        public string ViewMenu()
-        {
-            //switch
-            throw new NotImplementedException();
-        }
-
-        public Task BrowseMenu()
-        {
-            //_foodItemService.GetList() 
-            throw new NotImplementedException();
+            Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == DateTime.Now.Date;
+            var foodItems = await _weeklyMenuService.GetList<WeeklyMenu>("FoodItem, MealType", null, null, 10, 0, predicate);
+            var foodItemDtos = foodItems.Select(fi => new EmployeeVotingView
+            {
+                Name = fi.FoodItem.Name,
+                NumberOfVotes = fi.NumberOfVotes,
+                MealType = fi.MealType.Name
+            }).ToList();
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                MaxDepth = 128
+            };
+            return JsonSerializer.Serialize(foodItemDtos);
         }
     }
 }

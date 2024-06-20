@@ -13,7 +13,7 @@ namespace Data_Access_Layer.Entities
     {
         [Key]
         public int Id { get; set; }
-        [Column(TypeName = "varchar(100)")]
+        [Column(TypeName = "varchar(max)")]
         public string Message { get; set; }
         public bool IsRead { get; set; }
         public int UserId { get; set; }

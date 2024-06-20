@@ -1,5 +1,6 @@
 ﻿using CMS.Common.Enums;
 using CMS.Common.Models;
+using Common.Models;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
@@ -13,7 +14,6 @@ namespace Client
 
         public static async Task Main(string[] args)
         {
-            string choice = "Y";
             TcpClient client = new();
             try
             {
@@ -23,27 +23,35 @@ namespace Client
                 using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true })
                 using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                 {
-                    var response = await Authenticate(writer, reader);
-                    do
+                    var response = JsonSerializer.Deserialize<LoginResponse>(await Authenticate(writer, reader));
+                    Console.WriteLine($"{response.Message}");
+                    bool exitRequested = false;
+                    while (!exitRequested)
                     {
-                        switch (response)
+                        CustomProtocolDTO request = new();
+                        switch (response.RoleId.ToString())
                         {
                             case "1":
-                                var request = await AdminService.ShowMenuForAdmin(writer, reader);
-                                var result = await SendRequestAsync(writer, reader, request);
-                                Console.WriteLine($"{result}");
+                                request = await AdminService.ShowMenuForAdmin(writer, reader);
                                 break;
                             case "2":
+                                request = await ChefService.ShowMenuForChef(writer, reader, response.UserId);
                                 break;
                             case "3":
                                 break;
                         }
-                        Console.WriteLine("Do you wish to continue: Choose Y/N");
-                        choice = Console.ReadLine()?.Trim().ToUpper();
-                    }
-                    while (choice == "Y");
-                }
 
+                        if (request.Action == "Logout")
+                        {
+                            exitRequested = true;
+                            continue;
+                        }
+
+                        var result = await SendRequestAsync(writer, reader, request);
+                        FormatJson(result);
+                        //Console.WriteLine($"{result}");
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -54,7 +62,43 @@ namespace Client
                 client.Close();
             }
         }
+        public static void FormatJson(string json)
+        {
+            bool inQuotes = false;
+            int indentLevel = 0;
+            string currentLine = "";
 
+            foreach (char c in json)
+            {
+                if (c == '"')
+                {
+                    inQuotes = !inQuotes;
+                }
+
+                if (!inQuotes && (c == ',' || c == '{' || c == '}'))
+                {
+                    if (c == '{')
+                    {
+                        indentLevel++;
+                    }
+
+                    currentLine += c;
+                    currentLine += Environment.NewLine;
+
+                    if (c == '}')
+                    {
+                        indentLevel--;
+                        currentLine += new string(' ', indentLevel * 4); // Adjust indentation
+                    }
+                }
+                else
+                {
+                    currentLine += c;
+                }
+            }
+
+            Console.WriteLine(currentLine);
+        }
         private static async Task<string> Authenticate(StreamWriter writer, StreamReader reader)
         {
             Console.WriteLine("Enter employeeId");
@@ -79,18 +123,19 @@ namespace Client
                 MaxDepth = 128
             });
             await writer.WriteLineAsync(requestString.Length.ToString());
-                await writer.WriteLineAsync(requestString);
-                return await HandleServerResponse(reader);
+            await writer.WriteLineAsync(requestString);
+            return await HandleServerResponse(reader);
         }
 
         private static async Task<string> HandleServerResponse(StreamReader reader)
         {
+            CustomProtocolDTO response = new();
             while (true)
             {
                 string lengthString = await reader.ReadLineAsync();
                 if (string.IsNullOrEmpty(lengthString))
                 {
-                    break;
+                    continue;
                 }
 
                 if (!int.TryParse(lengthString, out int dataLength))
@@ -115,7 +160,7 @@ namespace Client
                         ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve,
                         MaxDepth = 128
                     };
-                    CustomProtocolDTO response = JsonSerializer.Deserialize<CustomProtocolDTO>(responseData);
+                    response = JsonSerializer.Deserialize<CustomProtocolDTO>(responseData);
                     return response.Response;
                 }
                 catch (JsonException ex)
@@ -125,7 +170,6 @@ namespace Client
                 }
 
             }
-            return "";
         }
     }
 }

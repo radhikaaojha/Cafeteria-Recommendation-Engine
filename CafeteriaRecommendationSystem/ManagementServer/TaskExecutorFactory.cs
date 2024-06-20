@@ -12,7 +12,7 @@ namespace CMS.Common.Utils
     public class TaskExecutorFactory
     {
         private readonly Dictionary<string, ITaskExecutor> taskExecutors;
-        public TaskExecutorFactory(IAuthenticateService authenticateService, IUserRepository userRepository, IAdminService adminService)
+        public TaskExecutorFactory(IAuthenticateService authenticateService, IUserRepository userRepository, IAdminService adminService, IChefService chefService)
         {
             taskExecutors = new Dictionary<string, ITaskExecutor>
         {
@@ -21,7 +21,12 @@ namespace CMS.Common.Utils
                 { Actions.RemoveFoodItem.ToString(), new AdminTaskExecutor(adminService) },
                 { Actions.UpdateFoodItemPrice.ToString(), new AdminTaskExecutor(adminService) },
                 { Actions.UpdateFoodItemStatus.ToString(), new AdminTaskExecutor(adminService) },
-                { Actions.BrowseMenu.ToString(), new AdminTaskExecutor(adminService) }
+                { Actions.BrowseMenu.ToString(), new AdminTaskExecutor(adminService) },
+                { Actions.TopRecommendations.ToString(), new ChefTaskExecutor(chefService) },
+                { Actions.PlanNextDayMenu.ToString(), new ChefTaskExecutor(chefService) },
+                { Actions.FinalizeMenu.ToString(), new ChefTaskExecutor(chefService) },
+                { Actions.ViewNotifications.ToString(), new ChefTaskExecutor(chefService) },
+                { Actions.ViewVotes.ToString(), new ChefTaskExecutor(chefService) },
            // { "AdminActions", new AdminTaskExecutor() }
         };
         }
@@ -63,7 +68,7 @@ namespace CMS.Common.Utils
 
             if (loginResponse.IsAuthenticated)
             {
-                return CreateSuccessResponse(loginResponse.RoleId.ToString());
+                return CreateSuccessResponse(JsonSerializer.Serialize(loginResponse));
             }
             else
             {

@@ -8,14 +8,10 @@ namespace CMS.Data.Services.Interfaces
 {
     public interface IChefService
     {
-        Task BrowseTodayMenu();
-        string ViewMenu();
-        Task FinalizeMenuItems();
-        Task NotifyEmployeesForFinalizeedMenu();    
-        Task NotifyEmployeesForPlannedMenu();    
-        Task PlanDailyMenu();
-        Task ViewFeedbackReport();
-        Task ViewNotifications(int userId);
-        Task BrowseMenu();
+        Task<string> GetEmployeeVotes();
+        Task<string> FinalizeMenuItems(string request);
+        Task<string> PlanDailyMenu(string request);
+        Task<string> ViewNotifications(int userId);
+        Task<string> GetTopRecommendations();
     }
 }

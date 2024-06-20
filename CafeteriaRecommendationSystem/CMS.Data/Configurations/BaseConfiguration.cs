@@ -14,9 +14,9 @@ namespace CMS.Data.Configurations
         public virtual void Configure(EntityTypeBuilder<TEntity> builder)
         {
             builder.Property(x => x.CreatedDateTime).HasColumnType("datetime2(0)")
-            .HasDefaultValueSql("getutcdate()");
+            .HasDefaultValueSql("getdate()");
             builder.Property(x => x.ModifiedDateTime).HasColumnType("datetime2(0)")
-            .HasDefaultValueSql("getutcdate()");
+            .HasDefaultValueSql("getdate()");
         }
     }
 }
