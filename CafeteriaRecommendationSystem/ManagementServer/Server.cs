@@ -22,6 +22,7 @@ namespace ManagementServer
     public class Server
     {
         private const int PORT = 8000;
+        private static readonly ConcurrentDictionary<string, TcpClient> connectedClients = new ConcurrentDictionary<string, TcpClient>();
         private ClientRequestProcessor clientRequestProcessor;
 
         public Server(ClientRequestProcessor clientRequestProcessor)
@@ -38,13 +39,15 @@ namespace ManagementServer
                 IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
                 server = new TcpListener(ipAddress, PORT);
                 server.Start();
-                Console.WriteLine($"Echo server started on {ipAddress}:{PORT}");
+                Console.WriteLine($"Server started on {ipAddress}:{PORT}");
                 while (true)
                 {
-                    Console.WriteLine("Waiting for a client connection...");
+                    //Console.WriteLine("Waiting for a client connection...");
                     TcpClient client = server.AcceptTcpClient();
-                    Console.WriteLine("Client connected");
-
+                    //Console.WriteLine("Client connected");
+                    //string clientId = client.Client.RemoteEndPoint.ToString();
+                    //connectedClients.TryAdd(clientId, client);
+                    //Console.WriteLine($"Client {clientId} connected");
                     Task.Run(() => HandleClientRequest(client));
                 }
             }
@@ -69,17 +72,6 @@ namespace ManagementServer
                 {
                     while (true)
                     {
-                        while (!reader.EndOfStream && !stream.DataAvailable)
-                        {
-                            await Task.Delay(10); // Wait for a short period before checking again
-                        }
-
-                        if (!stream.DataAvailable && stream.CanRead && stream.CanWrite)
-                        {
-                            // Client disconnected
-                            Console.WriteLine("Client disconnected.");
-                            break;
-                        }
 
                         string lengthString = await reader.ReadLineAsync();
                         if (string.IsNullOrWhiteSpace(lengthString))
@@ -104,6 +96,8 @@ namespace ManagementServer
             }
             catch (Exception e)
             {
+                Console.WriteLine($"Client {client.Client} disconnected: {e.Message}");
+                //connectedClients.TryRemove(clientId, out _);
                 Console.WriteLine($"Exception: {e}");
             }
         }

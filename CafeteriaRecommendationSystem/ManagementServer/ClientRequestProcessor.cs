@@ -23,8 +23,8 @@ namespace ManagementServer
 
         public async Task<string> ProcessClientRequest(CustomProtocolDTO request)
         {
-            var requestJSON = request.Payload["Request"]; //1-Price:50-Name-Pizza
-            var requestedAction = request.Headers["Action"];//Admin
+            var requestJSON = request.Payload; 
+            var requestedAction = request.Action;
 
             var actionResponse = await PerformTheRequestedAction(requestedAction, requestJSON);
 
@@ -34,7 +34,7 @@ namespace ManagementServer
         private async Task<ActionResponseDTO> PerformTheRequestedAction(string action, string jsonRequest)
         {
             var taskExecutor = taskExecutorFactory.GetTaskExecutor(action);
-            var jsonResponse = await taskExecutor.ExecuteTask(jsonRequest);
+            var jsonResponse = await taskExecutor.ExecuteTask(action,jsonRequest);
             return ConstructActionResponseObject(true, jsonResponse, "");
         }
 

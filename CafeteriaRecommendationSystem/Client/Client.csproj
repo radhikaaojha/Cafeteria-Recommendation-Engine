@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CMS.Common\CMS.Common.csproj" />
-    <ProjectReference Include="..\CMS.Data\CMS.Data.csproj" />
   </ItemGroup>
 
 </Project>

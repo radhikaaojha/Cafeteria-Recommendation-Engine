@@ -1,4 +1,5 @@
 ﻿using CafeteriaRecommendationSystem.Services.Interfaces;
+using CMS.Common.Enums;
 using CMS.Common.Models;
 using CMS.Data.Services;
 using CMS.Data.Services.Interfaces;
@@ -11,12 +12,15 @@ namespace CMS.Common.Utils
     public class TaskExecutorFactory
     {
         private readonly Dictionary<string, ITaskExecutor> taskExecutors;
-        public TaskExecutorFactory(IAuthenticateService authenticateService, IUserRepository userRepository, IRoleBasedMenuService roleBasedMenuService, IAdminService adminService)
+        public TaskExecutorFactory(IAuthenticateService authenticateService, IUserRepository userRepository, IAdminService adminService)
         {
             taskExecutors = new Dictionary<string, ITaskExecutor>
         {
-                { "Auth", new AuthenticateTaskExecutor(authenticateService,userRepository, roleBasedMenuService) },
-                { "Admin", new AdminTaskExecutor(adminService) }
+                { Actions.Auth.ToString(), new AuthenticateTaskExecutor(authenticateService,userRepository) },
+                { Actions.AddFoodItem.ToString(), new AdminTaskExecutor(adminService) },
+                { Actions.RemoveFoodItem.ToString(), new AdminTaskExecutor(adminService) },
+                { Actions.UpdateFoodItemPrice.ToString(), new AdminTaskExecutor(adminService) },
+                { Actions.UpdateFoodItemStatus.ToString(), new AdminTaskExecutor(adminService) },
            // { "AdminActions", new AdminTaskExecutor() }
         };
         }
@@ -36,7 +40,7 @@ namespace CMS.Common.Utils
 
     public interface ITaskExecutor
     {
-        Task<string> ExecuteTask(string JsonRequest);
+        Task<string> ExecuteTask(string action,string JsonRequest);
     }
 
 
@@ -44,24 +48,21 @@ namespace CMS.Common.Utils
     {
         private IAuthenticateService authenticateService;
         private IUserRepository userRepository;
-        private IRoleBasedMenuService menuService;
 
-        public AuthenticateTaskExecutor(IAuthenticateService authenticateService, IUserRepository userRepository, IRoleBasedMenuService menuService)
+        public AuthenticateTaskExecutor(IAuthenticateService authenticateService, IUserRepository userRepository)
         {
             this.authenticateService = authenticateService;
             this.userRepository = userRepository;
-            this.menuService = menuService;
         }
 
-        public async Task<string> ExecuteTask(string jsonRequest)
+        public async Task<string> ExecuteTask(string action,string jsonRequest)
         {
             var userCredentials = JsonSerializer.Deserialize<UserLogin>(jsonRequest);
             var loginResponse = await authenticateService.Login(userCredentials);
 
             if (loginResponse.IsAuthenticated)
             {
-                string menu = await menuService.ViewOptions(loginResponse.RoleId);
-                return CreateSuccessResponse(menu);
+                return CreateSuccessResponse(loginResponse.RoleId.ToString());
             }
             else
             {
@@ -72,14 +73,8 @@ namespace CMS.Common.Utils
         {
             var successResponse = new CustomProtocolDTO
             {
-                Response = new Dictionary<string, string>
-            {
-                { "Result", response}
-            },
-                Headers = new Dictionary<string, string>
-            {
-                { "Message", "Sucess" }
-            }
+                Response = response,
+                Action = "Sucess" 
             };
 
             return JsonSerializer.Serialize(successResponse);
@@ -89,14 +84,8 @@ namespace CMS.Common.Utils
         {
             var failureResponse = new CustomProtocolDTO
             {
-                Payload = new Dictionary<string, string>
-            {
-                { "IsAuthenticated", "false" }
-            },
-                Headers = new Dictionary<string, string>
-            {
-                { "Message", message }
-            }
+                Payload ="false" ,
+                Action = message 
             };
 
             return JsonSerializer.Serialize(failureResponse);
@@ -113,10 +102,31 @@ namespace CMS.Common.Utils
             this.adminService = adminService;
         }
 
-        public async Task<string> ExecuteTask(string request)
+        public async Task<string> ExecuteTask(string action, string request)
         {
-            //1-Price:50 Name:Pizza
-            var response = await adminService.HandleChoice(request);
+            string response = string.Empty;
+            
+            switch (action)
+            {
+                case "AddFoodItem":
+                    response = await adminService.AddFoodItem(request);
+                    break;
+                case "RemoveFoodItem":
+                   // return await adminService.RemoveFoodItem(request);
+                case "3":
+                   // return await adminService.BrowseTodayMenu(request);
+                case "4":
+                   // return await adminService.UpdatePriceForFoodItem();
+                case "5":
+                  //  return await UpdateAvailabilityStatusForFoodItem();
+                case "6":
+                  //  return await BrowseMenu();
+                  //  break;
+                case "7":
+                default:
+                    break; 
+
+            }
             return CreateSuccessResponse(response);
         }
 
@@ -124,36 +134,12 @@ namespace CMS.Common.Utils
         {
             var successResponse = new CustomProtocolDTO
             {
-                Response = new Dictionary<string, string>
-            {
-                { "Result", response}
-            },
-                Headers = new Dictionary<string, string>
-            {
-                { "Message", "Sucess" }
-            }
+                Response = response,
+                Action = "Sucess" 
             };
 
             return JsonSerializer.Serialize(successResponse);
         }
-
-        private string CreateFailureResponse(string message)
-        {
-            var failureResponse = new CustomProtocolDTO
-            {
-                Payload = new Dictionary<string, string>
-            {
-                { "IsAuthenticated", "false" }
-            },
-                Headers = new Dictionary<string, string>
-            {
-                { "Message", message }
-            }
-            };
-
-            return JsonSerializer.Serialize(failureResponse);
-        }
-
 
     }
 }

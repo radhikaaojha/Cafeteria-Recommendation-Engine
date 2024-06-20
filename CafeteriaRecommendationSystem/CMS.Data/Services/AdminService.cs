@@ -9,6 +9,7 @@ using Data_Access_Layer.Repository.Interfaces;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 
 namespace CMS.Data.Services
 {
@@ -29,8 +30,10 @@ namespace CMS.Data.Services
 
         public async Task<string> AddFoodItem(string input)
         {
+            var foodItem = JsonSerializer.Deserialize<AddFoodItem>(input);
+            await _foodItemService.Add(foodItem);
             //1 - Name : "" Price : "" FoodItemTypeId : ""
-            var foodItem = new AddFoodItem();
+            //var foodItem = new AddFoodItem();
 
             /*await SendMessageAsync(stream, "Enter the name of the food item:");
             foodItem.Name = await ReceiveMessageAsync(stream);
@@ -66,7 +69,7 @@ namespace CMS.Data.Services
             await _foodItemService.Add(foodItem);
             await _notificationService.SendBatchNotifications(AppConstants.FoodItemAdded, AppConstants.ChefAndEmployeeRoles);
             await SendMessageAsync(stream, "Food item added to menu successfully!");*/
-            return "";
+            return "Food item added to menu successfully";
         }
 
         public async Task<string> UpdateAvailabilityStatusForFoodItem()
@@ -118,16 +121,8 @@ namespace CMS.Data.Services
 
         public string ShowAdminMenu()
         {
-            return "\nSelect an option from the following:\n" +
-                      "1. Add a new food item\n" +
-                      "2. Remove food item\n" +
-                      "3. View the daily menu\n" +
-                      "4. Update the price of a food item\n" +
-                      "5. Update the availability status of a food item\n" +
-                      "6. Browse Menu of Cafeteria\n" +
-                      "7. Logout\n" +
-                      "Enter the number corresponding to your choice in the format: Admin 1-Name:Fries ";
-        }
+            return "";
+        }//in the format: Admin 1-Name:Fries 
 
         public async Task<string> RemoveFoodItem()
         {
