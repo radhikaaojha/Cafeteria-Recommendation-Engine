@@ -1,4 +1,5 @@
 ﻿using CafeteriaRecommendationSystem.Services.Interfaces;
+using CMS.Common.Models;
 using Data_Access_Layer.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,5 +14,6 @@ namespace CMS.Data.Services.Interfaces
         Task<FoodItem> UpdatePrice(int foodItemId, decimal newPrice);
         Task<FoodItem> UpdateStatus(int foodItemId, int newStatus);
         Task<bool> DoesFoodItemWithSameNameExists(string name);
+        Task<List<RecommendedItem>> GetTopRecommendationForChef();
     }
 }

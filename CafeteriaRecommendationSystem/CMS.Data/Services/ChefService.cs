@@ -168,25 +168,13 @@ namespace CMS.Data.Services
 
         public async Task<string> GetTopRecommendations()
         {
-            Expression<Func<FoodItem, bool>> predicate = data => data.StatusId == (int)Status.Available;
-            var sort = new List<string> { "SentimentScore DESC" };
-            var foodItems = await _foodItemService.GetList<FoodItem>("FoodItemAvailabilityStatus, FoodItemType", null, sort, 10, 0, predicate);
-            var foodItemDtos = foodItems.Select(fi => new BrowseMenu
-            {
-                Id = fi.Id,
-                Name = fi.Name,
-                Price = fi.Price,
-                Description = fi.Description,
-                SentimentScore = fi.SentimentScore,
-                AvailabilityStatus = fi.FoodItemAvailabilityStatus?.Name,
-                FoodItemType = fi.FoodItemType?.Name
-            }).ToList();
+            var foodItems = await _foodItemService.GetTopRecommendationForChef();             
             var options = new JsonSerializerOptions
             {
                 ReferenceHandler = ReferenceHandler.Preserve,
                 MaxDepth = 128
             };
-            return JsonSerializer.Serialize(foodItemDtos);
+            return JsonSerializer.Serialize(foodItems);
         }
 
         public async Task<string> GetEmployeeVotes()
