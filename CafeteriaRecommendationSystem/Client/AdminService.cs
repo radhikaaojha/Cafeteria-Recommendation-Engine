@@ -34,6 +34,9 @@ namespace Client
                     request.Action = "RemoveFoodItem";
                     request.Payload = JsonSerializer.Serialize(GetInputForRemoveFoodItem());
                     break;
+                case "7":
+                    Environment.Exit(0);
+                    break;
                 default:
                     Console.WriteLine("No such option");
                     break;
