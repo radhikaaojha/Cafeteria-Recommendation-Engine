@@ -13,6 +13,8 @@ using CMS.Common.Utils;
 using System;
 using CMS.Data.Repository.Interfaces;
 using CMS.Data.Repository;
+using Common.Utils;
+using System.Net;
 
 namespace ManagementServer
 {
@@ -31,6 +33,7 @@ namespace ManagementServer
             _serviceProvider = host.Services;
             var authTaskExecutor = _serviceProvider.GetRequiredService<AuthenticateTaskExecutor>();
             var adminTaskExecutor = _serviceProvider.GetRequiredService<AdminTaskExecutor>();
+            var employeeTaskExecutor = _serviceProvider.GetRequiredService<EmployeeTaskExecutor>();
             var chefTaskExecutor = _serviceProvider.GetRequiredService<ChefTaskExecutor>();
             var serverResponseHandler = _serviceProvider.GetRequiredService<ServerResponseHandler>();
             var taskExecutorFactory = _serviceProvider.GetRequiredService<TaskExecutorFactory>();
@@ -60,6 +63,7 @@ namespace ManagementServer
             services.AddScoped<AdminTaskExecutor>();
             services.AddScoped<ServerResponseHandler>();
             services.AddScoped<ChefTaskExecutor>();
+            services.AddScoped<EmployeeTaskExecutor>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             return services.BuildServiceProvider();
         }

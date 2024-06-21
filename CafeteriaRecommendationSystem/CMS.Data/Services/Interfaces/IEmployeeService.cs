@@ -10,11 +10,7 @@ namespace CMS.Data.Services.Interfaces
 {
     public interface IEmployeeService
     {
-        string ViewMenu();
-        Task GiveFeedback(int foodItemId, string feedback, int rating);
-        Task VoteInFavourForMenuItem(int foodItemId);
-        Task GetVotingItems();
-        Task BrowseTodayMenu();
-        Task ViewNotifications(int userId);
+        Task<string> GiveFeedback(string request);
+        Task<string> VoteInFavourForMenuItem(string request);
     }
 }

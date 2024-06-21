@@ -7,7 +7,6 @@ using CMS.Data.Services.Interfaces;
 using Common.Enums;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace CMS.Data.Services
@@ -46,13 +45,17 @@ namespace CMS.Data.Services
             Expression<Func<FoodItem, bool>> predicate = data => data.StatusId == (int)Status.Available;
             var foodItems = await base.GetList<FoodItem>("FoodItemFeedback", null, null, 0, 0, predicate);
             List<RecommendedItem> recommendedItemList = new();
-            foreach(var foodItem in foodItems)
+            foreach (var foodItem in foodItems)
             {
                 RecommendedItem recommendedItem = new();
                 recommendedItem.Name = foodItem.Name;
 
                 var feedbackComments = foodItem.FoodItemFeedback.Select(f => f.Comment);
                 string input = string.Join(". ", feedbackComments);
+                if (string.IsNullOrEmpty(input))
+                {
+                    continue;
+                }
                 var sentiment = RecommendationEngine.GetSentiments(input);
 
                 recommendedItem.Description = sentiment;

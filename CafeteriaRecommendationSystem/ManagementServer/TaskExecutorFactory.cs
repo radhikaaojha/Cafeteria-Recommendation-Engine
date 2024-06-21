@@ -3,7 +3,9 @@ using CMS.Common.Enums;
 using CMS.Common.Models;
 using CMS.Data.Services;
 using CMS.Data.Services.Interfaces;
+using Common;
 using Common.Models;
+using Common.Utils;
 using Data_Access_Layer.Repository.Interfaces;
 using System.Text.Json;
 
@@ -12,7 +14,7 @@ namespace CMS.Common.Utils
     public class TaskExecutorFactory
     {
         private readonly Dictionary<string, ITaskExecutor> taskExecutors;
-        public TaskExecutorFactory(IAuthenticateService authenticateService, IUserRepository userRepository, IAdminService adminService, IChefService chefService)
+        public TaskExecutorFactory(IAuthenticateService authenticateService, IUserRepository userRepository, IAdminService adminService, IChefService chefService, IEmployeeService employeeService)
         {
             taskExecutors = new Dictionary<string, ITaskExecutor>
         {
@@ -27,7 +29,8 @@ namespace CMS.Common.Utils
                 { Actions.FinalizeMenu.ToString(), new ChefTaskExecutor(chefService) },
                 { Actions.ViewNotifications.ToString(), new ChefTaskExecutor(chefService) },
                 { Actions.ViewVotes.ToString(), new ChefTaskExecutor(chefService) },
-           // { "AdminActions", new AdminTaskExecutor() }
+                { Actions.SubmitFeedback.ToString(), new EmployeeTaskExecutor(employeeService) },
+                { Actions.VoteForMenu.ToString(), new EmployeeTaskExecutor(employeeService) },
         };
         }
 
@@ -91,6 +94,7 @@ namespace CMS.Common.Utils
             var failureResponse = new CustomProtocolDTO
             {
                 Payload ="false" ,
+                Response = AppConstants.LoginFailed,
                 Action = message 
             };
 

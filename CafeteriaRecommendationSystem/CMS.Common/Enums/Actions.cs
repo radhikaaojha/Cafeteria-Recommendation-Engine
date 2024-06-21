@@ -19,7 +19,9 @@ namespace CMS.Common.Enums
         ViewNotifications,
         PlanNextDayMenu,
         FinalizeMenu,
-        ViewVotes
+        ViewVotes,
+        SubmitFeedback,
+        VoteForMenu
 
     }
 }

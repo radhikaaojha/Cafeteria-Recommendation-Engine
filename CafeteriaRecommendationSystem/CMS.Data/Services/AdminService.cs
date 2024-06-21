@@ -69,8 +69,6 @@ namespace CMS.Data.Services
                 Id = fi.Id,
                 Name = fi.Name,
                 Price = fi.Price,
-                Description = fi.Description,
-                SentimentScore = fi.SentimentScore,
                 AvailabilityStatus = fi.FoodItemAvailabilityStatus?.Name,
                 FoodItemType = fi.FoodItemType?.Name
             }).ToList();

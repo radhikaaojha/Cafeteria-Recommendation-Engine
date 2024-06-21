@@ -1,4 +1,8 @@
-﻿using CMS.Data.Services.Interfaces;
+﻿using CMS.Common.Models;
+using CMS.Data.Services.Interfaces;
+using Data_Access_Layer.Entities;
+using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace CMS.Data.Services
 {
@@ -14,44 +18,42 @@ namespace CMS.Data.Services
             _weeklyMenuService = weeklyMenuService;
         }
 
-        public Task BrowseTodayMenu()
+
+        public async Task<string> GiveFeedback(string request)
         {
-            //_weeklyMenuService.GetDailyMenu();
-            throw new NotImplementedException();
+            FeedbackRequest feedbackRequest = JsonSerializer.Deserialize<FeedbackRequest>(request);
+            await _feedbackService.Add(feedbackRequest);
+            return "Feedback added succesfully";
         }
 
-        public Task GetVotingItems()
+        public async Task<string> VoteInFavourForMenuItem(string request)
         {
-            //_weeklyMenuService.GetList() todays date
-            throw new NotImplementedException();
-        }
-
-        public Task GiveFeedback(int foodItemId, string feedback, int rating)
-        {
-            //model for feedback
-            //_feedbackService.Add();
-            throw new NotImplementedException();
-        }
-
-        public string ViewMenu()
-        {
-            //switch menu
-            throw new NotImplementedException();
-        }
-
-        public Task ViewNotifications(int userId)
-        {
-            //_notificationService.GetNotificationsForUser(userId);
-            throw new NotImplementedException();
-        }
-
-        public Task VoteInFavourForMenuItem(int foodItemId)
-        {
-            //GetVotingItems();
-            //in this list fetch the one having this food item id
-            //for this record, increase num of votes
-            //_weeklyMenuService.Update()
-            throw new NotImplementedException();
+            var dailyMenuRequest = JsonSerializer.Deserialize<DailyMenuInput>(request);
+            foreach (var item in dailyMenuRequest.Breakfast)
+            {
+                Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == DateTime.Now.Date && data.FoodItemId == int.Parse(item);
+                var breakfastItem = (await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate))
+                        .FirstOrDefault();
+                breakfastItem.NumberOfVotes += 1;
+                await _weeklyMenuService.Update(breakfastItem.Id, breakfastItem);
+            }
+            foreach (var item in dailyMenuRequest.Lunch)
+            {
+                Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == DateTime.Now.Date && data.FoodItemId == int.Parse(item);
+                var lunchItem = (await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate))
+                        .FirstOrDefault();
+                lunchItem.NumberOfVotes += 1;
+                await _weeklyMenuService.Update(lunchItem.Id, lunchItem);
+            }
+            foreach (var item in dailyMenuRequest.Dinner)
+            {
+                Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == DateTime.Now.Date && data.FoodItemId == int.Parse(item);
+                var dinnerItem = (await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate))
+                        .FirstOrDefault();
+                dinnerItem.NumberOfVotes += 1;
+                await _weeklyMenuService.Update(dinnerItem.Id, dinnerItem);
+            }
+            return "Voting has been submitted sucessfully!";
         }
 
 

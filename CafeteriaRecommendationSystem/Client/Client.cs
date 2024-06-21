@@ -38,6 +38,7 @@ namespace Client
                                 request = await ChefService.ShowMenuForChef(writer, reader, response.UserId);
                                 break;
                             case "3":
+                                request = await EmployeeService.ShowMenuForEmployee(writer, reader, response.UserId);
                                 break;
                         }
 
@@ -49,7 +50,6 @@ namespace Client
 
                         var result = await SendRequestAsync(writer, reader, request);
                         FormatJson(result);
-                        //Console.WriteLine($"{result}");
                     }
                 }
             }
