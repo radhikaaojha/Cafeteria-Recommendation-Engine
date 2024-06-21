@@ -8,9 +8,6 @@ namespace CMS.Common.Utils
         /*public static string GetSentiments(string sentiments)
         {
             List<string> feedbacks = new();
-            // var client = new TextAnalyticsClient(new Uri("https://crs-sentimentanalyser.cognitiveservices.azure.com/"), new AzureKeyCredential("89067196840f401e959f5aab2f1f1081"));
-            var client = new TextAnalyticsClient(new Uri("https://jaipur.cognitiveservices.azure.com/"), new AzureKeyCredential("5f9cec408ad34716ac37a45177dba143"));
-
             var response = client.ExtractKeyPhrases(sentiments);
             KeyPhraseCollection keyPhrases = response.Value;
 
