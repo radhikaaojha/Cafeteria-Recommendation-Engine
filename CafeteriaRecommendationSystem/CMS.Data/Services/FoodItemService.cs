@@ -44,29 +44,6 @@ namespace CMS.Data.Services
         {
             Expression<Func<FoodItem, bool>> predicate = data => data.StatusId == (int)Status.Available;
             return await base.GetList<FoodItem>("FoodItemFeedback", null, new List<string> { "SentimentScore DESC" }, 5, 0, predicate);
-            /*List<RecommendedItem> recommendedItemList = new();
-            foreach (var foodItem in foodItems)
-            {
-                RecommendedItem recommendedItem = new();
-                recommendedItem.Name = foodItem.Name;
-
-                var feedbackComments = foodItem.FoodItemFeedback.Select(f => f.Comment).ToList();
-                if (feedbackComments.Count() == 0)
-                {
-                    continue;
-                }
-                var (sentimentScore, description) = RecommendationEngine.AnalyzeSentiment(feedbackComments);
-
-                recommendedItem.Description = description;
-
-                recommendedItem.SentimentScore = (decimal)sentimentScore;
-
-                recommendedItemList.Add(recommendedItem);
-            }
-
-            var sortedItems = recommendedItemList.OrderByDescending(r => r.SentimentScore).ToList();
-
-            return sortedItems;*/
         }
 
 
