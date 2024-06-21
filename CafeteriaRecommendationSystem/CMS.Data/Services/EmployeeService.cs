@@ -1,6 +1,7 @@
 ﻿using CMS.Common.Models;
 using CMS.Data.Services.Interfaces;
 using Data_Access_Layer.Entities;
+using System;
 using System.Linq.Expressions;
 using System.Text.Json;
 
@@ -23,7 +24,39 @@ namespace CMS.Data.Services
         {
             FeedbackRequest feedbackRequest = JsonSerializer.Deserialize<FeedbackRequest>(request);
             await _feedbackService.Add(feedbackRequest);
+            //add to food item update score, feedback
             return "Feedback added succesfully";
+        }
+
+        public async Task<string> ViewNextDayMenu()
+        {
+            Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == DateTime.Now.Date && data.IsSelected;
+            var weeklyMenuItems = await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 0, 0, predicate);
+            var groupedItems = weeklyMenuItems.GroupBy(u => u.MealTypeId);
+
+            var dailyMenuInput = new DailyMenuInput();
+
+            foreach (var group in groupedItems)
+            {
+                var foodItemIds = group.Select(u => u.FoodItemId.ToString()).ToList();
+
+                switch (group.Key)
+                {
+                    case 1: 
+                        dailyMenuInput.Breakfast.AddRange(foodItemIds);
+                        break;
+                    case 2:
+                        dailyMenuInput.Lunch.AddRange(foodItemIds);
+                        break;
+                    case 3: 
+                        dailyMenuInput.Dinner.AddRange(foodItemIds);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return JsonSerializer.Serialize(dailyMenuInput);
         }
 
         public async Task<string> VoteInFavourForMenuItem(string request)

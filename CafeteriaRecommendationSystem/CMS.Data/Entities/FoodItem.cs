@@ -18,6 +18,9 @@ namespace Data_Access_Layer.Entities
         public int StatusId { get; set; }
         public decimal Price { get; set; }
         public int FoodItemTypeId {  get; set; }
+        [Column(TypeName = "varchar(max)")]
+        public string Description { get; set; } = string.Empty;
+        public decimal SentimentScore { get; set; }
         public FoodItemAvailabilityStatus FoodItemAvailabilityStatus { get; set; }
         public FoodItemType FoodItemType { get; set; }
         public List<FoodItemFeedback> FoodItemFeedback { get; set; }

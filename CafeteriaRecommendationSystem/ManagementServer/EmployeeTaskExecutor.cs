@@ -30,6 +30,9 @@ namespace Common.Utils
                 case "VoteForMenu":
                     response = await employeeService.VoteInFavourForMenuItem((request));
                     break;
+                case "ViewNextDayMenu":
+                    response = await employeeService.ViewNextDayMenu();
+                    break;
             }
             return CreateSuccessResponse(response);
         }

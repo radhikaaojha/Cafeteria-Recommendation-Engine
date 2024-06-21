@@ -9,7 +9,6 @@ namespace CMS.Common.Models
     public class SentimentAnalysisResult
     {
         public double SentimentScore { get; set; }
-        public List<string> FoodKeywords { get; set; }
-        public List<string> OtherKeyPhrases { get; set; }
+        public string Sentiment { get; set; }
     }
 }

@@ -40,34 +40,33 @@ namespace CMS.Data.Services
             return await _foodItemRepository.DoesFoodItemWithSameNameExists(name);
         }
 
-        public async Task<List<RecommendedItem>> GetTopRecommendationForChef()
+        public async Task<List<FoodItem>> GetTopRecommendationForChef()
         {
             Expression<Func<FoodItem, bool>> predicate = data => data.StatusId == (int)Status.Available;
-            var foodItems = await base.GetList<FoodItem>("FoodItemFeedback", null, null, 0, 0, predicate);
-            List<RecommendedItem> recommendedItemList = new();
+            return await base.GetList<FoodItem>("FoodItemFeedback", null, new List<string> { "SentimentScore DESC" }, 5, 0, predicate);
+            /*List<RecommendedItem> recommendedItemList = new();
             foreach (var foodItem in foodItems)
             {
                 RecommendedItem recommendedItem = new();
                 recommendedItem.Name = foodItem.Name;
 
-                var feedbackComments = foodItem.FoodItemFeedback.Select(f => f.Comment);
-                string input = string.Join(". ", feedbackComments);
-                if (string.IsNullOrEmpty(input))
+                var feedbackComments = foodItem.FoodItemFeedback.Select(f => f.Comment).ToList();
+                if (feedbackComments.Count() == 0)
                 {
                     continue;
                 }
-                var sentiment = RecommendationEngine.GetSentiments(input);
+                var (sentimentScore, description) = RecommendationEngine.AnalyzeSentiment(feedbackComments);
 
-                recommendedItem.Description = sentiment;
+                recommendedItem.Description = description;
 
-                recommendedItem.SentimentScore = (decimal)RecommendationEngine.AnalyzeSentimentScore(sentiment);
+                recommendedItem.SentimentScore = (decimal)sentimentScore;
 
                 recommendedItemList.Add(recommendedItem);
             }
 
             var sortedItems = recommendedItemList.OrderByDescending(r => r.SentimentScore).ToList();
 
-            return sortedItems;
+            return sortedItems;*/
         }
 
 

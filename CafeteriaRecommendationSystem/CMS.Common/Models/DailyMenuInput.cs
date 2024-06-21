@@ -8,8 +8,8 @@ namespace CMS.Common.Models
 {
     public class DailyMenuInput
     {
-        public List<string> Breakfast {  get; set; }
-        public List<string> Lunch {  get; set; }
-        public List<string> Dinner {  get; set; }
+        public List<string> Breakfast { get; set; } = new();
+        public List<string> Lunch { get; set; } = new();
+        public List<string> Dinner {  get; set; } = new();
     }
 }

@@ -184,13 +184,14 @@ namespace CMS.Data.Services
 
         public async Task<string> GetTopRecommendations()
         {
-            var foodItems = await _foodItemService.GetTopRecommendationForChef();             
+            var foodItems = await _foodItemService.GetTopRecommendationForChef();        
+            var recommendedItems = mapper.Map<List<RecommendedItem>>(foodItems);
             var options = new JsonSerializerOptions
             {
                 ReferenceHandler = ReferenceHandler.Preserve,
                 MaxDepth = 128
             };
-            return JsonSerializer.Serialize(foodItems);
+            return JsonSerializer.Serialize(recommendedItems);
         }
 
         public async Task<string> GetEmployeeVotes()

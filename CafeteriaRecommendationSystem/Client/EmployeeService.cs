@@ -16,7 +16,8 @@ namespace Client
                              "2. View Notifications\n" +
                              "3. Browse Menu of Cafeteria\n" +
                              "4. Submit feedback\n" +
-                             "5. Logout\n" +
+                             "5. View rolled out items for tommorrow menu\n" +
+                             "6. Logout\n" +
                              "Enter the number corresponding to your choice ");
                 var requestString = Console.ReadLine();
 
@@ -38,6 +39,9 @@ namespace Client
                         request.Payload = JsonSerializer.Serialize(GetInputForFeedback(userId));
                         break;
                     case "5":
+                        request.Action = Actions.ViewNextDayMenu.ToString();
+                        break;
+                    case "6":
                         request.Action = Actions.Logout.ToString();
                         break;
                     default:

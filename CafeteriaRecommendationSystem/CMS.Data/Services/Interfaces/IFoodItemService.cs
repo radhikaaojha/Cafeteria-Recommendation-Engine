@@ -14,6 +14,6 @@ namespace CMS.Data.Services.Interfaces
         Task<FoodItem> UpdatePrice(int foodItemId, decimal newPrice);
         Task<FoodItem> UpdateStatus(int foodItemId, int newStatus);
         Task<bool> DoesFoodItemWithSameNameExists(string name);
-        Task<List<RecommendedItem>> GetTopRecommendationForChef();
+        Task<List<FoodItem>> GetTopRecommendationForChef();
     }
 }

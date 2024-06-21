@@ -1,18 +1,11 @@
-﻿using Azure;
-using Azure.AI.TextAnalytics;
-using CMS.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using CMS.Common.Models;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace CMS.Common.Utils
 {
     public static class RecommendationEngine
     {
-        public static string GetSentiments(string sentiments)
+        /*public static string GetSentiments(string sentiments)
         {
             List<string> feedbacks = new();
             // var client = new TextAnalyticsClient(new Uri("https://crs-sentimentanalyser.cognitiveservices.azure.com/"), new AzureKeyCredential("89067196840f401e959f5aab2f1f1081"));
@@ -32,17 +25,17 @@ namespace CMS.Common.Utils
             var client = new TextAnalyticsClient(new Uri("ur;"), new AzureKeyCredential("key"));
             DocumentSentiment documentSentiment = client.AnalyzeSentiment(text);
             return documentSentiment.ConfidenceScores.Positive;
-        }
+        }*/
 
-        /*
+
         private static readonly HashSet<string> PositiveWords = new HashSet<string>
     {
-        "delicious", "tasty", "yum", "amazing", "excellent", "great", "good", "wonderful"
+        "delicious", "tasty", "yum", "amazing", "excellent", "great", "good", "wonderful", "fresh"
     };
 
         private static readonly HashSet<string> NegativeWords = new HashSet<string>
     {
-        "bad", "terrible", "disgusting", "awful", "horrible", "poor"
+        "bad", "terrible", "disgusting", "awful", "horrible", "poor","dull"
     };
 
         private static readonly HashSet<string> StopWords = new HashSet<string>
@@ -103,81 +96,54 @@ namespace CMS.Common.Utils
             {"extremely excellent", 2}
         };
 
-        public static (int score, int wordCount, List<string> foodKeywords) AnalyzeSentiment(List<string> words)
+        public static (double averageScore, string keyPhrases) AnalyzeSentiment(List<string> feedbacks)
         {
-            int score = 0;
-            int wordCount = 0;
-            bool negate = false;
-            var foodKeywords = new List<string>();
-
-            for (int i = 0; i < words.Count; i++)
+            if (feedbacks == null || feedbacks.Count == 0)
             {
-                string word = words[i];
-                string twoWordPhrase = i < words.Count - 1 ? $"{word} {words[i + 1]}" : "";
-
-                if (SentimentPhrases.TryGetValue(twoWordPhrase, out int phraseScore))
-                {
-                    score += phraseScore;
-                    wordCount++;
-                    foodKeywords.Add(twoWordPhrase);
-                    i++;
-                    negate = false;
-                }
-                else if (word == "not")
-                {
-                    negate = true;
-                }
-                else if (PositiveWords.Contains(word) || NegativeWords.Contains(word))
-                {
-                    int wordScore = PositiveWords.Contains(word) ? 1 : -1;
-                    score += negate ? -wordScore : wordScore;
-                    wordCount++;
-
-                    string keyword = negate ? $"not {word}" : word;
-                    foodKeywords.Add(keyword);
-
-                    negate = false;
-                }
-                else
-                {
-                    negate = false; 
-                }
+                return (0, "");
             }
 
-            return (score, wordCount, foodKeywords);
-        }
+            double totalScore = 0;
+            var allKeyPhrases = new HashSet<string>();
 
-        private static readonly Regex WordSplitRegex = new Regex(@"\w+", RegexOptions.Compiled);
-
-        private static List<string> PreprocessText(string text)
-        {
-            return WordSplitRegex.Matches(text.ToLowerInvariant())
-                .Cast<Match>()
-                .Select(m => m.Value)
-                .Where(word => !StopWords.Contains(word))
-                .ToList();
-        }
-
-        public static SentimentAnalysisResult AnalyzeFeedback(string feedbackText)
-        {
-            var words = PreprocessText(feedbackText);
-            var (sentimentScore, wordCount, foodKeywords) = AnalyzeSentiment(words);
-            var otherKeyPhrases = ExtractKeyPhrases(words);
-
-            return new SentimentAnalysisResult
+            foreach (var feedback in feedbacks)
             {
-                SentimentScore = wordCount > 0 ? (double)sentimentScore / wordCount : 0,
-                FoodKeywords = foodKeywords,
-                OtherKeyPhrases = otherKeyPhrases
-            };
+                var words = feedback.Split(new[] { ' ', '.', ',', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
+                double feedbackScore = 0;
+
+                foreach (var word in words)
+                {
+                    string lowerWord = word.ToLower();
+                    if (PositiveWords.Contains(lowerWord))
+                    {
+                        feedbackScore += 1;
+                        allKeyPhrases.Add(lowerWord);
+                    }
+                    else if (NegativeWords.Contains(lowerWord))
+                    {
+                        feedbackScore -= 1;
+                        allKeyPhrases.Add(lowerWord);
+                    }
+                    else if (IsKeyPhrase(lowerWord))
+                    {
+                        allKeyPhrases.Add(lowerWord);
+                    }
+                }
+
+                totalScore += words.Length > 0 ? feedbackScore / words.Length : 0;
+            }
+
+            double averageScore = feedbacks.Count > 0 ? totalScore / feedbacks.Count : 0;
+            string keyPhrasesString = string.Join(", ", allKeyPhrases);
+
+            return (averageScore, keyPhrasesString);
         }
 
-        private static List<string> ExtractKeyPhrases(List<string> words)
+        private static bool IsKeyPhrase(string word)
         {
-            return words.Where(word => !RestaurantKeywords.Contains(word))
-                        .Distinct()
-                        .ToList();
+            var keyPhrases = new HashSet<string> { "yum", "fresh", "delicious", "tasty", "service", "ambiance", "price" };
+            return keyPhrases.Contains(word);
         }
-        */
+
     }
 }
