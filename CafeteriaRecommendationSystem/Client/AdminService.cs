@@ -16,7 +16,8 @@ namespace Client
             while(true)
             {
                 CustomProtocolDTO request = new CustomProtocolDTO();
-                Console.WriteLine("\nSelect an option from the following:\n" +
+                Console.WriteLine(new string('-', 40));
+                Console.WriteLine("Select an option from the following:\n" +
                              "1. Add a new food item\n" +
                              "2. Remove food item\n" +
                              "3. Browse Menu of Cafeteria\n" +
@@ -24,6 +25,7 @@ namespace Client
                              "5. Update the availability status of a food item\n" +
                              "6. Logout\n" +
                              "Enter the number corresponding to your choice ");
+                Console.WriteLine(new string('-', 40));
                 var requestString = Console.ReadLine();
 
                 switch (requestString)
