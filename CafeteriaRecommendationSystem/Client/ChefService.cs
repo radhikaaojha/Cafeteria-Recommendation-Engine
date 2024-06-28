@@ -68,30 +68,35 @@ namespace Client
         private static object GetInputForDailyMenu()
         {
             DailyMenuInput dailyMenuInput = new();
-            Console.WriteLine("Enter Id for 3 food items you plan to make for breakfast separated by ','");
-            var breakfast = Console.ReadLine();
-            Console.WriteLine("Enter Id for 3 food items you plan to make for lunch separated by ','");
-            var lunch = Console.ReadLine(); 
-            Console.WriteLine("Enter Id for 3 food items you plan to make for dinner separated by ','");
-            var dinner = Console.ReadLine();
-            dailyMenuInput.Breakfast = new List<string>(breakfast.Split(',', StringSplitOptions.RemoveEmptyEntries));
-            dailyMenuInput.Lunch = new List<string>(lunch.Split(',', StringSplitOptions.RemoveEmptyEntries));
-            dailyMenuInput.Dinner = new List<string>(dinner.Split(',', StringSplitOptions.RemoveEmptyEntries));
+            dailyMenuInput.Breakfast = GetFoodItemIds("breakfast",3);
+            dailyMenuInput.Lunch = GetFoodItemIds("lunch", 3);
+            dailyMenuInput.Dinner = GetFoodItemIds("dinner", 3);
             return dailyMenuInput;
         }
+        static List<string> GetFoodItemIds(string mealType, int count)
+        {
+            while (true)
+            {
+                Console.WriteLine($"Enter Ids for 3 food items you plan to make for {mealType} separated by ','");
+                var input = Console.ReadLine();
+                var ids = input.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(id => id.Trim()).ToList();
 
+                if (ids.Count == 3)
+                {
+                    return ids;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter exactly 3 food item IDs separated by commas.");
+                }
+            }
+        }
         private static object GetInputForFinalMenu()
         {
             DailyMenuInput dailyMenuInput = new();
-            Console.WriteLine("Enter Id for 2 food items you plan to make for breakfast separated by ','");
-            var breakfast = Console.ReadLine();
-            Console.WriteLine("Enter Id for 2 food items you plan to make for lunch separated by ','");
-            var lunch = Console.ReadLine();
-            Console.WriteLine("Enter Id for 2 food items you plan to make for dinner separated by ','");
-            var dinner = Console.ReadLine();
-            dailyMenuInput.Breakfast = new List<string>(breakfast.Split(',', StringSplitOptions.RemoveEmptyEntries));
-            dailyMenuInput.Lunch = new List<string>(lunch.Split(',', StringSplitOptions.RemoveEmptyEntries));
-            dailyMenuInput.Dinner = new List<string>(dinner.Split(',', StringSplitOptions.RemoveEmptyEntries));
+            dailyMenuInput.Breakfast = GetFoodItemIds("breakfast",2);
+            dailyMenuInput.Lunch = GetFoodItemIds("lunch", 2);
+            dailyMenuInput.Dinner = GetFoodItemIds("dinner", 2);
             return dailyMenuInput;
         }
     }
