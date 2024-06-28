@@ -71,13 +71,13 @@ namespace Data_Access_Layer
             new User { Id = 1, Email = "admin1@example.com", Name = "Admin", RoleId = 1 },
             new User { Id = 2, Email = "admin2@example.com", Name = "Admin", RoleId = 1 },
             new User { Id = 3, Email = "admin3@example.com", Name = "Admin", RoleId = 1 },
-            new User { Id = 4, Email = "user1@example.com", Name = "Radhika", RoleId = 2 },
-            new User { Id = 5, Email = "user2@example.com", Name = "Raghvendra", RoleId = 2 },
-            new User { Id = 6, Email = "user3@example.com", Name = "Rakshita", RoleId = 2 },
-            new User { Id = 7, Email = "user4@example.com", Name = "Mukul", RoleId = 2 },
-            new User { Id = 8, Email = "chef1@example.com", Name = "Amit", RoleId = 3 },
-            new User { Id = 9, Email = "chef2@example.com", Name = "Ashit", RoleId = 3 },
-            new User { Id = 10, Email = "chef3@example.com", Name = "Ankit", RoleId = 3 }
+            new User { Id = 4, Email = "user1@example.com", Name = "Radhika", RoleId = 3 },
+            new User { Id = 5, Email = "user2@example.com", Name = "Raghvendra", RoleId = 3 },
+            new User { Id = 6, Email = "user3@example.com", Name = "Rakshita", RoleId = 3 },
+            new User { Id = 7, Email = "user4@example.com", Name = "Mukul", RoleId = 3 },
+            new User { Id = 8, Email = "chef1@example.com", Name = "Amit", RoleId = 2 },
+            new User { Id = 9, Email = "chef2@example.com", Name = "Ashit", RoleId = 2 },
+            new User { Id = 10, Email = "chef3@example.com", Name = "Ankit", RoleId = 2 }
 
             };
 
