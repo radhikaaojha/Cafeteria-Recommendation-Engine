@@ -37,7 +37,7 @@ namespace ManagementServer
               })
               .Build();
             _serviceProvider = host.Services;
-            var authTaskExecutor = _serviceProvider.GetRequiredService<AuthenticateTaskExecutor>();
+            var authTaskExecutor = _serviceProvider.GetRequiredService<AuthenticationTaskExecutor>();
             var adminTaskExecutor = _serviceProvider.GetRequiredService<AdminTaskExecutor>();
             var employeeTaskExecutor = _serviceProvider.GetRequiredService<EmployeeTaskExecutor>();
             var chefTaskExecutor = _serviceProvider.GetRequiredService<ChefTaskExecutor>();
@@ -65,7 +65,7 @@ namespace ManagementServer
             services.AddScoped<IWeeklyMenuService, WeeklyMenuService>();
             services.AddScoped<IFoodItemRepository, FoodItemRepository>();
             services.AddScoped<TaskExecutorFactory>();
-            services.AddScoped<AuthenticateTaskExecutor>();
+            services.AddScoped<AuthenticationTaskExecutor>();
             services.AddScoped<AdminTaskExecutor>();
             services.AddScoped<ServerResponseHandler>();
             services.AddScoped<ChefTaskExecutor>();

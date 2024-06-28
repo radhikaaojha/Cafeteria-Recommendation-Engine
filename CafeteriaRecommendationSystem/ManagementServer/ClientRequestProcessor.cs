@@ -31,31 +31,22 @@ namespace ManagementServer
             return serverResponseHandler.CreateResponseForClient(actionResponse.Response, actionResponse.ErrorMessage);
         }
 
-        private async Task<ActionResponseDTO> PerformTheRequestedAction(string action, string jsonRequest)
+        private async Task<ActionResponse> PerformTheRequestedAction(string action, string jsonRequest)
         {
             var taskExecutor = taskExecutorFactory.GetTaskExecutor(action);
             var jsonResponse = await taskExecutor.ExecuteTask(action,jsonRequest);
             return ConstructActionResponseObject(true, jsonResponse, "");
         }
 
-        private ActionResponseDTO ConstructActionResponseObject(bool success, string response, string errorMessage)
+        private ActionResponse ConstructActionResponseObject(bool success, string response, string errorMessage)
         {
-            return new ActionResponseDTO
+            return new ActionResponse
             {
                 Success = success,
                 Response = response,
                 ErrorMessage = errorMessage
             };
         }
-        private CustomProtocolDTO DeserializeRequest(string message)
-        {
-            return JsonSerializer.Deserialize<CustomProtocolDTO>(message);
-        }
     }
-    public class ActionResponseDTO
-    {
-        public bool Success { get; set; }
-        public string Response { get; set; }
-        public string ErrorMessage { get; set; }
-    }
+    
 }

@@ -12,6 +12,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static TorchSharp.torch.nn;
 
 namespace CMS.Data.Services
 {
@@ -53,8 +54,9 @@ namespace CMS.Data.Services
             return $"Food item {foodItem.Name} status has been updated successfully";
         }
 
-        public async Task<string> RemoveFoodItem(int foodItemId)
+        public async Task<string> RemoveFoodItem(string request)
         {
+            var foodItemId = JsonSerializer.Deserialize<int>(request);
             var foodItemInput = await _foodItemService.GetById<FoodItem>(foodItemId);
             var foodItem = await _foodItemService.UpdateStatus(foodItemInput.Id, (int)Status.Unavailable);
             await _notificationService.SendBatchNotifications(AppConstants.FoodItemRemoved, AppConstants.ChefAndEmployeeRoles, (int)NotificationType.FoodItemRemoved);

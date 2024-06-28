@@ -34,7 +34,7 @@ namespace Client
                         break;
                     case "2":
                         request.Action = Actions.RemoveFoodItem.ToString();
-                        request.Payload = JsonSerializer.Serialize(GetInputForRemoveFoodItem());
+                        request.Payload = GetInputForRemoveFoodItem();
                         break;
                     case "3":
                         request.Action = Actions.BrowseMenu.ToString();
