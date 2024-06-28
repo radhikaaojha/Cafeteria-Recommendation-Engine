@@ -72,74 +72,57 @@ namespace CMS.Data.Services
 
         public async Task NotifyEmployeesForFinalizeedMenu(DailyMenuInput finalMenu)
         {
-            /*var message = new System.Text.StringBuilder();
-            message.AppendLine("The final menu for tomorrow has been finalized!");
+            var message = new System.Text.StringBuilder();
             if (finalMenu.Breakfast.Count > 0)
             {
-                message.AppendLine("\nThe following items are decided to be made for breakfast:");
+                message.AppendLine("The following items are decided to be made for breakfast:");
                 message.AppendLine(string.Join(", ", finalMenu.Breakfast));
                 message.AppendLine();
             }
 
             if (finalMenu.Lunch.Count > 0)
             {
-                message.AppendLine("\nThe following items are decided to be made for lunch:");
+                message.AppendLine("The following items are decided to be made for lunch:");
                 message.AppendLine(string.Join(", ", finalMenu.Lunch));
                 message.AppendLine();
             }
 
             if (finalMenu.Dinner.Count > 0)
             {
-                message.AppendLine("\nThe following items are decided to be made for dinner:");
+                message.AppendLine("The following items are decided to be made for dinner:");
                 message.AppendLine(string.Join(", ", finalMenu.Dinner));
                 message.AppendLine();
-            }*/
-            var finalMenuNotification = new DisplayMenu
-            {
-                Breakfast = finalMenu.Breakfast,
-                Lunch = finalMenu.Lunch,
-                Dinner = finalMenu.Dinner,
-                Message = "Finalized Menu for tomoroorw is here!"
-            };
-            string jsonMessage = JsonSerializer.Serialize(finalMenuNotification);
-
-            await _notificationService.SendBatchNotifications(jsonMessage.ToString(), AppConstants.Employee, (int)NotificationType.FinalMenu);
+            }
+            message.AppendLine("Finalised Menu for tomorrow is here!");
+            await _notificationService.SendBatchNotifications(message.ToString(), AppConstants.Employee, (int)NotificationType.FinalMenu);
         }
 
         public async Task NotifyEmployeesForPlannedMenu(DailyMenuInput plannedMenu)
         {
-            /* var message = new System.Text.StringBuilder();
-             if (plannedMenu.Breakfast.Count > 0)
-             {
-                 message.AppendLine("The following items are decided to be made for breakfast:");
-                 message.AppendLine(string.Join(", ", plannedMenu.Breakfast));
-                 message.AppendLine();
-             }
-
-             if (plannedMenu.Lunch.Count > 0)
-             {
-                 message.AppendLine("The following items are decided to be made for lunch:");
-                 message.AppendLine(string.Join(", ", plannedMenu.Lunch));
-                 message.AppendLine();
-             }
-
-             if (plannedMenu.Dinner.Count > 0)
-             {
-                 message.AppendLine("The following items are decided to be made for dinner:");
-                 message.AppendLine(string.Join(", ", plannedMenu.Dinner));
-                 message.AppendLine();
-             }
-             message.AppendLine("Please don't forget to vote for your favourite dishes to have your opinion counted!");*/
-            var plannedMenuNotification = new DisplayMenu
+            var message = new System.Text.StringBuilder();
+            if (plannedMenu.Breakfast.Count > 0)
             {
-                Breakfast = plannedMenu.Breakfast,
-                Lunch = plannedMenu.Lunch,
-                Dinner = plannedMenu.Dinner,
-                Message = "Finalized Menu for tomoroorw is here!"
-            };
-            string jsonMessage = JsonSerializer.Serialize(plannedMenuNotification);
+                message.AppendLine("The following items are decided to be made for breakfast:");
+                message.AppendLine(string.Join(", ", plannedMenu.Breakfast));
+                message.AppendLine();
+            }
 
-            await _notificationService.SendBatchNotifications(jsonMessage.ToString(), AppConstants.Employee, (int)NotificationType.FoodItemVoting);
+            if (plannedMenu.Lunch.Count > 0)
+            {
+                message.AppendLine("The following items are decided to be made for lunch:");
+                message.AppendLine(string.Join(", ", plannedMenu.Lunch));
+                message.AppendLine();
+            }
+
+            if (plannedMenu.Dinner.Count > 0)
+            {
+                message.AppendLine("The following items are decided to be made for dinner:");
+                message.AppendLine(string.Join(", ", plannedMenu.Dinner));
+                message.AppendLine();
+            }
+            message.AppendLine("Please don't forget to vote for your favourite dishes to have your opinion counted!");
+
+            await _notificationService.SendBatchNotifications(message.ToString(), AppConstants.Employee, (int)NotificationType.FoodItemVoting);
         }
 
         public async Task<string> PlanDailyMenu(string request)
