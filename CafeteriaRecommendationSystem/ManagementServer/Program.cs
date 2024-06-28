@@ -15,12 +15,18 @@ using CMS.Data.Repository.Interfaces;
 using CMS.Data.Repository;
 using Common.Utils;
 using System.Net;
+using Microsoft.Extensions.Logging;
 
 namespace ManagementServer
 {
     public class Program
     {
         private static IServiceProvider _serviceProvider;
+        private static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+       {
+           builder
+               .AddFilter((category, level) => false); 
+       });
         public static async Task Main(string[] args)
         {
             var services = new ServiceCollection();
@@ -44,7 +50,7 @@ namespace ManagementServer
 
         private static IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CMSDbContext>(options => options.UseSqlServer(AppConstants.ConnectionString));
+            services.AddDbContext<CMSDbContext>(options => options.UseSqlServer(AppConstants.ConnectionString).UseLoggerFactory(loggerFactory));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped(typeof(ICrudBaseRepository<>), typeof(CrudBaseRepository<>));
             services.AddScoped(typeof(ICrudBaseService<>), typeof(CrudBaseService<>));
