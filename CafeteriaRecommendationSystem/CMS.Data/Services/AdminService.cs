@@ -41,8 +41,8 @@ namespace CMS.Data.Services
             }
 
             await _foodItemService.Add(foodItem);
-
-            await _notificationService.SendBatchNotifications(AppConstants.FoodItemAdded, AppConstants.ChefAndEmployeeRoles,(int) NotificationType.NewFoodItemAdded);
+            var notificationMessage = string.Format(AppConstants.FoodItemAdded, foodItem.Name);
+            await _notificationService.SendBatchNotifications(notificationMessage, AppConstants.ChefAndEmployeeRoles,(int) NotificationType.NewFoodItemAdded);
             return $"Food item {foodItem.Name} added to menu successfully";
         }
 
@@ -50,7 +50,8 @@ namespace CMS.Data.Services
         {
             var foodItemInput = JsonSerializer.Deserialize<FoodItemStatusUpdate>(input);
             var foodItem = await _foodItemService.UpdateStatus(foodItemInput.FoodItemId, foodItemInput.StatusId);
-            await _notificationService.SendBatchNotifications(AppConstants.FoodItemStatusUpdated, AppConstants.ChefAndEmployeeRoles, (int)NotificationType.FoodItemAvailabilityUpdated);
+            var notificationMessage = string.Format(AppConstants.FoodItemStatusUpdated, foodItem.Name);
+            await _notificationService.SendBatchNotifications(notificationMessage, AppConstants.ChefAndEmployeeRoles, (int)NotificationType.FoodItemAvailabilityUpdated);
             return $"Food item {foodItem.Name} status has been updated successfully";
         }
 
@@ -59,7 +60,8 @@ namespace CMS.Data.Services
             var foodItemId = JsonSerializer.Deserialize<int>(request);
             var foodItemInput = await _foodItemService.GetById<FoodItem>(foodItemId);
             var foodItem = await _foodItemService.UpdateStatus(foodItemInput.Id, (int)Status.Unavailable);
-            await _notificationService.SendBatchNotifications(AppConstants.FoodItemRemoved, AppConstants.ChefAndEmployeeRoles, (int)NotificationType.FoodItemRemoved);
+            var notificationMessage = string.Format(AppConstants.FoodItemRemoved, foodItem.Name);
+            await _notificationService.SendBatchNotifications(notificationMessage, AppConstants.ChefAndEmployeeRoles, (int)NotificationType.FoodItemRemoved);
             return $"Food item {foodItem.Name} status has been discontinued successfully";
         }
 
@@ -86,7 +88,8 @@ namespace CMS.Data.Services
         {
             var foodItemInput = JsonSerializer.Deserialize<FoodItemPriceUpdate>(input);
             var foodItem = await _foodItemService.UpdatePrice(foodItemInput.FoodItemId, foodItemInput.Price);
-            await _notificationService.SendBatchNotifications(AppConstants.FoodItemPriceUpdated, AppConstants.ChefAndEmployeeRoles, (int)NotificationType.FoodItemPriceUpdated);
+            var notificationMessage = string.Format(AppConstants.FoodItemPriceUpdated, foodItem.Name);
+            await _notificationService.SendBatchNotifications(notificationMessage, AppConstants.ChefAndEmployeeRoles, (int)NotificationType.FoodItemPriceUpdated);
             return $"Food item {foodItem.Name} price has been updated successfully";
         }
 
