@@ -81,13 +81,13 @@ namespace Client
                 var input = Console.ReadLine();
                 var ids = input.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(id => id.Trim()).ToList();
 
-                if (ids.Count == 3)
+                if (ids.Count == count)
                 {
                     return ids;
                 }
                 else
                 {
-                    Console.WriteLine("Invalid input. Please enter exactly 3 food item IDs separated by commas.");
+                    Console.WriteLine($"Invalid input. Please enter exactly {count} food item IDs separated by commas.");
                 }
             }
         }

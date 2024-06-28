@@ -58,18 +58,29 @@ namespace Client
         private static object GetInputForVoting()
         {
             DailyMenuInput votingMenuInput = new();
-            Console.WriteLine("Enter Id for 2 food items you vote to make for breakfast separated by ','");
-            var breakfast = Console.ReadLine();
-            Console.WriteLine("Enter Id for 2 food items you vote to make for lunch separated by ','");
-            var lunch = Console.ReadLine();
-            Console.WriteLine("Enter Id for 2 food items you vote to make for dinner separated by ','");
-            var dinner = Console.ReadLine();
-            votingMenuInput.Breakfast = new List<string>(breakfast.Split(',', StringSplitOptions.RemoveEmptyEntries));
-            votingMenuInput.Lunch = new List<string>(lunch.Split(',', StringSplitOptions.RemoveEmptyEntries));
-            votingMenuInput.Dinner = new List<string>(dinner.Split(',', StringSplitOptions.RemoveEmptyEntries));
+            votingMenuInput.Breakfast = GetFoodItemId("breakfast");
+            votingMenuInput.Lunch = GetFoodItemId("lunch");
+            votingMenuInput.Dinner = GetFoodItemId("dinner");
             return votingMenuInput;
         }
+        static List<string> GetFoodItemId(string mealType)
+        {
+            while (true)
+            {
+                Console.WriteLine($"Enter the Id for a food item you vote to make for {mealType}:");
+                var input = Console.ReadLine();
+                var ids = input.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(id => id.Trim()).ToList();
 
+                if (ids.Count == 1)
+                {
+                    return ids;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter exactly 1 food item ID.");
+                }
+            }
+        }
         private static object GetInputForFeedback(int userId)
         {
             FeedbackRequest feedbackRequest = new FeedbackRequest();

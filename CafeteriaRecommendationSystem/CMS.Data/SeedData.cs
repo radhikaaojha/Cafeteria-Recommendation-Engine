@@ -115,9 +115,9 @@ namespace Data_Access_Layer
             new FoodItem { Id = 15, Name = "Cheese Sandwich", StatusId = 2, Price = 85, FoodItemTypeId = (int)FoodItemType.Sandwiches },
 
             // Main Courses
-            new FoodItem { Id = 16, Name = "Butter Chicken", StatusId = 2, Price = 150, FoodItemTypeId = (int)FoodItemType.MainCourses },
-            new FoodItem { Id = 17, Name = "Paneer Butter Masala", StatusId = 2, Price = 130, FoodItemTypeId = (int)FoodItemType.MainCourses },
-            new FoodItem { Id = 18, Name = "Dal Makhani", StatusId = 2, Price = 100, FoodItemTypeId = (int)FoodItemType.MainCourses },
+            new FoodItem { Id = 16, Name = "Chole Rice", StatusId = 2, Price = 150, FoodItemTypeId = (int)FoodItemType.MainCourses },
+            new FoodItem { Id = 17, Name = "Rajma Rice", StatusId = 2, Price = 130, FoodItemTypeId = (int)FoodItemType.MainCourses },
+            new FoodItem { Id = 18, Name = "Paneer Roti", StatusId = 2, Price = 100, FoodItemTypeId = (int)FoodItemType.MainCourses },
             new FoodItem { Id = 19, Name = "Chole Bhature", StatusId = 2, Price = 110, FoodItemTypeId = (int)FoodItemType.MainCourses },
             new FoodItem { Id = 20, Name = "Biryani", StatusId = 2, Price = 120, FoodItemTypeId = (int)FoodItemType.MainCourses },
 
@@ -133,7 +133,30 @@ namespace Data_Access_Layer
             new FoodItem { Id = 27, Name = "Lassi", StatusId = 2, Price = 40, FoodItemTypeId = (int)FoodItemType.Beverages },
             new FoodItem { Id = 28, Name = "Nimbu Pani", StatusId = 2, Price = 35, FoodItemTypeId = (int)FoodItemType.Beverages },
             new FoodItem { Id = 29, Name = "Mango Shake", StatusId = 2, Price = 50, FoodItemTypeId = (int)FoodItemType.Beverages },
-            new FoodItem { Id = 30, Name = "Coconut Water", StatusId = 2, Price = 45, FoodItemTypeId = (int)FoodItemType.Beverages }
+            new FoodItem { Id = 30, Name = "Coconut Water", StatusId = 2, Price = 45, FoodItemTypeId = (int)FoodItemType.Beverages },
+
+            //Thalis
+             new FoodItem { Id = 33, Name = "Mixed Veg Roti", StatusId = 2, Price = 150, FoodItemTypeId = (int)FoodItemType.MainCourses },
+             new FoodItem { Id = 34, Name = "Kadhi Rice", StatusId = 2, Price = 120, FoodItemTypeId = (int)FoodItemType.MainCourses },
+             new FoodItem { Id = 35, Name = "Masoor Dal Rice", StatusId = 2, Price = 110, FoodItemTypeId = (int)FoodItemType.MainCourses },
+             new FoodItem { Id = 36, Name = "Chicken Curry Rice", StatusId = 2, Price = 180, FoodItemTypeId = (int)FoodItemType.MainCourses },
+             new FoodItem { Id = 37, Name = "Egg Curry Rice", StatusId = 2, Price = 160, FoodItemTypeId = (int)FoodItemType.MainCourses },
+             new FoodItem { Id = 38, Name = "Dal Roti", StatusId = 2, Price = 100, FoodItemTypeId = (int)FoodItemType.MainCourses },
+             new FoodItem { Id = 39, Name = "Mutton Biryani", StatusId = 2, Price = 100, FoodItemTypeId = (int)FoodItemType.MainCourses },
+             new FoodItem { Id = 40, Name = "Fish Curry Rice", StatusId = 2, Price = 190, FoodItemTypeId = (int)FoodItemType.MainCourses },
+            new FoodItem { Id = 41, Name = "Mutton Curry Rice", StatusId = 2, Price = 220, FoodItemTypeId = (int)FoodItemType.MainCourses },
+            new FoodItem { Id = 42, Name = "Vegetable Pulao", StatusId = 2, Price = 130, FoodItemTypeId = (int)FoodItemType.MainCourses },
+            new FoodItem { Id = 43, Name = "Aloo Gobi Roti", StatusId = 2, Price = 120, FoodItemTypeId = (int)FoodItemType.MainCourses },
+            new FoodItem { Id = 44, Name = "Baingan Bharta Roti", StatusId = 2, Price = 130, FoodItemTypeId = (int)FoodItemType.MainCourses },
+            new FoodItem { Id = 45, Name = "Palak Paneer Roti", StatusId = 2, Price = 150, FoodItemTypeId = (int)FoodItemType.MainCourses },
+            new FoodItem { Id = 46, Name = "Sambar Rice", StatusId = 2, Price = 100, FoodItemTypeId = (int)FoodItemType.MainCourses },
+            new FoodItem { Id = 47, Name = "Aloo Matar Roti", StatusId = 2, Price = 120, FoodItemTypeId = (int)FoodItemType.MainCourses },
+            new FoodItem { Id = 48, Name = "Gobi Masala Roti", StatusId = 2, Price = 140, FoodItemTypeId = (int)FoodItemType.MainCourses },
+            new FoodItem { Id = 49, Name = "Paneer Bhurji Roti", StatusId = 2, Price = 160, FoodItemTypeId = (int)FoodItemType.MainCourses },
+            new FoodItem { Id = 50, Name = "Chicken Biryani", StatusId = 2, Price = 200, FoodItemTypeId = (int)FoodItemType.MainCourses },
+            new FoodItem { Id = 51, Name = "Aloo Paratha", StatusId = 2, Price = 110, FoodItemTypeId = (int)FoodItemType.MainCourses },
+             new FoodItem { Id = 52, Name = "Bhindi Roti", StatusId = 2, Price = 140, FoodItemTypeId = (int)FoodItemType.MainCourses },
+
         };
         }
     }

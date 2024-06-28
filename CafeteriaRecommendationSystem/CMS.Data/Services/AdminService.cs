@@ -74,7 +74,9 @@ namespace CMS.Data.Services
                 Name = fi.Name,
                 Price = fi.Price,
                 AvailabilityStatus = fi.FoodItemAvailabilityStatus?.Name,
-                FoodItemType = fi.FoodItemType?.Name
+                FoodItemType = fi.FoodItemType?.Name,
+                Description = fi.Description,
+                SentimentScore = fi.SentimentScore
             }).ToList();
             var options = new JsonSerializerOptions
             {

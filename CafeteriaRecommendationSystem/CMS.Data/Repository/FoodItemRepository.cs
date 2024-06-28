@@ -4,6 +4,8 @@ using Data_Access_Layer;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository;
 using System.Linq.Expressions;
+using Common.Enums;
+using FoodItemType = Common.Enums.FoodItemType;
 
 namespace CMS.Data.Repository
 {
@@ -29,7 +31,26 @@ namespace CMS.Data.Repository
                            weeklyMenu.IsSelected &&
                            weeklyMenu.CreatedDateTime.Date >= startOfWeek && weeklyMenu.CreatedDateTime.Date < endOfWeek);
 
-            return await base.GetList("FoodItemFeedback", null, new List<string> { "SentimentScore DESC" }, 5, 0, predicate);
+            var allAvailableFoodItems  = await base.GetList("FoodItemFeedback", null, new List<string> { "SentimentScore DESC" }, 15, 0, predicate);
+            var mainCourseOptions = allAvailableFoodItems.Where(fi => fi.FoodItemTypeId == (int)FoodItemType.MainCourses).Take(5).ToList();
+            var otherItemOptions = allAvailableFoodItems
+                                   .Where(fi => fi.FoodItemTypeId != (int)FoodItemType.MainCourses)
+                                   .GroupBy(fi => fi.FoodItemTypeId)
+                                   .SelectMany(g => g.Take(2))
+                                   .Take(10)
+                                   .ToList();
+            if (otherItemOptions.Count < 10)
+            {
+                otherItemOptions.AddRange(
+                    allAvailableFoodItems
+                    .Except(mainCourseOptions)
+                    .Except(otherItemOptions)
+                    .Take(10 - otherItemOptions.Count)
+                );
+            }
+            var combinedOptions = mainCourseOptions.Concat(otherItemOptions).ToList();
+
+            return combinedOptions;
         }
 
         public DateTime GetStartOfCurrentWeek()
