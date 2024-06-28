@@ -1,44 +1,95 @@
 ﻿using AutoMapper;
 using CafeteriaRecommendationSystem.Services;
+using CMS.Common.Models;
 using CMS.Data.Services.Interfaces;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Markup;
+using Microsoft.ML;
+using System.Linq.Expressions;
 
 namespace CMS.Data.Services
 {
     public class FeedbackService : CrudBaseService<FoodItemFeedback>, IFeedbackService
     {
-        private IMapper mapper;
+        private IMapper _mapper;
         public FeedbackService(ICrudBaseRepository<FoodItemFeedback> repository, IMapper mapper) : base(repository, mapper)
         {
+            _mapper = mapper;
         }
 
-        public Task AnalyzeFeedbackSentiments(int foodItemId)
+        public async Task<(float, string)> AnalyzeFeedbackSentiments(int foodItemId)
         {
-            //base.GetList() where food item is this
-            //analaysze
-            throw new NotImplementedException();
+            Expression<Func<FoodItemFeedback, bool>> predicate = data => data.FoodItemId == foodItemId;
+
+            var feedbacksList = await base.GetList<FoodItemFeedback>(null, null, null, 0, 0, predicate);
+
+            var foodReviews = _mapper.Map<List<FoodReview>>(feedbacksList);
+
+            var context = new MLContext();
+            string dataPath = @"C:\Users\radhika.ojha\OneDrive - InTimeTec Visionsoft Pvt. Ltd.,\Desktop\Cafeteria Recommendation Engine\Cafeteria-Recommendation-Engine\CafeteriaRecommendationSystem\CMS.Data\Services\SentimentData.csv";
+            var data = context.Data.LoadFromTextFile<FoodReview>(dataPath, separatorChar: ',', hasHeader: true);
+            var pipeline = context.Transforms.Text.FeaturizeText("Features", nameof(FoodReview.ReviewText)).Append(context.BinaryClassification.Trainers.SdcaLogisticRegression(labelColumnName: "Sentiment", featureColumnName: "Features"));
+            var model = pipeline.Fit(data);
+            var predictor = context.Model.CreatePredictionEngine<FoodReview, SentimentPrediction>(model);
+
+            var sentiments = foodReviews.Select(review => new
+            {
+                Review = review,
+                Prediction = predictor.Predict(review)
+            }).ToList();
+
+            var groupedByFoodItem = sentiments.First().Review.FoodItemId;
+            var reviews = sentiments.Select(g => g.Review.ReviewText).ToList();
+
+            var averageProbability = sentiments.Average(g => g.Prediction.Probability) * 100;
+
+            var majorSentiments = ExtractMajorSentiments(reviews, sentiments.Select(g => g.Prediction).ToList());
+            var sentiment = (string.Join(", ", majorSentiments));
+            return (averageProbability, sentiment);
+
         }
 
-        public Task<double> GetAverageRatingByFoodItem(int foodItemId)
+        private static List<string> ExtractMajorSentiments(List<string> reviews, List<SentimentPrediction> predictions)
         {
-            //base.GetList(); Predicate=fooitemid
-            //avg of ratin
-            throw new NotImplementedException();
+            List<string> PositiveKeywords = new List<string> { "yummy", "delicious", "tasty", "amazing", "good", "fresh", "yum" };
+            List<string> NegativeKeywords = new List<string> { "bad", "terrible", "awful", "spicy", "gross", "oily", "too sweet" };
+            var keywordCounts = new Dictionary<string, int>();
+
+            for (int i = 0; i < reviews.Count; i++)
+            {
+                var review = reviews[i];
+                var prediction = predictions[i];
+
+                if (prediction.PredictedLabel && prediction.Probability >= 0.7)
+                {
+                    UpdateKeywordCounts(review, PositiveKeywords, keywordCounts);
+                }
+                else if (!prediction.PredictedLabel && prediction.Probability >= 0.7)
+                {
+                    UpdateKeywordCounts(review, NegativeKeywords, keywordCounts);
+                }
+            }
+            return keywordCounts
+           .OrderByDescending(kv => kv.Value)
+            .ThenBy(kv => PositiveKeywords.IndexOf(kv.Key))
+            .ThenBy(kv => NegativeKeywords.IndexOf(kv.Key))
+           .Select(kv => kv.Key)
+           .ToList();
         }
 
-        public Task GetFeedbackReport(DateTime startDate, DateTime endDate)
+        private static void UpdateKeywordCounts(string review, List<string> keywords, Dictionary<string, int> keywordCounts)
         {
-            //base.GetList() pred=endDate start
-            //analyse sentiments for each food item
-            //avg rating for each food item
-            throw new NotImplementedException();
+            foreach (var keyword in keywords)
+            {
+                if (review.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!keywordCounts.ContainsKey(keyword))
+                    {
+                        keywordCounts[keyword] = 0;
+                    }
+                    keywordCounts[keyword]++;
+                }
+            }
         }
     }
 }

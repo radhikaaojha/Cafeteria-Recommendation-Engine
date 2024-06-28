@@ -9,6 +9,7 @@ namespace CMS.Common.Models
 {
     public class RecommendedItem
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         [Column(TypeName = "varchar(200)")]
         public string Description { get; set; } 

@@ -11,5 +11,6 @@ namespace CMS.Data.Repository.Interfaces
     public interface IFoodItemRepository : ICrudBaseRepository<FoodItem>
     {
         Task<bool> DoesFoodItemWithSameNameExists(string name);
+        Task<List<FoodItem>> GetNextDayMenuRecommendation();
     }
 }

@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
 using CafeteriaRecommendationSystem.Services;
-using CMS.Common.Models;
-using CMS.Common.Utils;
 using CMS.Data.Repository.Interfaces;
 using CMS.Data.Services.Interfaces;
-using Common.Enums;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
-using System.Linq.Expressions;
 
 namespace CMS.Data.Services
 {
@@ -42,10 +38,15 @@ namespace CMS.Data.Services
 
         public async Task<List<FoodItem>> GetTopRecommendationForChef()
         {
-            Expression<Func<FoodItem, bool>> predicate = data => data.StatusId == (int)Status.Available;
-            return await base.GetList<FoodItem>("FoodItemFeedback", null, new List<string> { "SentimentScore DESC" }, 5, 0, predicate);
+            return await _foodItemRepository.GetNextDayMenuRecommendation();
         }
 
-
+        public async Task UpdateSentimentResult(float score, string feedback, int foodItemId)
+        {
+            var foodItem = await base.GetById<FoodItem>(foodItemId);
+            foodItem.SentimentScore = (decimal)score;
+            foodItem.Description = feedback;
+            await base.Update(foodItem.Id, foodItem);
+        }
     }
 }

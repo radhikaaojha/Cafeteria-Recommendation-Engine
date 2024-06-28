@@ -10,8 +10,6 @@ namespace CMS.Data.Services.Interfaces
 {
     public interface IFeedbackService : ICrudBaseService<FoodItemFeedback>
     {
-        Task<double> GetAverageRatingByFoodItem(int foodItemId);
-        Task AnalyzeFeedbackSentiments(int foodItemId);
-        Task GetFeedbackReport(DateTime startDate, DateTime endDate);
+        Task<(float, string)> AnalyzeFeedbackSentiments(int foodItemId);
     }
 }
