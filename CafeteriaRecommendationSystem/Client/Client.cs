@@ -29,6 +29,11 @@ namespace Client
                     while (!exitRequested)
                     {
                         CustomProtocolDTO request = new();
+                        if(response.UserId == 0)
+                        {
+                            Environment.Exit(0);
+                            client.Close();
+                        }
                         switch (response.RoleId.ToString())
                         {
                             case "1":

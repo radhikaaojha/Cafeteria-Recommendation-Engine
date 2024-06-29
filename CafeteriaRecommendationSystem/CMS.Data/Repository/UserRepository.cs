@@ -19,7 +19,7 @@ namespace Data_Access_Layer.Repository
         public async Task<User> AuthenticateUser(UserLogin userLogin)
         {
             int.TryParse(userLogin.EmployeeId, out int id);
-            return await _context.User.Where(u=>u.Id == id && u.Name == userLogin.Name).FirstOrDefaultAsync();
+            return await _context.User.Where(u=>u.Id == id && u.Name == userLogin.Name.ToLower()).FirstOrDefaultAsync();
         }
 
     }

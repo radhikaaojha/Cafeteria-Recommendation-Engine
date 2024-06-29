@@ -1,16 +1,6 @@
-﻿using CafeteriaRecommendationSystem.Services;
-using CafeteriaRecommendationSystem.Services.Interfaces;
+﻿using CMS.Common.Exceptions;
 using CMS.Common.Models;
-using CMS.Common.Utils;
-using CMS.Data.Services;
-using CMS.Data.Services.Interfaces;
-using Common;
-using Data_Access_Layer;
-using Data_Access_Layer.Repository;
-using Data_Access_Layer.Repository.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Common.Models;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
@@ -35,7 +25,7 @@ namespace ManagementServer
             TcpListener server = null;
             try
             {
-                
+
                 IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
                 server = new TcpListener(ipAddress, PORT);
                 server.Start();
@@ -61,39 +51,56 @@ namespace ManagementServer
 
         private async Task HandleClientRequest(TcpClient client)
         {
+            StreamWriter writer = null;
             try
             {
                 using (NetworkStream stream = client.GetStream())
                 using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
-                using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true })
+                using (writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true })
                 {
                     while (true)
                     {
-
-                        string lengthString = await reader.ReadLineAsync();
-                        if (string.IsNullOrWhiteSpace(lengthString))
+                        try
                         {
-                            continue;
+                            string lengthString = await reader.ReadLineAsync();
+                            if (string.IsNullOrWhiteSpace(lengthString))
+                            {
+                                continue;
+                            }
+                            int dataLength = int.Parse(lengthString);
+                            char[] dataBuffer = new char[dataLength];
+                            await reader.ReadBlockAsync(dataBuffer, 0, dataLength);
+                            string requestString = new string(dataBuffer);
+
+                            var request = DeserializeRequest(requestString);
+                            var response = await clientRequestProcessor.ProcessClientRequest(request);
+
+                            byte[] responseBytes = Encoding.UTF8.GetBytes(response);
+                            await writer.WriteLineAsync(responseBytes.Length.ToString());
+                            await writer.WriteLineAsync(response);
+                            await writer.FlushAsync();
                         }
-                        int dataLength = int.Parse(lengthString);
-                        char[] dataBuffer = new char[dataLength];
-                        await reader.ReadBlockAsync(dataBuffer, 0, dataLength);
-                        string requestString = new string(dataBuffer);
-
-                        var request = DeserializeRequest(requestString);
-                        var response = await clientRequestProcessor.ProcessClientRequest(request);
-
-                        byte[] responseBytes = Encoding.UTF8.GetBytes(response);
-                        await writer.WriteLineAsync(responseBytes.Length.ToString());
-                        await writer.WriteLineAsync(response);
-                        await writer.FlushAsync();
+                        catch (UserNotFoundException e)
+                        {
+                            LoginResponse exceptionResponse = new();
+                            exceptionResponse.Message = e.Message;
+                            var exceptionResponseJson = JsonSerializer.Serialize(exceptionResponse);
+                            CustomProtocolDTO customProtocolDTO = new CustomProtocolDTO();
+                            customProtocolDTO.Response = exceptionResponseJson;
+                            var response = SerializeResponse(customProtocolDTO);
+                            byte[] responseBytes = Encoding.UTF8.GetBytes(response);
+                            await writer.WriteLineAsync(responseBytes.Length.ToString());
+                            await writer.WriteLineAsync(response);
+                            await writer.FlushAsync();
+                        }
+                        catch (IOException e)
+                        {
+                            Console.WriteLine($"Client {client.Client.RemoteEndPoint} disconnected: {e.Message}");
+                            connectedClients.TryRemove(client.Client.RemoteEndPoint.ToString(), out _);
+                            break;
+                        }
                     }
                 }
-            }
-            catch (IOException e)
-            {
-                Console.WriteLine($"Client {client.Client.RemoteEndPoint} disconnected: {e.Message}");
-                connectedClients.TryRemove(client.Client.RemoteEndPoint.ToString(), out _);
             }
             catch (Exception e)
             {
@@ -104,6 +111,11 @@ namespace ManagementServer
         private CustomProtocolDTO DeserializeRequest(string message)
         {
             return JsonSerializer.Deserialize<CustomProtocolDTO>(message);
+        }
+
+        private string SerializeResponse(CustomProtocolDTO response)
+        {
+            return JsonSerializer.Serialize(response);
         }
     }
 }

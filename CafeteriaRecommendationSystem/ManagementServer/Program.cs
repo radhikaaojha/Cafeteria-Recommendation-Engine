@@ -54,7 +54,6 @@ namespace ManagementServer
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped(typeof(ICrudBaseRepository<>), typeof(CrudBaseRepository<>));
             services.AddScoped(typeof(ICrudBaseService<>), typeof(CrudBaseService<>));
-            services.AddScoped<IRoleBasedMenuService, RoleBasedMenuService>();
             services.AddScoped<IAuthenticateService, AuthenticateService>();
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IChefService, ChefService>();
