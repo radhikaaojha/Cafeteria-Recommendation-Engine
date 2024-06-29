@@ -7,6 +7,7 @@ using Common;
 using Common.Enums;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
+using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -22,13 +23,15 @@ namespace CMS.Data.Services
         private INotificationService _notificationService;
         private IUserRepository _userRepository;
         private IWeeklyMenuService _weeklyMenuService;
+        private ILogger<AdminService> _logger;
 
-        public AdminService(INotificationService notificationService, IFoodItemService foodItemService, IUserRepository userRepository, IWeeklyMenuService weeklyMenuService)
+        public AdminService(INotificationService notificationService, IFoodItemService foodItemService, IUserRepository userRepository, IWeeklyMenuService weeklyMenuService, ILogger<AdminService> logger)
         {
             _userRepository = userRepository;
             _notificationService = notificationService;
             _weeklyMenuService = weeklyMenuService;
             _foodItemService = foodItemService;
+            _logger = logger;
         }
 
         public async Task<string> AddFoodItem(string input)
@@ -37,7 +40,7 @@ namespace CMS.Data.Services
 
             if (await _foodItemService.DoesFoodItemWithSameNameExists(foodItem.Name))
             {
-                return("Food item with the same name already exists!");
+                throw new FoodItemExistsException("Food item with the same name already exists!",null,_logger);
             }
 
             await _foodItemService.Add(foodItem);

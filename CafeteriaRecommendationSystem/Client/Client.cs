@@ -1,5 +1,6 @@
 ﻿using CMS.Common.Enums;
 using CMS.Common.Models;
+using Common;
 using Common.Models;
 using System.Net.Sockets;
 using System.Text;
@@ -9,15 +10,13 @@ namespace Client
 {
     public class Client
     {
-        private const string SERVER_IP = "127.0.0.1";
-        private const int PORT = 8000;
 
         public static async Task Main(string[] args)
         {
             TcpClient client = new();
             try
             {
-                await client.ConnectAsync(SERVER_IP, PORT);
+                await client.ConnectAsync(AppConstants.SERVER_IP, AppConstants.PORT);
                 Console.WriteLine("Connected to the server.");
                 using (NetworkStream stream = client.GetStream())
                 using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true })
@@ -29,7 +28,7 @@ namespace Client
                     while (!exitRequested)
                     {
                         CustomProtocolDTO request = new();
-                        if(response.UserId == 0)
+                        if (response.UserId == 0)
                         {
                             Environment.Exit(0);
                             client.Close();
@@ -67,67 +66,9 @@ namespace Client
                 client.Close();
             }
         }
-        public static void FormatJson(string json)
-        {
-            bool inQuotes = false;
-            int indentLevel = 0;
-            string currentLine = "";
-
-            foreach (char c in json)
-            {
-                if (c == '"')
-                {
-                    inQuotes = !inQuotes;
-                }
-
-                if (!inQuotes && (c == ',' || c == '{' || c == '}'))
-                {
-                    if (c == '{')
-                    {
-                        indentLevel++;
-                    }
-
-                    currentLine += c;
-                    currentLine += Environment.NewLine;
-
-                    if (c == '}')
-                    {
-                        indentLevel--;
-                        currentLine += new string(' ', indentLevel * 4); // Adjust indentation
-                    }
-                }
-                else
-                {
-                    currentLine += c;
-                }
-            }
-
-            Console.WriteLine(currentLine);
-        }
         private static async Task<string> Authenticate(StreamWriter writer, StreamReader reader)
         {
-            string employeeId = string.Empty;
-            while (true)
-            {
-                Console.WriteLine("Enter employeeId:");
-                employeeId = Console.ReadLine();
-
-                if (string.IsNullOrWhiteSpace(employeeId))
-                {
-                    Console.WriteLine("Employee ID cannot be empty. Please enter a valid employee ID.");
-                    continue;
-                }
-
-                if (!int.TryParse(employeeId, out _))
-                {
-                    Console.WriteLine("Employee ID must be numeric. Please enter a valid employee ID.");
-                    continue;
-                }
-
-                break;
-            }
-            Console.WriteLine("Enter name");
-            var name = Console.ReadLine();
+            var (employeeId, name) = GetInputForLogin();
 
             CustomProtocolDTO authRequest = new CustomProtocolDTO
             {
@@ -193,6 +134,72 @@ namespace Client
                 }
 
             }
+        }
+
+        private static (string, string) GetInputForLogin()
+        {
+            string employeeId = string.Empty;
+            while (true)
+            {
+                Console.WriteLine("Enter employeeId:");
+                employeeId = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(employeeId))
+                {
+                    Console.WriteLine("Employee ID cannot be empty. Please enter a valid employee ID.");
+                    continue;
+                }
+
+                if (!int.TryParse(employeeId, out _))
+                {
+                    Console.WriteLine("Employee ID must be numeric. Please enter a valid employee ID.");
+                    continue;
+                }
+
+                break;
+            }
+            Console.WriteLine("Enter name");
+            var name = Console.ReadLine();
+
+            return (employeeId, name);
+        }
+
+        public static void FormatJson(string json)
+        {
+            bool inQuotes = false;
+            int indentLevel = 0;
+            string currentLine = "";
+
+            foreach (char c in json)
+            {
+                if (c == '"')
+                {
+                    inQuotes = !inQuotes;
+                }
+
+                if (!inQuotes && (c == ',' || c == '{' || c == '}'))
+                {
+                    if (c == '{')
+                    {
+                        indentLevel++;
+                    }
+
+                    currentLine += c;
+                    currentLine += Environment.NewLine;
+
+                    if (c == '}')
+                    {
+                        indentLevel--;
+                        currentLine += new string(' ', indentLevel * 4);
+                    }
+                }
+                else
+                {
+                    currentLine += c;
+                }
+            }
+
+            Console.WriteLine(currentLine);
         }
     }
 }

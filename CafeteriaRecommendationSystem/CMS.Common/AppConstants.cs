@@ -9,6 +9,8 @@ namespace Common
 {
     public static class AppConstants
     {
+        public const string SERVER_IP = "127.0.0.1";
+        public const int PORT = 8000;
         public const string LoginSuccess = "Login successfull";
         public const string LoginFailed = "Unable to login user! Invalid name or employeeId";
         public const string InvalidInputMessage = "Invalid input. Operation aborted.";

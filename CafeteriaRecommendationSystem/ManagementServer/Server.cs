@@ -80,19 +80,6 @@ namespace ManagementServer
                             await writer.WriteLineAsync(response);
                             await writer.FlushAsync();
                         }
-                        catch (UserNotFoundException e)
-                        {
-                            LoginResponse exceptionResponse = new();
-                            exceptionResponse.Message = e.Message;
-                            var exceptionResponseJson = JsonSerializer.Serialize(exceptionResponse);
-                            CustomProtocolDTO customProtocolDTO = new CustomProtocolDTO();
-                            customProtocolDTO.Response = exceptionResponseJson;
-                            var response = SerializeResponse(customProtocolDTO);
-                            byte[] responseBytes = Encoding.UTF8.GetBytes(response);
-                            await writer.WriteLineAsync(responseBytes.Length.ToString());
-                            await writer.WriteLineAsync(response);
-                            await writer.FlushAsync();
-                        }
                         catch (IOException e)
                         {
                             Console.WriteLine($"Client {client.Client.RemoteEndPoint} disconnected: {e.Message}");

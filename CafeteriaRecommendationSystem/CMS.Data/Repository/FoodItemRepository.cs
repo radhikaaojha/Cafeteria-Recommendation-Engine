@@ -17,7 +17,7 @@ namespace CMS.Data.Repository
 
         public async Task<bool> DoesFoodItemWithSameNameExists(string name)
         {
-            return _context.FoodItem.Any(foodItem => foodItem.Name == name);
+            return _context.FoodItem.Any(foodItem => foodItem.Name.ToLower() == name.ToLower());
         }
 
         public async Task<List<FoodItem>> GetNextDayMenuRecommendation()
