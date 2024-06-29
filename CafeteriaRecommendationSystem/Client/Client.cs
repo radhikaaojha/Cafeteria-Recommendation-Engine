@@ -106,8 +106,26 @@ namespace Client
         }
         private static async Task<string> Authenticate(StreamWriter writer, StreamReader reader)
         {
-            Console.WriteLine("Enter employeeId");
-            var employeeId = Console.ReadLine();
+            string employeeId = string.Empty;
+            while (true)
+            {
+                Console.WriteLine("Enter employeeId:");
+                employeeId = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(employeeId))
+                {
+                    Console.WriteLine("Employee ID cannot be empty. Please enter a valid employee ID.");
+                    continue;
+                }
+
+                if (!int.TryParse(employeeId, out _))
+                {
+                    Console.WriteLine("Employee ID must be numeric. Please enter a valid employee ID.");
+                    continue;
+                }
+
+                break;
+            }
             Console.WriteLine("Enter name");
             var name = Console.ReadLine();
 
