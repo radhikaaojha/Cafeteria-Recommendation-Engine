@@ -30,9 +30,6 @@ namespace CMS.Common.Utils
                 case "FinalizeMenu":
                     response = await chefService.FinalizeMenuItems(request);
                     break;
-                case "ViewNotifications":
-                    response = await chefService.ViewNotifications(int.Parse(request));
-                    break;
                 case "ViewVotes":
                     response = await chefService.GetEmployeeVotes();
                     break;

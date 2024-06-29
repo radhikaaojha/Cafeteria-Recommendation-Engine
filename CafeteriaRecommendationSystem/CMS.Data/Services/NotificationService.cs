@@ -5,15 +5,24 @@ using CMS.Data.Services.Interfaces;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
 using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace CMS.Data.Services
 {
     public class NotificationService : CrudBaseService<Notification>, INotificationService
     {
         private readonly IUserRepository _userRepository;
+        private IMapper _mapper;
         public NotificationService(ICrudBaseRepository<Notification> repository, IUserRepository userRepository, IMapper mapper) : base(repository, mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
+        }
+
+        public async Task<string> ViewNotifications(int userId)
+        {
+            var notificationModel = _mapper.Map<List<ViewNotification>>(await GetNotificationsForUser(userId));
+            return JsonSerializer.Serialize(notificationModel);
         }
 
         public async Task<List<Notification>> GetNotificationsForUser(int userId)

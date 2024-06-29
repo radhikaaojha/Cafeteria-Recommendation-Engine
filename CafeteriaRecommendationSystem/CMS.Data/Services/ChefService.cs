@@ -159,12 +159,6 @@ namespace CMS.Data.Services
             return "Notifications to vote for planned menu has been sent!";
         }
 
-        public async Task<string> ViewNotifications(int userId)
-        {
-            var notificationModel = mapper.Map<List<ViewNotification>>(await _notificationService.GetNotificationsForUser(userId));
-            return JsonSerializer.Serialize(notificationModel);
-        }
-
         public async Task<string> GetTopRecommendations()
         {
             var foodItems = await _foodItemService.GetTopRecommendationForChef();        

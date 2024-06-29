@@ -65,27 +65,6 @@ namespace CMS.Data.Services
             return $"Food item {foodItem.Name} status has been discontinued successfully";
         }
 
-        public async Task<string> BrowseMenu()
-        {
-            var foodItems = await _foodItemService.GetList<FoodItem>("FoodItemAvailabilityStatus, FoodItemType", null, null, 0, 0, null);
-            var foodItemDtos = foodItems.Select(fi => new BrowseMenu
-            {
-                Id = fi.Id,
-                Name = fi.Name,
-                Price = fi.Price,
-                AvailabilityStatus = fi.FoodItemAvailabilityStatus?.Name,
-                FoodItemType = fi.FoodItemType?.Name,
-                Description = fi.Description,
-                SentimentScore = fi.SentimentScore
-            }).ToList();
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                MaxDepth = 128 
-            }; 
-            return JsonSerializer.Serialize(foodItemDtos);
-        }
-
         public async Task<string> UpdatePriceForFoodItem(string input)
         {
             var foodItemInput = JsonSerializer.Deserialize<FoodItemPriceUpdate>(input);

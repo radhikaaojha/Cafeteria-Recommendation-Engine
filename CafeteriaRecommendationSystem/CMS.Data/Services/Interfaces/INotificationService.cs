@@ -12,6 +12,7 @@ namespace CMS.Data.Services.Interfaces
     public interface INotificationService : ICrudBaseService<Notification>
     {
         Task<List<Notification>> GetNotificationsForUser(int userId);
+        Task<string> ViewNotifications(int userId);
         Task SendBatchNotifications(string message, List<int> roleId, int notificationTypeId);
     }
 }

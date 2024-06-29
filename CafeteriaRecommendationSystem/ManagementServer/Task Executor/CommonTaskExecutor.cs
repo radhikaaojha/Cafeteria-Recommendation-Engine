@@ -10,13 +10,15 @@ using System.Threading.Tasks;
 
 namespace Common.Utils
 {
-    public class AdminTaskExecutor : ITaskExecutor
+    public class CommonTaskExecutor : ITaskExecutor
     {
-        private IAdminService adminService;
+        private INotificationService _notificationService;
+        private IFoodItemService _foodItemService;
 
-        public AdminTaskExecutor(IAdminService adminService)
+        public CommonTaskExecutor(INotificationService notificationService, IFoodItemService foodItemService)
         {
-            this.adminService = adminService;
+            _notificationService = notificationService;
+            _foodItemService = foodItemService;
         }
 
         public async Task<string> ExecuteTask(string action, string request)
@@ -25,17 +27,11 @@ namespace Common.Utils
 
             switch (action)
             {
-                case "AddFoodItem":
-                    response = await adminService.AddFoodItem(request);
+                case "BrowseMenu":
+                    response = await _foodItemService.BrowseMenu();
                     break;
-                case "RemoveFoodItem":
-                    response = await adminService.RemoveFoodItem(request);
-                    break;
-                case "UpdateFoodItemPrice":
-                    response = await adminService.UpdatePriceForFoodItem(request);
-                    break;
-                case "UpdateFoodItemStatus":
-                    response = await adminService.UpdateAvailabilityStatusForFoodItem(request);
+                case "ViewNotifications":
+                    response = await _notificationService.ViewNotifications(int.Parse(request));
                     break;
             }
             return CreateSuccessResponse(response);
@@ -54,3 +50,4 @@ namespace Common.Utils
 
     }
 }
+

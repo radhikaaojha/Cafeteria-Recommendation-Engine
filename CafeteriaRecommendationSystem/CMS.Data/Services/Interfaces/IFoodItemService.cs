@@ -16,5 +16,6 @@ namespace CMS.Data.Services.Interfaces
         Task<bool> DoesFoodItemWithSameNameExists(string name);
         Task<List<FoodItem>> GetTopRecommendationForChef();
         Task UpdateSentimentResult(float score, string feedback, int foodItemId);
+        Task<string> BrowseMenu();
     }
 }

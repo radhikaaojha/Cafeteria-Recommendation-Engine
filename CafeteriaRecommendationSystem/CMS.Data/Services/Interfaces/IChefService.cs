@@ -11,7 +11,6 @@ namespace CMS.Data.Services.Interfaces
         Task<string> GetEmployeeVotes();
         Task<string> FinalizeMenuItems(string request);
         Task<string> PlanDailyMenu(string request);
-        Task<string> ViewNotifications(int userId);
         Task<string> GetTopRecommendations();
     }
 }

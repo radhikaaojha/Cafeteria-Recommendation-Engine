@@ -19,7 +19,7 @@ namespace CMS.Common.Utils
     public class TaskExecutorFactory
     {
         private readonly Dictionary<string, ITaskExecutor> taskExecutors;
-        public TaskExecutorFactory(IAuthenticateService authenticateService,IAdminService adminService, IChefService chefService, IEmployeeService employeeService)
+        public TaskExecutorFactory(IAuthenticateService authenticateService,IAdminService adminService, IChefService chefService, IEmployeeService employeeService, INotificationService notificationService, IFoodItemService foodItemService)
         {
             taskExecutors = new Dictionary<string, ITaskExecutor>
         {
@@ -28,11 +28,11 @@ namespace CMS.Common.Utils
                 { Actions.RemoveFoodItem.ToString(), new AdminTaskExecutor(adminService) },
                 { Actions.UpdateFoodItemPrice.ToString(), new AdminTaskExecutor(adminService) },
                 { Actions.UpdateFoodItemStatus.ToString(), new AdminTaskExecutor(adminService) },
-                { Actions.BrowseMenu.ToString(), new AdminTaskExecutor(adminService) },
+                { Actions.BrowseMenu.ToString(), new CommonTaskExecutor(notificationService, foodItemService) },
                 { Actions.TopRecommendations.ToString(), new ChefTaskExecutor(chefService) },
                 { Actions.PlanNextDayMenu.ToString(), new ChefTaskExecutor(chefService) },
                 { Actions.FinalizeMenu.ToString(), new ChefTaskExecutor(chefService) },
-                { Actions.ViewNotifications.ToString(), new ChefTaskExecutor(chefService) },
+                { Actions.ViewNotifications.ToString(), new CommonTaskExecutor(notificationService, foodItemService) },
                 { Actions.ViewVotes.ToString(), new ChefTaskExecutor(chefService) },
                 { Actions.SubmitFeedback.ToString(), new EmployeeTaskExecutor(employeeService) },
                 { Actions.VoteForMenu.ToString(), new EmployeeTaskExecutor(employeeService) },

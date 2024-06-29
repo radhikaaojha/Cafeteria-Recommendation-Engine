@@ -15,6 +15,5 @@ namespace CMS.Data.Services.Interfaces
         Task<string> RemoveFoodItem(string request);
         Task<string> UpdateAvailabilityStatusForFoodItem(string request);
         Task<string> UpdatePriceForFoodItem(string request);
-        Task<string> BrowseMenu();
     }
 }
