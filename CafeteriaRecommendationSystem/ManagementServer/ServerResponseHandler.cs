@@ -10,7 +10,7 @@ namespace ManagementServer
 {
     public class ServerResponseHandler
     {
-        public string CreateResponseForClient(string responseData, string errorMessage)
+        public string CreateResponseForClient(string responseData)
         {
             var customProtocolResponse = JsonSerializer.Deserialize<CustomProtocolDTO>(responseData);
             return SerializeResponse(customProtocolResponse);

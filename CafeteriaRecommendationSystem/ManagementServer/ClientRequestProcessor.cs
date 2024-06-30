@@ -26,26 +26,15 @@ namespace ManagementServer
             var requestJSON = request.Payload; 
             var requestedAction = request.Action;
 
-            var actionResponse = await PerformTheRequestedAction(requestedAction, requestJSON);
+            var response =  await PerformTheRequestedAction(requestedAction, requestJSON);
 
-            return serverResponseHandler.CreateResponseForClient(actionResponse.Response, actionResponse.ErrorMessage);
+            return serverResponseHandler.CreateResponseForClient(response);
         }
 
-        private async Task<ActionResponse> PerformTheRequestedAction(string action, string jsonRequest)
+        private async Task<string> PerformTheRequestedAction(string action, string jsonRequest)
         {
             var taskExecutor = taskExecutorFactory.GetTaskExecutor(action);
-            var jsonResponse = await taskExecutor.ExecuteTask(action,jsonRequest);
-            return ConstructActionResponseObject(true, jsonResponse, "");
-        }
-
-        private ActionResponse ConstructActionResponseObject(bool success, string response, string errorMessage)
-        {
-            return new ActionResponse
-            {
-                Success = success,
-                Response = response,
-                ErrorMessage = errorMessage
-            };
+            return await taskExecutor.ExecuteTask(action,jsonRequest);
         }
     }
     
