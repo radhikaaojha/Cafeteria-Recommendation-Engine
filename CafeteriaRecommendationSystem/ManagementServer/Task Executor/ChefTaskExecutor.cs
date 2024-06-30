@@ -1,4 +1,5 @@
-﻿using CMS.Common.Models;
+﻿using CMS.Common.Exceptions;
+using CMS.Common.Models;
 using CMS.Data.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,22 @@ namespace CMS.Common.Utils
                         break;
                 }
                 return ProtocolResponseHelper.CreateSuccessResponse(response);
+            }
+            catch (FoodItemNotFoundException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            }
+            catch (InvalidInputException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            }
+            catch (ApiException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
             }
             catch (Exception ex)
             {

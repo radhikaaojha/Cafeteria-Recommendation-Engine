@@ -22,14 +22,12 @@ namespace CMS.Data.Repository
 
         public async Task<List<FoodItem>> GetNextDayMenuRecommendation()
         {
-            DateTime startOfWeek = GetStartOfCurrentWeek();
-            DateTime endOfWeek = startOfWeek.AddDays(7);
+            DateTime yesterday = DateTime.Today.AddDays(-1);
             Expression<Func<FoodItem, bool>> predicate = foodItem =>
                        foodItem.StatusId == (int)Status.Available &&
                        !_context.WeeklyMenu.Any(weeklyMenu =>
                            weeklyMenu.FoodItemId == foodItem.Id &&
-                           weeklyMenu.IsSelected &&
-                           weeklyMenu.CreatedDateTime.Date >= startOfWeek && weeklyMenu.CreatedDateTime.Date < endOfWeek);
+                           weeklyMenu.IsSelected && weeklyMenu.CreatedDateTime.Date == yesterday);
 
             var allAvailableFoodItems  = await base.GetList("FoodItemFeedback", null, new List<string> { "SentimentScore DESC" }, 15, 0, predicate);
             var mainCourseOptions = allAvailableFoodItems.Where(fi => fi.FoodItemTypeId == (int)FoodItemType.MainCourses).Take(5).ToList();
@@ -51,13 +49,6 @@ namespace CMS.Data.Repository
             var combinedOptions = mainCourseOptions.Concat(otherItemOptions).ToList();
 
             return combinedOptions;
-        }
-
-        public DateTime GetStartOfCurrentWeek()
-        {
-            DateTime now = DateTime.Now;
-            int diff = (7 + (now.DayOfWeek - DayOfWeek.Monday)) % 7;
-            return now.AddDays(-1 * diff).Date;
         }
     }
 }

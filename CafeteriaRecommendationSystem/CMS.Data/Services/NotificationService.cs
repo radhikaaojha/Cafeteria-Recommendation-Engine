@@ -22,6 +22,10 @@ namespace CMS.Data.Services
         public async Task<string> ViewNotifications(int userId)
         {
             var notificationModel = _mapper.Map<List<ViewNotification>>(await GetNotificationsForUser(userId));
+            foreach (var notification in notificationModel)
+            {
+                notification.Message = FormatNotificationMessage(notification.Message);
+            }
             return JsonSerializer.Serialize(notificationModel);
         }
 
@@ -61,6 +65,10 @@ namespace CMS.Data.Services
                 });
             }
             await base.AddRange(addNotifications);
+        }
+        private string FormatNotificationMessage(string message)
+        {
+            return message.Replace("\r\n", "\n").Replace("\n", Environment.NewLine);
         }
     }
 }
