@@ -24,7 +24,7 @@ namespace Common.Utils
                 var userCredentials = JsonSerializer.Deserialize<UserLogin>(jsonRequest);
                 var loginResponse = await authenticateService.Login(userCredentials);
 
-                return CreateSuccessResponse(JsonSerializer.Serialize(loginResponse));
+                return ProtocolResponseHelper.CreateSuccessResponse(JsonSerializer.Serialize(loginResponse));
             }
             catch (UserNotFoundException e)
             {
@@ -35,18 +35,12 @@ namespace Common.Utils
                 customProtocolDTO.Response = exceptionResponseJson;
                 return JsonSerializer.Serialize(customProtocolDTO);
             }
-        }
-
-        private string CreateSuccessResponse(string response)
-        {
-            var successResponse = new CustomProtocolDTO
+            catch (Exception ex)
             {
-                Response = response,
-                Action = "Sucess"
-            };
-
-            return JsonSerializer.Serialize(successResponse);
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            }
         }
 
+        
     }
 }

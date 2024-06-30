@@ -23,29 +23,25 @@ namespace Common.Utils
 
         public async Task<string> ExecuteTask(string action, string request)
         {
-            string response = string.Empty;
-
-            switch (action)
+            try
             {
-                case "BrowseMenu":
-                    response = await _foodItemService.BrowseMenu();
-                    break;
-                case "ViewNotifications":
-                    response = await _notificationService.ViewNotifications(int.Parse(request));
-                    break;
+                string response = string.Empty;
+
+                switch (action)
+                {
+                    case "BrowseMenu":
+                        response = await _foodItemService.BrowseMenu();
+                        break;
+                    case "ViewNotifications":
+                        response = await _notificationService.ViewNotifications(int.Parse(request));
+                        break;
+                }
+                return ProtocolResponseHelper.CreateSuccessResponse(response);
             }
-            return CreateSuccessResponse(response);
-        }
-
-        private string CreateSuccessResponse(string response)
-        {
-            var successResponse = new CustomProtocolDTO
+            catch (Exception ex)
             {
-                Response = response,
-                Action = "Sucess"
-            };
-
-            return JsonSerializer.Serialize(successResponse);
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            }
         }
 
     }

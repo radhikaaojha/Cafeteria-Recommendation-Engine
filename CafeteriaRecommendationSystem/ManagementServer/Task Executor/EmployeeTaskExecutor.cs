@@ -20,32 +20,28 @@ namespace Common.Utils
         }
         public async Task<string> ExecuteTask(string action, string request)
         {
-            string response = string.Empty;
-
-            switch (action)
+            try
             {
-                case "SubmitFeedback":
-                    response = await employeeService.GiveFeedback(request);
-                    break;
-                case "VoteForMenu":
-                    response = await employeeService.VoteInFavourForMenuItem((request));
-                    break;
-                case "ViewNextDayMenu":
-                    response = await employeeService.ViewNextDayMenu();
-                    break;
+                string response = string.Empty;
+
+                switch (action)
+                {
+                    case "SubmitFeedback":
+                        response = await employeeService.GiveFeedback(request);
+                        break;
+                    case "VoteForMenu":
+                        response = await employeeService.VoteInFavourForMenuItem((request));
+                        break;
+                    case "ViewNextDayMenu":
+                        response = await employeeService.ViewNextDayMenu();
+                        break;
+                }
+                return ProtocolResponseHelper.CreateSuccessResponse(response);
             }
-            return CreateSuccessResponse(response);
-        }
-
-        private string CreateSuccessResponse(string response)
-        {
-            var successResponse = new CustomProtocolDTO
+            catch (Exception ex)
             {
-                Response = response,
-                Action = "Sucess"
-            };
-
-            return JsonSerializer.Serialize(successResponse);
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            }
         }
     }
 }

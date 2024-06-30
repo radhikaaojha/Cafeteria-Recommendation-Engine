@@ -40,35 +40,16 @@ namespace Common.Utils
                         response = await adminService.UpdateAvailabilityStatusForFoodItem(request);
                         break;
                 }
-                return CreateSuccessResponse(response);
+                return ProtocolResponseHelper.CreateSuccessResponse(response);
             }
             catch(FoodItemExistsException ex)
             {
-                return CreateFailureResponse(ex.Message);
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
             }
-            
-        }
-
-        private string CreateSuccessResponse(string response)
-        {
-            var successResponse = new CustomProtocolDTO
+            catch (Exception ex)
             {
-                Response = response,
-                Action = "Sucess"
-            };
-
-            return JsonSerializer.Serialize(successResponse);
-        }
-
-        private string CreateFailureResponse(string response)
-        {
-            var successResponse = new CustomProtocolDTO
-            {
-                Response = response,
-                Action = "Exception"
-            };
-
-            return JsonSerializer.Serialize(successResponse);
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            }
         }
     }
 }
