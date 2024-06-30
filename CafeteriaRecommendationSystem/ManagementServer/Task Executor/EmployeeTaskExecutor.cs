@@ -1,6 +1,8 @@
-﻿using CMS.Common.Models;
+﻿using CMS.Common.Exceptions;
+using CMS.Common.Models;
 using CMS.Common.Utils;
 using CMS.Data.Services.Interfaces;
+using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +20,7 @@ namespace Common.Utils
         {
             this.employeeService = employeeService;
         }
+
         public async Task<string> ExecuteTask(string action, string request)
         {
             try
@@ -33,10 +36,26 @@ namespace Common.Utils
                         response = await employeeService.VoteInFavourForMenuItem((request));
                         break;
                     case "ViewNextDayMenu":
-                        response = await employeeService.ViewNextDayMenu();
+                        response = await employeeService.ViewDailyMenu(DateTime.Now);
+                        break;
+                    case "ViewTodaysMenu":
+                        DateTime yesterday = DateTime.Today.AddDays(-1);
+                        response = await employeeService.ViewDailyMenu(yesterday);
                         break;
                 }
                 return ProtocolResponseHelper.CreateSuccessResponse(response);
+            }
+            catch (InvalidInputException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            }
+            catch (ApiException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
             }
             catch (Exception ex)
             {

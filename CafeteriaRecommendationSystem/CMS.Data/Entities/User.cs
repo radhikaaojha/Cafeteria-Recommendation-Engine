@@ -23,6 +23,7 @@ namespace Data_Access_Layer.Entities
         [Column(TypeName = "char(30)")]
         public string Salt { get; set; }
         public Role Role { get; set; }
+        public bool HasVotedToday { get; set; }
         public List<FoodItemFeedback> FoodItemFeedback {  get; set; }
         public List<Notification> Notification { get; set; }
     }

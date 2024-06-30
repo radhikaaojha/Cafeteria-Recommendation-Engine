@@ -55,7 +55,13 @@ namespace CMS.Data.Services
             await FinalizeMealItems(dailyMenuRequest.Dinner, MealType.Dinner);
 
             await NotifyEmployeesForPlannedMenu(dailyMenuRequest);
+            await SetUserVotingToFalse();
             return "Notifications for finalized menu has been sent successfully!";
+        }
+
+        private async Task SetUserVotingToFalse()
+        {
+            await _userRepository.SetUserVoting(false);
         }
 
         public async Task NotifyEmployeesForFinalizeedMenu(DailyMenuInput finalMenu)

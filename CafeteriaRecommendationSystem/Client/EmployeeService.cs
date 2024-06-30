@@ -18,7 +18,8 @@ namespace Client
                              "3. Browse Menu of Cafeteria\n" +
                              "4. Submit feedback\n" +
                              "5. View rolled out items for tommorrow menu\n" +
-                             "6. Logout\n" +
+                             "6. View today's menu\n" +
+                             "7. Logout\n" +
                              "Enter the number corresponding to your choice ");
                 Console.WriteLine(new string('-', 40)); 
                 var requestString = Console.ReadLine();
@@ -27,7 +28,7 @@ namespace Client
                 {
                     case "1":
                         request.Action = Actions.VoteForMenu.ToString();
-                        request.Payload = JsonSerializer.Serialize(GetInputForVoting());
+                        request.Payload = JsonSerializer.Serialize(GetInputForVoting(userId));
                         break;
                     case "2":
                         request.Action = Actions.ViewNotifications.ToString();
@@ -44,6 +45,9 @@ namespace Client
                         request.Action = Actions.ViewNextDayMenu.ToString();
                         break;
                     case "6":
+                        request.Action = Actions.ViewTodaysMenu.ToString();
+                        break;
+                    case "7":
                         request.Action = Actions.Logout.ToString();
                         break;
                     default:
@@ -55,12 +59,13 @@ namespace Client
             }
         }
 
-        private static object GetInputForVoting()
+        private static object GetInputForVoting(int userId)
         {
-            DailyMenuInput votingMenuInput = new();
+            VotingMenuInput votingMenuInput = new();
             votingMenuInput.Breakfast = GetFoodItemId("breakfast");
             votingMenuInput.Lunch = GetFoodItemId("lunch");
             votingMenuInput.Dinner = GetFoodItemId("dinner");
+            votingMenuInput.UserId = userId;
             return votingMenuInput;
         }
         static List<string> GetFoodItemId(string mealType)

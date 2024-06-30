@@ -46,7 +46,7 @@ namespace CMS.Data.Repository
                     .Take(10 - otherItemOptions.Count)
                 );
             }
-            var combinedOptions = mainCourseOptions.Concat(otherItemOptions).ToList();
+            var combinedOptions = mainCourseOptions.Concat(otherItemOptions).OrderByDescending(u=>u.SentimentScore).ToList();
 
             return combinedOptions;
         }

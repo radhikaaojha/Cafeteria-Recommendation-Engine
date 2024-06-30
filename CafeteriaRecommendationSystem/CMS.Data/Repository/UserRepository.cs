@@ -22,6 +22,24 @@ namespace Data_Access_Layer.Repository
             return await _context.User.Where(u=>u.Id == id && u.Name.ToLower() == userLogin.Name.ToLower()).FirstOrDefaultAsync();
         }
 
+        public async Task<bool> HasVotedToday(int userId)
+        {
+            return await _context.User.AnyAsync(u => u.Id == userId && u.HasVotedToday);
+        }
+
+        public async Task SetUserVoting(bool status)
+        {
+            var users = await _context.User.ToListAsync(); 
+
+            foreach (var user in users)
+            {
+                user.HasVotedToday = false;
+            }
+
+            _context.UpdateRange(users);
+            await _context.SaveChangesAsync();
+        }
+
     }
 
 }

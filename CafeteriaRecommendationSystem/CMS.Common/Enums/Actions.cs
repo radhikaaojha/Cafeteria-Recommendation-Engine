@@ -22,7 +22,8 @@ namespace CMS.Common.Enums
         ViewVotes,
         SubmitFeedback,
         VoteForMenu,
-        ViewNextDayMenu
+        ViewNextDayMenu,
+        ViewTodaysMenu
 
     }
 }
