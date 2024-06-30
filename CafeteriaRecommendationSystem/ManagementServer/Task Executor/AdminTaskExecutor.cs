@@ -42,10 +42,26 @@ namespace Common.Utils
                 }
                 return ProtocolResponseHelper.CreateSuccessResponse(response);
             }
-            catch(FoodItemExistsException ex)
+            catch(ApiException ex)
             {
                 return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
             }
+            catch (FoodItemExistsException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            }
+            catch (FoodItemNotFoundException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            }
+            catch (InvalidInputException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            } 
+            catch (ArgumentOutOfRangeException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            } 
             catch (Exception ex)
             {
                 return ProtocolResponseHelper.CreateFailureResponse(ex.Message);

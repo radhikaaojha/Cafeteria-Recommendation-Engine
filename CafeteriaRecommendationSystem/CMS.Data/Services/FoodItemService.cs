@@ -7,20 +7,29 @@ using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using CMS.Common.Exceptions;
+using CacheManager.Core.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace CMS.Data.Services
 {
     public class FoodItemService : CrudBaseService<FoodItem>, IFoodItemService
     {
         private readonly IFoodItemRepository _foodItemRepository;
-        public FoodItemService(IFoodItemRepository foodItemRepository, ICrudBaseRepository<FoodItem> repository, IMapper mapper) : base(repository, mapper)
+        private ILogger<FoodItemService> _logger;  
+        public FoodItemService(IFoodItemRepository foodItemRepository, ICrudBaseRepository<FoodItem> repository, IMapper mapper, ILogger<FoodItemService> logger) : base(repository, mapper)
         {
             _foodItemRepository = foodItemRepository;
+            _logger = logger;
         }
 
         public async Task<FoodItem> UpdatePrice(int foodItemId, decimal newPrice)
         {
             var foodItem = await base.GetById<FoodItem>(foodItemId);
+
+            if (foodItem == null)
+                throw new FoodItemNotFoundException("Food Item with given id doesnt exist", null, _logger);
+
             foodItem.Price = newPrice;
             await base.Update(foodItem.Id, foodItem);
             return foodItem;
@@ -29,6 +38,10 @@ namespace CMS.Data.Services
         public async Task<FoodItem> UpdateStatus(int foodItemId, int newStatusId)
         {
             var foodItem = await base.GetById<FoodItem>(foodItemId);
+
+            if (foodItem == null)
+                throw new FoodItemNotFoundException("Food Item with given id doesnt exist", null, _logger);
+
             foodItem.StatusId = newStatusId;
             await base.Update(foodItem.Id, foodItem);
             return foodItem;
@@ -47,6 +60,10 @@ namespace CMS.Data.Services
         public async Task UpdateSentimentResult(float score, string feedback, int foodItemId)
         {
             var foodItem = await base.GetById<FoodItem>(foodItemId);
+
+            if (foodItem == null)
+                throw new FoodItemNotFoundException("Food Item with given id doesnt exist", null, _logger);
+
             foodItem.SentimentScore = (decimal)score;
             foodItem.Description = feedback;
             await base.Update(foodItem.Id, foodItem);
