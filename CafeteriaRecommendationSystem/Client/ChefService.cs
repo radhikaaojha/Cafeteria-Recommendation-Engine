@@ -25,9 +25,9 @@ namespace Client
                              "4. Plan next day menu\n" +
                              "5. Finalize Menu Selection\n" +
                              "6. View recommendation from employees\n" +
-                             "7. View discarded menu list\n" +
+                             "7. View discarded menu item list\n" +
                              "8. Remove discarded menu item\n" +
-                             "9. Roll out detailed feedback questions for discarded items\n" +
+                             "9. Roll out detailed feedback questions for discarded item\n" +
                              "10. Logout\n" +
                              "Enter the number corresponding to your choice ");
                 Console.WriteLine(new string('-', 40)); 
@@ -80,7 +80,7 @@ namespace Client
 
         private static string GetInputForRemoveFoodItem()
         {
-            Console.WriteLine("Enter id of food item you wish to remove from discarded list");
+            Console.WriteLine("Enter id of food item you wish to remove");
             return Console.ReadLine();
         }
 

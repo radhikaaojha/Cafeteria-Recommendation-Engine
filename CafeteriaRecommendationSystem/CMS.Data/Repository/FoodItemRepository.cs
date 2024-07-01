@@ -6,6 +6,8 @@ using Data_Access_Layer.Repository;
 using System.Linq.Expressions;
 using Common.Enums;
 using FoodItemType = Common.Enums.FoodItemType;
+using Microsoft.EntityFrameworkCore;
+using CMS.Common.Exceptions;
 
 namespace CMS.Data.Repository
 {
@@ -18,6 +20,22 @@ namespace CMS.Data.Repository
         public async Task<bool> DoesFoodItemWithSameNameExists(string name)
         {
             return _context.FoodItem.Any(foodItem => foodItem.Name.ToLower() == name.ToLower());
+        }
+        
+        public async Task<FoodItem> GetDiscardedFoodItem()
+        {
+            var foodItems = await _context.FoodItem.Include(f => f.FoodItemAvailabilityStatus)
+                                                   .Include(f => f.FoodItemType)
+                                                   .Where(f => f.SentimentScore < 20)
+                                                   .OrderBy(f => f.SentimentScore)
+                                                   .ToListAsync();
+
+            var discardedFoodItem = foodItems.FirstOrDefault(f => ContainsNegativeKeywords(f.Description));
+
+            if (discardedFoodItem == null)
+                throw new FoodItemNotFoundException("No food item elgibile for discard menu item list");
+
+            return discardedFoodItem;
         }
 
         public async Task<List<FoodItem>> GetNextDayMenuRecommendation()
@@ -49,6 +67,11 @@ namespace CMS.Data.Repository
             var combinedOptions = mainCourseOptions.Concat(otherItemOptions).OrderByDescending(u=>u.SentimentScore).ToList();
 
             return combinedOptions;
+        }
+        private bool ContainsNegativeKeywords(string description)
+        {
+            var negativeKeywords = new List<string> { "tasteless", "extremely bad experience", "very poor","poor","bad","not nice","didnt like","soggy","gross" };
+            return negativeKeywords.Any(keyword => description.Contains(keyword, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

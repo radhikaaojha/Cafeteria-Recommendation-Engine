@@ -129,30 +129,25 @@ namespace CMS.Data.Services
                 throw new InvalidOperationException("Discarded Food items List can only be generated once a month.");
             }
 
-            Expression<Func<FoodItem, bool>> predicate = data => data.SentimentScore < 20 && ContainsNegativeKeywords(data.Description);
+            var discardedFoodItem = await _foodItemRepository.GetDiscardedFoodItem();
 
-            var discardedFoodItem = await base.GetList<FoodItem>("FoodItemAvailabilityStatus, FoodItemType", null, new List<string> { "SentimentScore" }, 1, 0, predicate);
-
-            if (discardedFoodItem.Count == 0)
-                throw new FoodItemNotFoundException("No food item elgibile for discard menu item list");
-
-            var discardedFoodItemDTO = discardedFoodItem.Select(fi => new BrowseMenu
+            var discardedFoodItemDto = new BrowseMenu
             {
-                Id = fi.Id,
-                Name = fi.Name,
-                Price = fi.Price,
-                AvailabilityStatus = fi.FoodItemAvailabilityStatus?.Name,
-                FoodItemType = fi.FoodItemType?.Name,
-                Description = fi.Description,
-                SentimentScore = fi.SentimentScore
-            }).FirstOrDefault();
+                Id = discardedFoodItem.Id,
+                Name = discardedFoodItem.Name,
+                Price = discardedFoodItem.Price,
+                AvailabilityStatus = discardedFoodItem.FoodItemAvailabilityStatus?.Name,
+                FoodItemType = discardedFoodItem.FoodItemType?.Name,
+                Description = discardedFoodItem.Description,
+                SentimentScore = discardedFoodItem.SentimentScore
+            };
 
-            discardedFoodItem.FirstOrDefault().StatusId = (int)Status.Discarded;
-            await base.Update(discardedFoodItem.FirstOrDefault().Id, discardedFoodItemDTO);
+            discardedFoodItem.StatusId = (int)Status.Discarded;
+            await base.Update(discardedFoodItem.Id, discardedFoodItemDto);
 
             await _appActivityLogRepository.UpdateLastExecutionDate("GenerateDiscardList", DateTime.Now);
 
-            return JsonSerializer.Serialize(discardedFoodItemDTO);
+            return JsonSerializer.Serialize(discardedFoodItemDto);
         }
 
         public async Task<string> RollOutFeedbackQuestionnaireForDiscardedItem()
@@ -171,7 +166,7 @@ namespace CMS.Data.Services
                 string message = $"We are trying to improve your experience with {foodItem.Name}.Id :{foodItem.Id} Please provide your feedback and help us." +
                                  $"Q1. What did you not like about {foodItem.Name}?" +
                                  $"Q2. How would you like {foodItem.Name} to taste?" +
-                                 $"Q3. Share your mom’s recipe";
+                                 $"Q3. Share your moms recipe";
                 await _notificationService.SendBatchNotifications(message.ToString(), AppConstants.Employee, (int)NotificationType.FinalMenu);
             }
 

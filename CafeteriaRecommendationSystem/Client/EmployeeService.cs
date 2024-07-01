@@ -76,7 +76,7 @@ namespace Client
             Console.WriteLine($"Q2. How would you like {detailedFeedbackRequest.FoodItemId} to taste?");
             string answer2 = Console.ReadLine();
 
-            Console.WriteLine($"Q3. Share your mom’s recipe");
+            Console.WriteLine($"Q3. Share your moms recipe");
             string answer3 = Console.ReadLine();
 
             var feedback = new DetailedFeedbackRequest
