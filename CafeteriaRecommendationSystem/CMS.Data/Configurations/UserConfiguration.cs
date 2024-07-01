@@ -21,6 +21,11 @@ namespace CMS.Data.Configurations
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasMany(ft => ft.DetailedFoodItemFeedback)
+            .WithOne(c => c.User)
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
             builder.HasMany(ft => ft.Notification)
            .WithOne(c => c.User)
            .HasForeignKey(c => c.UserId)

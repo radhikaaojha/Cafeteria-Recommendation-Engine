@@ -23,7 +23,9 @@ namespace Client
                              "3. Browse Menu of Cafeteria\n" +
                              "4. Update the price of a food item\n" +
                              "5. Update the availability status of a food item\n" +
-                             "6. Logout\n" +
+                             "6. View discarded menu list\n" +
+                             "7. Roll out feedback questions for discarded items\n" +
+                             "8. Logout\n" +
                              "Enter the number corresponding to your choice ");
                 Console.WriteLine(new string('-', 40));
                 var requestString = Console.ReadLine();
@@ -40,7 +42,6 @@ namespace Client
                         break;
                     case "3":
                         request.Action = Actions.BrowseMenu.ToString();
-                        request.Payload = "";
                         break;
                     case "4":
                         request.Action = Actions.UpdateFoodItemPrice.ToString();
@@ -51,6 +52,12 @@ namespace Client
                         request.Payload = JsonSerializer.Serialize(GetInputForUpdateFoodItemStatus());
                         break;
                     case "6":
+                        request.Action = Actions.ViewDiscardList.ToString();
+                        break;
+                    case "7":
+                        request.Action = Actions.RollOutDetailedFeedbackQuestions.ToString();
+                        break;
+                    case "8":
                         request.Action = Actions.Logout.ToString();
                         break;
                     default:

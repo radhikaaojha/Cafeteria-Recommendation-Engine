@@ -7,6 +7,7 @@
         FoodItemPriceUpdated,
         FoodItemAvailabilityUpdated,
         FoodItemVoting,
-        FinalMenu
+        FinalMenu,
+        DetailedFeedback
     }
 }

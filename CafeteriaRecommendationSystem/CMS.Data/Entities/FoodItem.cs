@@ -24,6 +24,7 @@ namespace Data_Access_Layer.Entities
         public FoodItemAvailabilityStatus FoodItemAvailabilityStatus { get; set; }
         public FoodItemType FoodItemType { get; set; }
         public List<FoodItemFeedback> FoodItemFeedback { get; set; }
+        public List<DetailedFoodItemFeedback> DetailedFoodItemFeedback { get; set; }
         public List<WeeklyMenu> WeeklyMenu { get; set; }
     }
 }

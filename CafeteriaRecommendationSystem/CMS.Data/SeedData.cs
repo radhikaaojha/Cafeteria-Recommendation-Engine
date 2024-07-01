@@ -24,7 +24,9 @@ namespace Data_Access_Layer
                 new Entities.FoodItemAvailabilityStatus { Id = 1, Name = Status.OutOfStock.ToString() },
                 new Entities.FoodItemAvailabilityStatus { Id = 2, Name = Common.Enums.Status.Available.ToString() },
                 new Entities.FoodItemAvailabilityStatus { Id = 3, Name = Common.Enums.Status.OnHold.ToString() },
-                new Entities.FoodItemAvailabilityStatus { Id = 4, Name = Common.Enums.Status.Unavailable.ToString() }
+                new Entities.FoodItemAvailabilityStatus { Id = 4, Name = Common.Enums.Status.Unavailable.ToString() },
+                new Entities.FoodItemAvailabilityStatus { Id = 5, Name = Common.Enums.Status.Discarded.ToString() },
+                new Entities.FoodItemAvailabilityStatus { Id = 6, Name = Common.Enums.Status.Removed.ToString() }
             };
         }
 
@@ -61,6 +63,7 @@ namespace Data_Access_Layer
                 new CMS.Data.Entities.NotificationType { Id = 4, Name = CMS.Common.Enums.NotificationType.FoodItemAvailabilityUpdated.ToString() },
                 new CMS.Data.Entities.NotificationType { Id = 5, Name = CMS.Common.Enums.NotificationType.FoodItemVoting.ToString() },
                 new CMS.Data.Entities.NotificationType { Id = 6, Name = CMS.Common.Enums.NotificationType.FinalMenu.ToString() },
+                new CMS.Data.Entities.NotificationType { Id = 7, Name = CMS.Common.Enums.NotificationType.DetailedFeedback.ToString() },
             };
         }
 

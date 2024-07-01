@@ -46,6 +46,10 @@ namespace Common.Utils
             {
                 return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
             }
+            catch(InvalidOperationException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            }
             catch (FoodItemExistsException ex)
             {
                 return ProtocolResponseHelper.CreateFailureResponse(ex.Message);

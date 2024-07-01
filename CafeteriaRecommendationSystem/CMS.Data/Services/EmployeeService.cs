@@ -1,6 +1,7 @@
 ﻿using CMS.Common.Exceptions;
 using CMS.Common.Models;
 using CMS.Data.Services.Interfaces;
+using Common.Enums;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
 using System.Linq.Expressions;
@@ -78,6 +79,16 @@ namespace CMS.Data.Services
             }
 
             return JsonSerializer.Serialize(viewNextDayMenu);
+        }
+
+        public async Task<string> SubmitDetailedFeedback(string request)
+        {
+            var feedbackRequest = JsonSerializer.Deserialize<DetailedFeedbackRequest>(request);
+            await ValidateDetailedFeedbackRequest(feedbackRequest);
+
+            await _feedbackService.SubmitDetailedFeedback(feedbackRequest);
+
+            return "Feedback submitted succesfully";
         }
 
         public async Task<string> VoteInFavourForMenuItem(string request)
@@ -178,11 +189,38 @@ namespace CMS.Data.Services
             }
         }
 
+        private async Task ValidateDetailedFeedbackRequest(DetailedFeedbackRequest request)
+        {
+            var foodItem = await _foodItemService.GetById<FoodItem>(request.FoodItemId);
+            if (foodItem == null)
+                throw new FoodItemNotFoundException("Food item with given id doesnt exist");
+            if (foodItem.StatusId != (int)Status.Discarded)
+                throw new InvalidOperationException("Food item isn't in the discarded list so cannot submit detailed feedback");
+        }
+
         private async Task UpdateSentimentAnalysis(FeedbackRequest feedbackRequest)
         {
             var (rating, feedbacks) = await _feedbackService.AnalyzeFeedbackSentiments(feedbackRequest.FoodItemId);
             await _foodItemService.UpdateSentimentResult(rating, feedbacks, feedbackRequest.FoodItemId);
 
+            if (rating < 20 && ContainsNegativeKeywords(feedbacks))
+            {
+                await _foodItemService.AddToDiscardList(feedbackRequest.FoodItemId);
+            }
+
+        }
+        private bool ContainsNegativeKeywords(string feedback)
+        {
+            var negativeKeywords = new List<string> { "Tasteless", "extremely bad experience", "very poor", "bad", "disgusting","not good","gross","poor" };
+
+            foreach (var keyword in negativeKeywords)
+            {
+                if (feedback.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

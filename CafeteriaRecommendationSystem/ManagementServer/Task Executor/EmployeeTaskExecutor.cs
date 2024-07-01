@@ -38,12 +38,19 @@ namespace Common.Utils
                     case "ViewNextDayMenu":
                         response = await employeeService.ViewDailyMenu(DateTime.Now);
                         break;
+                    case "SubmitDetailedFeedback":
+                        response = await employeeService.SubmitDetailedFeedback(request);
+                        break;
                     case "ViewTodaysMenu":
                         DateTime yesterday = DateTime.Today.AddDays(-1);
                         response = await employeeService.ViewDailyMenu(yesterday);
                         break;
                 }
                 return ProtocolResponseHelper.CreateSuccessResponse(response);
+            }
+            catch (FoodItemNotFoundException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
             }
             catch (InvalidInputException ex)
             {

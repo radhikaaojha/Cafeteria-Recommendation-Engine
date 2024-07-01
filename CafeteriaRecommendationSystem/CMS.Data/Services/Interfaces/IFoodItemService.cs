@@ -17,5 +17,8 @@ namespace CMS.Data.Services.Interfaces
         Task<List<FoodItem>> GetTopRecommendationForChef();
         Task UpdateSentimentResult(float score, string feedback, int foodItemId);
         Task<string> BrowseMenu();
+        Task AddToDiscardList(int foodItemId);
+        Task<string> ViewDiscardedFoodItem();
+        Task<string> RollOutFeedbackQuestionnaireForDiscardedItem();
     }
 }

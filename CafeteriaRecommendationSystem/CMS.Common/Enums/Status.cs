@@ -5,6 +5,8 @@
         OutOfStock = 1,
         Available,
         OnHold,
-        Unavailable
+        Unavailable,
+        Discarded,
+        Removed
     }
 }

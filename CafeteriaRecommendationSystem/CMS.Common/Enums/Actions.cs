@@ -23,7 +23,10 @@ namespace CMS.Common.Enums
         SubmitFeedback,
         VoteForMenu,
         ViewNextDayMenu,
-        ViewTodaysMenu
+        ViewTodaysMenu,
+        ViewDiscardList,
+        RollOutDetailedFeedbackQuestions,
+        SubmitDetailedFeedback
 
     }
 }

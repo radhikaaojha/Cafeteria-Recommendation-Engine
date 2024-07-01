@@ -38,6 +38,9 @@ namespace CMS.Common.Utils
                 { Actions.VoteForMenu.ToString(), new EmployeeTaskExecutor(employeeService) },
                 { Actions.ViewNextDayMenu.ToString(), new EmployeeTaskExecutor(employeeService) },
                 { Actions.ViewTodaysMenu.ToString(), new EmployeeTaskExecutor(employeeService) },
+                { Actions.ViewDiscardList.ToString(), new CommonTaskExecutor(notificationService,foodItemService) },
+                { Actions.RollOutDetailedFeedbackQuestions.ToString(), new CommonTaskExecutor(notificationService,foodItemService) },
+                { Actions.SubmitDetailedFeedback.ToString(), new EmployeeTaskExecutor(employeeService) },
         };
         }
 

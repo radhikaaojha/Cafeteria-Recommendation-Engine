@@ -25,6 +25,8 @@ namespace Data_Access_Layer
         public DbSet<Role> Role { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<WeeklyMenu> WeeklyMenu { get; set; }
+        public DbSet<AppActivityLog> AppActivityLog { get; set; }
+        public DbSet<DetailedFoodItemFeedback> DetailedFoodItemFeedback { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,6 +40,8 @@ namespace Data_Access_Layer
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new WeeklyMenuConfiguration());
+            modelBuilder.ApplyConfiguration(new DetailedFoodItemFeedbackConfiguration());
+            modelBuilder.ApplyConfiguration(new AppActivityLogConfiguration());
             modelBuilder.Entity<Role>().HasData(SeedData.GetRoles());
             modelBuilder.Entity<NotificationType>().HasData(SeedData.GetNotificationTypes());
             modelBuilder.Entity<MealType>().HasData(SeedData.GetMealTypes());

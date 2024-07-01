@@ -35,8 +35,18 @@ namespace Common.Utils
                     case "ViewNotifications":
                         response = await _notificationService.ViewNotifications(int.Parse(request));
                         break;
+                    case "ViewDiscardList":
+                        response = await _foodItemService.ViewDiscardedFoodItem();
+                        break;
+                    case "RollOutDetailedFeedbackQuestions":
+                        response = await _foodItemService.RollOutFeedbackQuestionnaireForDiscardedItem();
+                        break;
                 }
                 return ProtocolResponseHelper.CreateSuccessResponse(response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
             }
             catch (Exception ex)
             {

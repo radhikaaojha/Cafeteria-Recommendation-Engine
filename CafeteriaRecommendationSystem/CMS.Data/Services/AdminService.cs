@@ -77,7 +77,7 @@ namespace CMS.Data.Services
         {
             var foodItemId = JsonSerializer.Deserialize<int>(request);
 
-            var foodItem = await _foodItemService.UpdateStatus(foodItemId, (int)Status.Unavailable);
+            var foodItem = await _foodItemService.UpdateStatus(foodItemId, (int)Status.Removed);
 
             await NotifyForUpdate((int)NotificationType.FoodItemRemoved, foodItem.Name);
 

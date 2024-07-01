@@ -1,6 +1,7 @@
 ﻿using CMS.Common.Enums;
 using CMS.Common.Models;
 using System.Text.Json;
+using Tensorflow.Contexts;
 
 namespace Client
 {
@@ -19,7 +20,8 @@ namespace Client
                              "4. Submit feedback\n" +
                              "5. View rolled out items for tommorrow menu\n" +
                              "6. View today's menu\n" +
-                             "7. Logout\n" +
+                             "7. Submit detailed food item feedback\n" +
+                             "8. Logout\n" +
                              "Enter the number corresponding to your choice ");
                 Console.WriteLine(new string('-', 40)); 
                 var requestString = Console.ReadLine();
@@ -48,6 +50,10 @@ namespace Client
                         request.Action = Actions.ViewTodaysMenu.ToString();
                         break;
                     case "7":
+                        request.Action = Actions.SubmitDetailedFeedback.ToString();
+                        request.Payload = JsonSerializer.Serialize(GetInputForDetailedFeedback(userId));
+                        break;
+                    case "8":
                         request.Action = Actions.Logout.ToString();
                         break;
                     default:
@@ -57,6 +63,32 @@ namespace Client
                 }
                 return request;
             }
+        }
+        public static DetailedFeedbackRequest GetInputForDetailedFeedback(int userId)
+        {
+            DetailedFeedbackRequest detailedFeedbackRequest = new();
+            Console.WriteLine("Enter id of food item you wish to give feedback for");
+            detailedFeedbackRequest.FoodItemId = int.Parse(Console.ReadLine());
+
+            Console.WriteLine($"Q1. What didn’t you like about {detailedFeedbackRequest.FoodItemId}?");
+            string answer1 = Console.ReadLine();
+
+            Console.WriteLine($"Q2. How would you like {detailedFeedbackRequest.FoodItemId} to taste?");
+            string answer2 = Console.ReadLine();
+
+            Console.WriteLine($"Q3. Share your mom’s recipe");
+            string answer3 = Console.ReadLine();
+
+            var feedback = new DetailedFeedbackRequest
+            {
+                UserId = userId,
+                FoodItemId = detailedFeedbackRequest.FoodItemId,
+                Answer1 = answer1,
+                Answer2 = answer2,
+                Answer3 = answer3
+            };
+
+            return feedback;
         }
 
         private static object GetInputForVoting(int userId)

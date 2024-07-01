@@ -4,6 +4,7 @@ using Data_Access_Layer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CMS.Data.Migrations
 {
     [DbContext(typeof(CMSDbContext))]
-    partial class CMSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240701034418_DiscardedMenuList")]
+    partial class DiscardedMenuList
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,51 +46,6 @@ namespace CMS.Data.Migrations
                     b.HasKey("ActionName");
 
                     b.ToTable("AppActivityLog");
-                });
-
-            modelBuilder.Entity("CMS.Data.Entities.DetailedFoodItemFeedback", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Answer1")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Answer2")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Answer3")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
-
-                    b.Property<int>("FoodItemId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ModifiedDateTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(0)")
-                        .HasDefaultValueSql("getdate()");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FoodItemId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("DetailedFoodItemFeedback");
                 });
 
             modelBuilder.Entity("CMS.Data.Entities.NotificationType", b =>
@@ -159,13 +116,6 @@ namespace CMS.Data.Migrations
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "FinalMenu"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "DetailedFeedback"
                         });
                 });
 
@@ -1198,9 +1148,9 @@ namespace CMS.Data.Migrations
                             HasVotedToday = false,
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Admin",
-                            Password = "eKk2ImDDwtMZKgz1eE7W5n8B1Z+s2zz+0hAGHHDbOVM=",
+                            Password = "wFjBAs2TycIyp0YczBePjqnb4bdcZHVqA183EbZ/lcg=",
                             RoleId = 1,
-                            Salt = "t5LNtxy+EHJ4QnogCvR1Sg=="
+                            Salt = "h0482lqEHWB2XsBC0XibYQ=="
                         },
                         new
                         {
@@ -1210,9 +1160,9 @@ namespace CMS.Data.Migrations
                             HasVotedToday = false,
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Admin",
-                            Password = "IF1e3YyYWWJxHuG3i/cacWn1G/8YGY4wXkfaePzlxT0=",
+                            Password = "kYtXoaGSd69AEjjnmm0+cUExK890domuQuui+jDg6GA=",
                             RoleId = 1,
-                            Salt = "2SBNak6kMWMx98Ss38wl+w=="
+                            Salt = "gMOuyH8MnaGz6THTGqThtA=="
                         },
                         new
                         {
@@ -1222,9 +1172,9 @@ namespace CMS.Data.Migrations
                             HasVotedToday = false,
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Admin",
-                            Password = "JxenBTGHvdUEWd2Kg6mIfuE1yp2kk1OFdp2brru7IKE=",
+                            Password = "f4n2NV7fMPc/b0U4+IG/Wuj1LIBIvjaDOZPaCvu55bk=",
                             RoleId = 1,
-                            Salt = "48RSIpD9Tg4xYlCGH3iPcA=="
+                            Salt = "KD3tYTATY8wi5nCC2UtJrA=="
                         },
                         new
                         {
@@ -1234,9 +1184,9 @@ namespace CMS.Data.Migrations
                             HasVotedToday = false,
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Radhika",
-                            Password = "GzNN+Ub+boP1xA+TSf0RuTgL5ZUx8ep/pBpes+a6WsY=",
+                            Password = "mRKKBJbxIe09CATLRECbHZg9f03rLpLesn9T5okdkLo=",
                             RoleId = 3,
-                            Salt = "X4D6DhV4PvAfAfUomt8XUg=="
+                            Salt = "URvqTRvzbShWWqLH8NMaxQ=="
                         },
                         new
                         {
@@ -1246,9 +1196,9 @@ namespace CMS.Data.Migrations
                             HasVotedToday = false,
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Raghvendra",
-                            Password = "hgQsQyOSvEIk2Sc+2LRYSbRd1/3gA1Wa7ywbhBc+H18=",
+                            Password = "nPrH6EHYnBAJkfrg+QVaI5EelJFdnnwHc/j2D5yfhOg=",
                             RoleId = 3,
-                            Salt = "QXB4p/pVkrXo19UJqlMYkw=="
+                            Salt = "gLGy0Yqgm2Bcpn7Wi54YFQ=="
                         },
                         new
                         {
@@ -1258,9 +1208,9 @@ namespace CMS.Data.Migrations
                             HasVotedToday = false,
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Rakshita",
-                            Password = "JOlTmD/9Q/0WjAuyxoE/53trpCmbx09gM7eVAHLGB/A=",
+                            Password = "XIEv0RhGZ8EzbAMLmGedO15qkQRmXVPE7PW9QxtVewk=",
                             RoleId = 3,
-                            Salt = "NEUHTX+b0qYVpqhnwbfR4Q=="
+                            Salt = "D8/J38MEXPQ7wvgTFKXV/Q=="
                         },
                         new
                         {
@@ -1270,9 +1220,9 @@ namespace CMS.Data.Migrations
                             HasVotedToday = false,
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Mukul",
-                            Password = "WWfz8rqV6WjYQdhIgAtHD5rsEt4LAOlrpe0/QOgUmxQ=",
+                            Password = "nsnFeec+euamxC1RnwjnqoPKlWf1xeta+YA+f4QWqzI=",
                             RoleId = 3,
-                            Salt = "xPCmMtNgkH7I7Hc3Ar+nwA=="
+                            Salt = "fnzubQzINBanSmQZR26+8A=="
                         },
                         new
                         {
@@ -1282,9 +1232,9 @@ namespace CMS.Data.Migrations
                             HasVotedToday = false,
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Amit",
-                            Password = "fQjKRI657xGiS57txP4l8Bay3X8vDlZpI0+pkMWe9/I=",
+                            Password = "GJaMJo5HnXHlHqtcgsYEhSeDcpu1HinTYe2Bkho7oGM=",
                             RoleId = 2,
-                            Salt = "LEXfORcWclIBnV8ESyAcCQ=="
+                            Salt = "yNbFaoDrOSRuxU/J4um5kg=="
                         },
                         new
                         {
@@ -1294,9 +1244,9 @@ namespace CMS.Data.Migrations
                             HasVotedToday = false,
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Ashit",
-                            Password = "Z9IkM+2g5fO3mTxMZBTSU4qogYtalFCOoDe9xx/Fpps=",
+                            Password = "WvmI4IQ9/SjX5N/AQZFDRkhJSuO/KGCXJMgdHNunLJc=",
                             RoleId = 2,
-                            Salt = "ecu6QbD5DcNfl58aAdvzgQ=="
+                            Salt = "ojoS/bjqhds+SyO9N1vLqA=="
                         },
                         new
                         {
@@ -1306,9 +1256,9 @@ namespace CMS.Data.Migrations
                             HasVotedToday = false,
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Ankit",
-                            Password = "gUtiwKyLNu1Xe+2p+iVHCfDsHxGdcu5Km9zHC9FVptU=",
+                            Password = "kYWN5pyzOAtqkStB1BBcO48wXl1fGccYXjWfa7MpnPU=",
                             RoleId = 2,
-                            Salt = "pst+XYlTOPuxFZgDNLDYJQ=="
+                            Salt = "PORGlTIpHz/WyGdCBOKGYQ=="
                         });
                 });
 
@@ -1349,25 +1299,6 @@ namespace CMS.Data.Migrations
                     b.HasIndex("MealTypeId");
 
                     b.ToTable("WeeklyMenu");
-                });
-
-            modelBuilder.Entity("CMS.Data.Entities.DetailedFoodItemFeedback", b =>
-                {
-                    b.HasOne("Data_Access_Layer.Entities.FoodItem", "FoodItem")
-                        .WithMany("DetailedFoodItemFeedback")
-                        .HasForeignKey("FoodItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data_Access_Layer.Entities.User", "User")
-                        .WithMany("DetailedFoodItemFeedback")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FoodItem");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Data_Access_Layer.Entities.FoodItem", b =>
@@ -1464,8 +1395,6 @@ namespace CMS.Data.Migrations
 
             modelBuilder.Entity("Data_Access_Layer.Entities.FoodItem", b =>
                 {
-                    b.Navigation("DetailedFoodItemFeedback");
-
                     b.Navigation("FoodItemFeedback");
 
                     b.Navigation("WeeklyMenu");
@@ -1493,8 +1422,6 @@ namespace CMS.Data.Migrations
 
             modelBuilder.Entity("Data_Access_Layer.Entities.User", b =>
                 {
-                    b.Navigation("DetailedFoodItemFeedback");
-
                     b.Navigation("FoodItemFeedback");
 
                     b.Navigation("Notification");

@@ -25,6 +25,7 @@ namespace Data_Access_Layer.Entities
         public Role Role { get; set; }
         public bool HasVotedToday { get; set; }
         public List<FoodItemFeedback> FoodItemFeedback {  get; set; }
+        public List<DetailedFoodItemFeedback> DetailedFoodItemFeedback {  get; set; }
         public List<Notification> Notification { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CMS.Common.Models;
+using CMS.Data.Entities;
 using Data_Access_Layer.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace CMS.Data.Profiles
     {
         public FeedbackProfile() {
             CreateMap<FoodItemFeedback, FeedbackRequest>().ReverseMap();
+            CreateMap<DetailedFoodItemFeedback, DetailedFeedbackRequest>().ReverseMap();
             CreateMap<FoodItemFeedback, FoodReview>()
                 .ForMember(dest => dest.ReviewText, opt => opt.MapFrom(src => src.Comment))
                 .ForMember(dest => dest.FoodItemId, opt => opt.MapFrom(src => src.FoodItemId))

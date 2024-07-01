@@ -13,5 +13,6 @@ namespace CMS.Data.Services.Interfaces
         Task<string> GiveFeedback(string request);
         Task<string> ViewDailyMenu(DateTime date);
         Task<string> VoteInFavourForMenuItem(string request);
+        Task<string> SubmitDetailedFeedback(string request);
     }
 }

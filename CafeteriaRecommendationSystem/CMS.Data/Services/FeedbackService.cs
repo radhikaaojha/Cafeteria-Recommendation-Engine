@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using CafeteriaRecommendationSystem.Services;
 using CMS.Common.Models;
+using CMS.Data.Entities;
+using CMS.Data.Repository.Interfaces;
 using CMS.Data.Services.Interfaces;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
@@ -12,8 +14,11 @@ namespace CMS.Data.Services
     public class FeedbackService : CrudBaseService<FoodItemFeedback>, IFeedbackService
     {
         private IMapper _mapper;
-        public FeedbackService(ICrudBaseRepository<FoodItemFeedback> repository, IMapper mapper) : base(repository, mapper)
+        private readonly IFeedbackRepository _feedbackRepository;
+        public FeedbackService(ICrudBaseRepository<FoodItemFeedback> repository, IMapper mapper, IFeedbackRepository feedbackRepository
+            ) : base(repository, mapper)
         {
+            _feedbackRepository = feedbackRepository;
             _mapper = mapper;
         }
 
@@ -47,6 +52,12 @@ namespace CMS.Data.Services
             var sentiment = (string.Join(", ", majorSentiments));
             return (averageProbability, sentiment);
 
+        }
+
+        public async Task SubmitDetailedFeedback(DetailedFeedbackRequest detailedFeedbackRequest)
+        {
+           DetailedFoodItemFeedback detailedFoodItemFeedback = _mapper.Map<DetailedFoodItemFeedback>(detailedFeedbackRequest);
+            await _feedbackRepository.SubmitDetailedFeedback(detailedFoodItemFeedback);
         }
 
         private static List<string> ExtractMajorSentiments(List<string> reviews, List<SentimentPrediction> predictions)

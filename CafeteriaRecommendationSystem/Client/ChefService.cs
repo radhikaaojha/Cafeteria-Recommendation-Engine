@@ -25,7 +25,10 @@ namespace Client
                              "4. Plan next day menu\n" +
                              "5. Finalize Menu Selection\n" +
                              "6. View recommendation from employees\n" +
-                             "7. Logout\n" +
+                             "7. View discarded menu list\n" +
+                             "8. Remove discarded menu item\n" +
+                             "9. Roll out detailed feedback questions for discarded items\n" +
+                             "10. Logout\n" +
                              "Enter the number corresponding to your choice ");
                 Console.WriteLine(new string('-', 40)); 
                 var requestString = Console.ReadLine();
@@ -54,6 +57,16 @@ namespace Client
                         request.Action = Actions.ViewVotes.ToString();
                         break;
                     case "7":
+                        request.Action = Actions.ViewDiscardList.ToString();
+                        break;
+                    case "8":
+                        request.Action = Actions.RemoveFoodItem.ToString();
+                        request.Payload = GetInputForRemoveFoodItem();
+                        break;
+                    case "9":
+                        request.Action = Actions.RollOutDetailedFeedbackQuestions.ToString();
+                        break;
+                    case "10":
                         request.Action = Actions.Logout.ToString();
                         break;
                     default:
@@ -63,6 +76,12 @@ namespace Client
                 }
                 return request;
             }
+        }
+
+        private static string GetInputForRemoveFoodItem()
+        {
+            Console.WriteLine("Enter id of food item you wish to remove from discarded list");
+            return Console.ReadLine();
         }
 
         private static object GetInputForDailyMenu()
