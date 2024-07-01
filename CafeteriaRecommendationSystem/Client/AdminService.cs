@@ -26,7 +26,7 @@ namespace Client
                              "6. View discarded menu item list\n" +
                              "7. Roll out feedback questions for discarded item\n" +
                              "8. Remove discarded menu item\n" +
-                             "8. Logout\n" +
+                             "9. Logout\n" +
                              "Enter the number corresponding to your choice ");
                 Console.WriteLine(new string('-', 40));
                 var requestString = Console.ReadLine();
