@@ -26,5 +26,6 @@ namespace Data_Access_Layer.Entities
         public List<FoodItemFeedback> FoodItemFeedback { get; set; }
         public List<DetailedFoodItemFeedback> DetailedFoodItemFeedback { get; set; }
         public List<WeeklyMenu> WeeklyMenu { get; set; }
+        public List<FoodItemCharactersticMapping> FoodItemCharactersticMapping { get; set; }
     }
 }

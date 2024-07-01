@@ -27,6 +27,9 @@ namespace Data_Access_Layer
         public DbSet<WeeklyMenu> WeeklyMenu { get; set; }
         public DbSet<AppActivityLog> AppActivityLog { get; set; }
         public DbSet<DetailedFoodItemFeedback> DetailedFoodItemFeedback { get; set; }
+        public DbSet<FoodItemCharacteristic> FoodItemCharacteristic { get; set; }
+        public DbSet<FoodItemCharactersticMapping> FoodItemCharactersticMapping { get; set; }
+        public DbSet<UserPreference> UserPreference { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -42,6 +45,9 @@ namespace Data_Access_Layer
             modelBuilder.ApplyConfiguration(new WeeklyMenuConfiguration());
             modelBuilder.ApplyConfiguration(new DetailedFoodItemFeedbackConfiguration());
             modelBuilder.ApplyConfiguration(new AppActivityLogConfiguration());
+            modelBuilder.ApplyConfiguration(new FoodItemCharactersticConfiguration());
+            modelBuilder.ApplyConfiguration(new FoodItemCharactersticMappingConfiguration());
+            modelBuilder.ApplyConfiguration(new UserPreferenceConfiguration());
             modelBuilder.Entity<Role>().HasData(SeedData.GetRoles());
             modelBuilder.Entity<NotificationType>().HasData(SeedData.GetNotificationTypes());
             modelBuilder.Entity<MealType>().HasData(SeedData.GetMealTypes());

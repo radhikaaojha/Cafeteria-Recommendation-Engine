@@ -27,5 +27,6 @@ namespace Data_Access_Layer.Entities
         public List<FoodItemFeedback> FoodItemFeedback {  get; set; }
         public List<DetailedFoodItemFeedback> DetailedFoodItemFeedback {  get; set; }
         public List<Notification> Notification { get; set; }
+        public List<UserPreference> UserPreference { get; set; }
     }
 }
