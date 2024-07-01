@@ -201,26 +201,7 @@ namespace CMS.Data.Services
         private async Task UpdateSentimentAnalysis(FeedbackRequest feedbackRequest)
         {
             var (rating, feedbacks) = await _feedbackService.AnalyzeFeedbackSentiments(feedbackRequest.FoodItemId);
-            await _foodItemService.UpdateSentimentResult(rating, feedbacks, feedbackRequest.FoodItemId);
-
-            if (rating < 20 && ContainsNegativeKeywords(feedbacks))
-            {
-                await _foodItemService.AddToDiscardList(feedbackRequest.FoodItemId);
-            }
-
-        }
-        private bool ContainsNegativeKeywords(string feedback)
-        {
-            var negativeKeywords = new List<string> { "Tasteless", "extremely bad experience", "very poor", "bad", "disgusting","not good","gross","poor" };
-
-            foreach (var keyword in negativeKeywords)
-            {
-                if (feedback.Contains(keyword, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-            }
-            return false;
+            await _foodItemService.UpdateSentimentResult(rating, feedbacks, feedbackRequest.FoodItemId);           
         }
     }
 }

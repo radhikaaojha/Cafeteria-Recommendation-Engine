@@ -25,6 +25,7 @@ namespace Client
                              "5. Update the availability status of a food item\n" +
                              "6. View discarded menu list\n" +
                              "7. Roll out feedback questions for discarded items\n" +
+                             "8. Remove discarded menu item\n" +
                              "8. Logout\n" +
                              "Enter the number corresponding to your choice ");
                 Console.WriteLine(new string('-', 40));
@@ -58,6 +59,10 @@ namespace Client
                         request.Action = Actions.RollOutDetailedFeedbackQuestions.ToString();
                         break;
                     case "8":
+                        request.Action = Actions.RemoveDiscardedFoodItem.ToString();
+                        request.Payload = GetInputForRemoveFoodItem();
+                        break;
+                    case "9":
                         request.Action = Actions.Logout.ToString();
                         break;
                     default:

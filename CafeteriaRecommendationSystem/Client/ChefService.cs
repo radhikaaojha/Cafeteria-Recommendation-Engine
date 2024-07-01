@@ -60,7 +60,7 @@ namespace Client
                         request.Action = Actions.ViewDiscardList.ToString();
                         break;
                     case "8":
-                        request.Action = Actions.RemoveFoodItem.ToString();
+                        request.Action = Actions.RemoveDiscardedFoodItem.ToString();
                         request.Payload = GetInputForRemoveFoodItem();
                         break;
                     case "9":

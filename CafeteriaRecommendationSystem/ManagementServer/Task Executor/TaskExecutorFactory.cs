@@ -41,6 +41,7 @@ namespace CMS.Common.Utils
                 { Actions.ViewDiscardList.ToString(), new CommonTaskExecutor(notificationService,foodItemService) },
                 { Actions.RollOutDetailedFeedbackQuestions.ToString(), new CommonTaskExecutor(notificationService,foodItemService) },
                 { Actions.SubmitDetailedFeedback.ToString(), new EmployeeTaskExecutor(employeeService) },
+                { Actions.RemoveDiscardedFoodItem.ToString(), new CommonTaskExecutor(notificationService,foodItemService) },
         };
         }
 

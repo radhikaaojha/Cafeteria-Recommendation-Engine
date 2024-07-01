@@ -1,4 +1,5 @@
-﻿using CMS.Common.Models;
+﻿using CMS.Common.Exceptions;
+using CMS.Common.Models;
 using CMS.Common.Utils;
 using CMS.Data.Services.Interfaces;
 using System;
@@ -41,10 +42,17 @@ namespace Common.Utils
                     case "RollOutDetailedFeedbackQuestions":
                         response = await _foodItemService.RollOutFeedbackQuestionnaireForDiscardedItem();
                         break;
+                    case "RemoveDiscardedFoodItem":
+                        response = await _foodItemService.RemoveDiscardedFoodItem(request);
+                        break;
                 }
                 return ProtocolResponseHelper.CreateSuccessResponse(response);
             }
             catch (InvalidOperationException ex)
+            {
+                return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
+            }
+            catch (FoodItemNotFoundException ex)
             {
                 return ProtocolResponseHelper.CreateFailureResponse(ex.Message);
             }

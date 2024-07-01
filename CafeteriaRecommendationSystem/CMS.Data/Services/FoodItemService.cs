@@ -23,7 +23,7 @@ namespace CMS.Data.Services
         private readonly INotificationService _notificationService;
         private ILogger<FoodItemService> _logger;
         public FoodItemService(IFoodItemRepository foodItemRepository, ICrudBaseRepository<FoodItem> repository,
-            IMapper mapper, ILogger<FoodItemService> logger, 
+            IMapper mapper, ILogger<FoodItemService> logger,
             IAppActivityLogRepository appActivityLogRepository, INotificationService notificationService) : base(repository, mapper)
         {
             _foodItemRepository = foodItemRepository;
@@ -51,21 +51,32 @@ namespace CMS.Data.Services
             if (foodItem == null)
                 throw new FoodItemNotFoundException("Food Item with given id doesnt exist", null, _logger);
 
-            if (foodItem.StatusId == (int)Status.Discarded)
-            {
-                if (await _appActivityLogRepository.HasTaskExecutedThisMonth("RemoveFoodItem"))
-                {
-                    throw new InvalidOperationException("Discarded Food items can only be removed once a month.");
-                }
-                else
-                {
-                    await _appActivityLogRepository.UpdateLastExecutionDate("RemoveFoodItem", DateTime.Now);
-                }
-            }
-
             foodItem.StatusId = newStatusId;
             await base.Update(foodItem.Id, foodItem);
             return foodItem;
+        }
+
+        public async Task<string> RemoveDiscardedFoodItem(string request)
+        {
+            var foodItemId = JsonSerializer.Deserialize<int>(request);
+
+            if (await _appActivityLogRepository.HasTaskExecutedThisMonth("RemoveDiscardedFoodItem"))
+                throw new InvalidOperationException("Discarded Food item can only be removed once a month.");
+
+            var foodItem = await base.GetById<FoodItem>(foodItemId);
+
+            if (foodItem == null)
+                throw new FoodItemNotFoundException("Food Item with given id doesnt exist", null, _logger);
+
+            if (foodItem.StatusId != (int)Status.Discarded)
+                throw new FoodItemNotFoundException("Food Item doesnt exist in discarded list", null, _logger);
+
+            foodItem.StatusId = (int)Status.Removed;
+            await base.Update(foodItem.Id, foodItem);
+
+            await _appActivityLogRepository.UpdateLastExecutionDate("RemoveDiscardedFoodItem", DateTime.Now);
+
+            return $"Removed {foodItem.Name} successfully";
         }
 
         public async Task<bool> DoesFoodItemWithSameNameExists(string name)
@@ -111,19 +122,21 @@ namespace CMS.Data.Services
             return JsonSerializer.Serialize(foodItemDtos);
         }
 
-        public async Task AddToDiscardList(int foodItemId)
-        {
-            var foodItem = await base.GetById<FoodItem>(foodItemId);
-            foodItem.StatusId = (int)Status.Discarded;
-            base.Update(foodItemId, foodItem);
-        }
-
         public async Task<string> ViewDiscardedFoodItem()
         {
-            Expression<Func<FoodItem, bool>> predicate = data => data.StatusId == (int)Status.Discarded;
+            if (await _appActivityLogRepository.HasTaskExecutedThisMonth("GenerateDiscardList"))
+            {
+                throw new InvalidOperationException("Discarded Food items List can only be generated once a month.");
+            }
 
-            var foodItems = await base.GetList<FoodItem>("FoodItemAvailabilityStatus, FoodItemType", null, null, 0, 0, predicate);
-            var foodItemDtos = foodItems.Select(fi => new BrowseMenu
+            Expression<Func<FoodItem, bool>> predicate = data => data.SentimentScore < 20 && ContainsNegativeKeywords(data.Description);
+
+            var discardedFoodItem = await base.GetList<FoodItem>("FoodItemAvailabilityStatus, FoodItemType", null, new List<string> { "SentimentScore" }, 1, 0, predicate);
+
+            if (discardedFoodItem.Count == 0)
+                throw new FoodItemNotFoundException("No food item elgibile for discard menu item list");
+
+            var discardedFoodItemDTO = discardedFoodItem.Select(fi => new BrowseMenu
             {
                 Id = fi.Id,
                 Name = fi.Name,
@@ -132,20 +145,26 @@ namespace CMS.Data.Services
                 FoodItemType = fi.FoodItemType?.Name,
                 Description = fi.Description,
                 SentimentScore = fi.SentimentScore
-            }).ToList();
-            return JsonSerializer.Serialize(foodItemDtos);
+            }).FirstOrDefault();
+
+            discardedFoodItem.FirstOrDefault().StatusId = (int)Status.Discarded;
+            await base.Update(discardedFoodItem.FirstOrDefault().Id, discardedFoodItemDTO);
+
+            await _appActivityLogRepository.UpdateLastExecutionDate("GenerateDiscardList", DateTime.Now);
+
+            return JsonSerializer.Serialize(discardedFoodItemDTO);
         }
 
         public async Task<string> RollOutFeedbackQuestionnaireForDiscardedItem()
         {
             if (await _appActivityLogRepository.HasTaskExecutedThisMonth("DetailedFeedback"))
             {
-                throw new InvalidOperationException("Detailed feedback has already been collected for this month.");
+                throw new InvalidOperationException("Detailed feedback has already been rolled out for this month.");
             }
 
             Expression<Func<FoodItem, bool>> predicate = data => data.StatusId == (int)Status.Discarded;
 
-            var foodItems = await base.GetList<FoodItem>(null, null, null, 0, 0, predicate);
+            var foodItems = await base.GetList<FoodItem>(null, null, new List<string> { "SentimentScore" }, 1, 0, predicate);
 
             foreach (var foodItem in foodItems)
             {
@@ -155,8 +174,22 @@ namespace CMS.Data.Services
                                  $"Q3. Share your mom’s recipe";
                 await _notificationService.SendBatchNotifications(message.ToString(), AppConstants.Employee, (int)NotificationType.FinalMenu);
             }
+
             await _appActivityLogRepository.UpdateLastExecutionDate("DetailedFeedback", DateTime.Now);
             return "Detailed feedback questionnaire has been sent to all employees";
+        }
+        private bool ContainsNegativeKeywords(string feedback)
+        {
+            var negativeKeywords = new List<string> { "Tasteless", "extremely bad experience", "very poor", "bad", "disgusting", "not good", "gross", "poor" };
+
+            foreach (var keyword in negativeKeywords)
+            {
+                if (feedback.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
