@@ -36,7 +36,7 @@ namespace Client
                         switch (response.RoleId.ToString())
                         {
                             case "1":
-                                request = await AdminService.ShowMenuForAdmin(writer, reader);
+                                request = await AdminService.ShowMenuForAdmin(writer, reader, response.UserId);
                                 break;
                             case "2":
                                 request = await ChefService.ShowMenuForChef(writer, reader, response.UserId);
@@ -72,6 +72,7 @@ namespace Client
 
             CustomProtocolDTO authRequest = new CustomProtocolDTO
             {
+                UserId = employeeId,
                 Action = Actions.Auth.ToString(),
                 Payload = JsonSerializer.Serialize(new { EmployeeId = employeeId, Name = name })
             };

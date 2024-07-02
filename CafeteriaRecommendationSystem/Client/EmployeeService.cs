@@ -25,7 +25,7 @@ namespace Client
                              "Enter the number corresponding to your choice ");
                 Console.WriteLine(new string('-', 40));
                 var requestString = Console.ReadLine();
-
+                request.UserId = userId.ToString();
                 switch (requestString)
                 {
                     case "1":

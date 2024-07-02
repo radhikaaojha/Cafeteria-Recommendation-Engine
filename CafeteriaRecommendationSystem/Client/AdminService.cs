@@ -11,7 +11,7 @@ namespace Client
 {
     public static class AdminService
     {
-        public static async Task<CustomProtocolDTO> ShowMenuForAdmin(StreamWriter writer, StreamReader reader)
+        public static async Task<CustomProtocolDTO> ShowMenuForAdmin(StreamWriter writer, StreamReader reader, int userId)
         {
             while(true)
             {
@@ -30,7 +30,7 @@ namespace Client
                              "Enter the number corresponding to your choice ");
                 Console.WriteLine(new string('-', 40));
                 var requestString = Console.ReadLine();
-
+                request.UserId = userId.ToString();
                 switch (requestString)
                 {
                     case "1":

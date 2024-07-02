@@ -11,5 +11,6 @@ namespace CMS.Data.Repository.Interfaces
         Task<DateTime?> GetLastExecutionDate(string settingName);
         Task UpdateLastExecutionDate(string settingName, DateTime value);
         Task<bool> HasTaskExecutedThisMonth(string settingName);
+        Task SaveActivityLogs(string userId, string actionName);
     }
 }

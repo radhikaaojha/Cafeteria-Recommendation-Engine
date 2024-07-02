@@ -43,7 +43,8 @@ namespace ManagementServer
             var chefTaskExecutor = _serviceProvider.GetRequiredService<ChefTaskExecutor>();
             var serverResponseHandler = _serviceProvider.GetRequiredService<ServerResponseHandler>();
             var taskExecutorFactory = _serviceProvider.GetRequiredService<TaskExecutorFactory>();
-            var clientRequestProcessor = new ClientRequestProcessor(taskExecutorFactory, serverResponseHandler);
+            var appActivityLog = _serviceProvider.GetRequiredService<IAppActivityLogRepository>();
+            var clientRequestProcessor = new ClientRequestProcessor(taskExecutorFactory, serverResponseHandler, appActivityLog);
             var server = new Server(clientRequestProcessor);
             await server.StartServer();
         }
@@ -63,7 +64,7 @@ namespace ManagementServer
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IWeeklyMenuService, WeeklyMenuService>();
             services.AddScoped<IFoodItemRepository, FoodItemRepository>();
-            services.AddScoped<IAppActivityLogRepository, AppActivityLogRepository>();
+            services.AddScoped<IAppActivityLogRepository, ActivityLogRepository>();
             services.AddScoped<IFeedbackRepository, FeedbackRepository>();
             services.AddScoped<TaskExecutorFactory>();
             services.AddScoped<AuthenticationTaskExecutor>();

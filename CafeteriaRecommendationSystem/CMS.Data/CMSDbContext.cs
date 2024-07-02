@@ -30,6 +30,7 @@ namespace Data_Access_Layer
         public DbSet<FoodItemCharacteristic> FoodItemCharacteristic { get; set; }
         public DbSet<FoodItemCharactersticMapping> FoodItemCharactersticMapping { get; set; }
         public DbSet<UserPreference> UserPreference { get; set; }
+        public DbSet<UserActivityLog> UserActivityLog { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,19 +1,13 @@
-﻿using CMS.Data.Repository.Interfaces;
-using Data_Access_Layer.Entities;
-using Data_Access_Layer.Repository;
+﻿using CMS.Data.Entities;
+using CMS.Data.Repository.Interfaces;
 using Data_Access_Layer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CMS.Data.Entities;
+using Data_Access_Layer.Repository;
 
 namespace CMS.Data.Repository
 {
-    public class AppActivityLogRepository : CrudBaseRepository<AppActivityLog>, IAppActivityLogRepository
+    public class ActivityLogRepository : CrudBaseRepository<AppActivityLog>, IAppActivityLogRepository
     {
-        public AppActivityLogRepository(CMSDbContext context) : base(context)
+        public ActivityLogRepository(CMSDbContext context) : base(context)
         {
         }
         public async Task<DateTime?> GetLastExecutionDate(string settingName)
@@ -41,10 +35,22 @@ namespace CMS.Data.Repository
             }
             await _context.SaveChangesAsync();
         }
+
         public async Task<bool> HasTaskExecutedThisMonth(string settingName)
         {
             var lastExecutionDate = await GetLastExecutionDate(settingName);
             return lastExecutionDate.HasValue && lastExecutionDate.Value.Month == DateTime.Now.Month && lastExecutionDate.Value.Year == DateTime.Now.Year;
+        }
+
+        public async Task SaveActivityLogs(string userId, string actionName)
+        {
+            UserActivityLog log = new UserActivityLog
+            {
+                UserId = userId,
+                Action = actionName
+            };
+            await _context.UserActivityLog.AddAsync(log);
+            await _context.SaveChangesAsync();
         }
     }
 }
