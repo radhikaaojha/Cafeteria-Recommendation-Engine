@@ -1,4 +1,6 @@
-﻿using Common.Models;
+﻿using CMS.Common.Models;
+using CMS.Data.Entities;
+using Common.Models;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +42,17 @@ namespace Data_Access_Layer.Repository
             await _context.SaveChangesAsync();
         }
 
+        public async Task SubmitUserPreferences(List<UserPreferenceInput> userPreferences)
+        {
+            var preferences = userPreferences.Select(up => new UserPreference
+            {
+                UserId = up.UserId,
+                CharacteristicId = (int)up.CharacteristicId,
+                Priority = up.Priority
+            }).ToList();
+            await _context.UserPreference.AddRangeAsync(preferences);
+            await _context.SaveChangesAsync();
+        }
     }
 
 }

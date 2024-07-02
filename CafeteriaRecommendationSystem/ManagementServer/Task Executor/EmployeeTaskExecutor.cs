@@ -36,14 +36,17 @@ namespace Common.Utils
                         response = await employeeService.VoteInFavourForMenuItem((request));
                         break;
                     case "ViewNextDayMenu":
-                        response = await employeeService.ViewDailyMenu(DateTime.Now);
+                        response = await employeeService.ViewDailyMenu(DateTime.Now, int.Parse(request));
+                        break;
+                    case "UserPreference":
+                        response = await employeeService.SubmitUserPreference(request);
                         break;
                     case "SubmitDetailedFeedback":
                         response = await employeeService.SubmitDetailedFeedback(request);
                         break;
                     case "ViewTodaysMenu":
                         DateTime yesterday = DateTime.Today.AddDays(-1);
-                        response = await employeeService.ViewDailyMenu(yesterday);
+                        response = await employeeService.ViewDailyMenu(yesterday, int.Parse(request));
                         break;
                 }
                 return ProtocolResponseHelper.CreateSuccessResponse(response);

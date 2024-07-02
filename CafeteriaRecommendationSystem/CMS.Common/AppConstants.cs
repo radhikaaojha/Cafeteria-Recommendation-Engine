@@ -22,5 +22,5 @@ namespace Common
         public const string FoodItemPriceUpdated = "Food item {0} price has been updated";
         public const string FoodItemStatusUpdated = "Food item {0} availability has been updated";
         public const string FoodItemRemoved = "Food item {0} has been discontinued.";
-}
+    }
 }

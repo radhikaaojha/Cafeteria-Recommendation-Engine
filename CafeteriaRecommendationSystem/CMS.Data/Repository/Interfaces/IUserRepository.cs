@@ -1,4 +1,5 @@
-﻿using Common.Models;
+﻿using CMS.Common.Models;
+using Common.Models;
 using Data_Access_Layer.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace Data_Access_Layer.Repository.Interfaces
         Task<User> AuthenticateUser(UserLogin userLogin);
         Task<bool> HasVotedToday(int userId);
         Task SetUserVoting(bool status);
+        Task SubmitUserPreferences(List<UserPreferenceInput> userPreferences);
     }
 
 }

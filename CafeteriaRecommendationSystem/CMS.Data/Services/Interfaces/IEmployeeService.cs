@@ -11,8 +11,9 @@ namespace CMS.Data.Services.Interfaces
     public interface IEmployeeService
     {
         Task<string> GiveFeedback(string request);
-        Task<string> ViewDailyMenu(DateTime date);
+        Task<string> ViewDailyMenu(DateTime date,int userId);
         Task<string> VoteInFavourForMenuItem(string request);
         Task<string> SubmitDetailedFeedback(string request);
+        Task<string> SubmitUserPreference(string request);
     }
 }

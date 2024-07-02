@@ -1,5 +1,6 @@
 ﻿using CMS.Common.Exceptions;
 using CMS.Common.Models;
+using CMS.Data.Entities;
 using CMS.Data.Services.Interfaces;
 using Common.Enums;
 using Data_Access_Layer.Entities;
@@ -40,21 +41,27 @@ namespace CMS.Data.Services
             return "Feedback submitted succesfully";
         }
 
-        public async Task<string> ViewDailyMenu(DateTime date)
+        public async Task<string> ViewDailyMenu(DateTime date, int userId)
         {
             Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == date.Date && data.IsSelected;
-            var weeklyMenuItems = await _weeklyMenuService.GetList<WeeklyMenu>("FoodItem", null, null, 0, 0, predicate);
+            var weeklyMenuItems = await _weeklyMenuService.GetList<WeeklyMenu>("FoodItem, FoodItem.FoodItemCharactersticMapping", null, null, 0, 0, predicate);
             
             if (weeklyMenuItems.Count == 0)
                 return "Menu has not yet been finalised";
 
-            var groupedItems = weeklyMenuItems.GroupBy(u => u.MealTypeId);
+            var user = await _userRepository.GetById(userId, "UserPreference");
+
+            var groupedItems = weeklyMenuItems.GroupBy(u => u.MealTypeId).Select(group => new
+            {
+                MealTypeId = group.Key,
+                FoodItems = group.OrderByDescending(item => CalculatePreferenceScore(item.FoodItem, user.UserPreference)).ToList()
+            }); ;
 
             var viewNextDayMenu = new ViewNextDayMenu();
 
             foreach (var group in groupedItems)
             {
-                var foodItems = group.Select(u => new RecommendedItem
+                var foodItems = group.FoodItems.Select(u => new RecommendedItem
                 {
                     Id = u.FoodItem.Id,
                     Name = u.FoodItem.Name,
@@ -62,7 +69,7 @@ namespace CMS.Data.Services
                     SentimentScore = u.FoodItem.SentimentScore
                 }).ToList();
 
-                switch (group.Key)
+                switch (group.MealTypeId)
                 {
                     case 1:
                         viewNextDayMenu.Breakfast.AddRange(foodItems);
@@ -79,6 +86,27 @@ namespace CMS.Data.Services
             }
 
             return JsonSerializer.Serialize(viewNextDayMenu);
+        }
+
+        private int CalculatePreferenceScore(FoodItem foodItem, List<UserPreference> userPreferences)
+        {
+            int score = 0;
+            foreach (var characteristic in foodItem.FoodItemCharactersticMapping)
+            {
+                var preference = userPreferences.FirstOrDefault(p => p.CharacteristicId == characteristic.CharacteristicId);
+                if (preference != null)
+                {
+                    score += (userPreferences.Count - preference.Priority + 1); 
+                }
+            }
+            return score;
+        }
+
+        public async Task<string> SubmitUserPreference(string request)
+        {
+            var userPreference = JsonSerializer.Deserialize<List<UserPreferenceInput>>(request);
+            await _userRepository.SubmitUserPreferences(userPreference);
+            return "User preference has been recorded successfully";
         }
 
         public async Task<string> SubmitDetailedFeedback(string request)

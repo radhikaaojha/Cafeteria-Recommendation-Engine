@@ -27,6 +27,7 @@ namespace CMS.Common.Enums
         ViewDiscardList,
         RollOutDetailedFeedbackQuestions,
         SubmitDetailedFeedback,
-        RemoveDiscardedFoodItem
+        RemoveDiscardedFoodItem,
+        UserPreference
     }
 }

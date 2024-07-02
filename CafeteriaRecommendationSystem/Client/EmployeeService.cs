@@ -1,7 +1,6 @@
 ﻿using CMS.Common.Enums;
 using CMS.Common.Models;
 using System.Text.Json;
-using Tensorflow.Contexts;
 
 namespace Client
 {
@@ -21,9 +20,10 @@ namespace Client
                              "5. View rolled out items for tommorrow menu\n" +
                              "6. View today's menu\n" +
                              "7. Submit detailed food item feedback\n" +
-                             "8. Logout\n" +
+                             "8. Submit food preference\n" +
+                             "9. Logout\n" +
                              "Enter the number corresponding to your choice ");
-                Console.WriteLine(new string('-', 40)); 
+                Console.WriteLine(new string('-', 40));
                 var requestString = Console.ReadLine();
 
                 switch (requestString)
@@ -45,15 +45,21 @@ namespace Client
                         break;
                     case "5":
                         request.Action = Actions.ViewNextDayMenu.ToString();
+                        request.Payload = userId.ToString();
                         break;
                     case "6":
                         request.Action = Actions.ViewTodaysMenu.ToString();
+                        request.Payload = userId.ToString();
                         break;
                     case "7":
                         request.Action = Actions.SubmitDetailedFeedback.ToString();
                         request.Payload = JsonSerializer.Serialize(GetInputForDetailedFeedback(userId));
                         break;
                     case "8":
+                        request.Action = Actions.UserPreference.ToString();
+                        request.Payload = JsonSerializer.Serialize(CollectUserPreferences(userId));
+                        break;
+                    case "9":
                         request.Action = Actions.Logout.ToString();
                         break;
                     default:
@@ -64,6 +70,47 @@ namespace Client
                 return request;
             }
         }
+
+        public static List<UserPreferenceInput> CollectUserPreferences(int userId)
+        {
+            var preferences = new List<UserPreferenceInput>();
+            var characteristicIds = Enum.GetValues(typeof(FoodCharacterstic)).Cast<FoodCharacterstic>().ToList();
+
+            foreach (var characteristicId in characteristicIds)
+            {
+                Console.WriteLine($"Enter priority for {characteristicId} (On a scale of 11): ");
+                int priority;
+                bool isValidPriority = false;
+
+                do
+                {
+                    if (!int.TryParse(Console.ReadLine(), out priority))
+                    {
+                        Console.WriteLine("Invalid input. Please enter a valid integer.");
+                        continue;
+                    }
+
+                    if (preferences.Any(p => p.Priority == priority))
+                    {
+                        Console.WriteLine($"Priority {priority} is already assigned to another characteristic. Please choose a different priority.");
+                    }
+                    else
+                    {
+                        isValidPriority = true;
+                    }
+                } while (!isValidPriority);
+
+                preferences.Add(new UserPreferenceInput
+                {
+                    UserId = userId,
+                    CharacteristicId = characteristicId,
+                    Priority = priority
+                });
+            }
+
+            return preferences;
+        }
+
         public static DetailedFeedbackRequest GetInputForDetailedFeedback(int userId)
         {
             DetailedFeedbackRequest detailedFeedbackRequest = new();
@@ -129,6 +176,10 @@ namespace Client
             Console.WriteLine("Enter rating between 0 to 5");
             feedbackRequest.Rating = int.Parse(Console.ReadLine());
             return feedbackRequest;
+        }
+        public static bool ValidatePriority(List<UserPreferenceInput> userPreferences, int newPriority)
+        {
+            return userPreferences.Any(up => up.Priority == newPriority);
         }
     }
 }

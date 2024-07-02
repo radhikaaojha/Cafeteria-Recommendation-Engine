@@ -87,7 +87,7 @@ namespace CMS.Data.Services
                 message.Append(string.Join(", ", finalMenu.Dinner));
                 message.Append(". ");
             }
-            message.Append("Finalised Menu for tomorrow is here!");
+            message.Append("Finalised Menu for tomorrow is here");
             await _notificationService.SendBatchNotifications(message.ToString(), AppConstants.Employee, (int)NotificationType.FinalMenu);
         }
 
@@ -114,7 +114,7 @@ namespace CMS.Data.Services
                 message.Append(string.Join(", ", plannedMenu.Dinner));
                 message.Append(". ");
             }
-            message.Append("Please don't forget to vote for your favourite dishes to have your opinion counted!");
+            message.Append("Please dont forget to vote for your favourite dishes to have your opinion counted!");
 
             await _notificationService.SendBatchNotifications(message.ToString(), AppConstants.Employee, (int)NotificationType.FoodItemVoting);
         }

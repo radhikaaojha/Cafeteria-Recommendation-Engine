@@ -55,6 +55,8 @@ namespace Data_Access_Layer
             modelBuilder.Entity<FoodItemType>().HasData(SeedData.GetFoodItemTypes());
             modelBuilder.Entity<User>().HasData(SeedData.GetUsers());
             modelBuilder.Entity<FoodItem>().HasData(SeedData.GetFoodItems());
+            modelBuilder.Entity<FoodItemCharacteristic>().HasData(SeedData.GetFoodItemCharacterstic());
+            modelBuilder.Entity<FoodItemCharactersticMapping>().HasData(SeedData.GetFoodItemCharactersticMapping());
         }
 
         private void SetAuditProperties()

@@ -42,6 +42,7 @@ namespace CMS.Common.Utils
                 { Actions.RollOutDetailedFeedbackQuestions.ToString(), new CommonTaskExecutor(notificationService,foodItemService) },
                 { Actions.SubmitDetailedFeedback.ToString(), new EmployeeTaskExecutor(employeeService) },
                 { Actions.RemoveDiscardedFoodItem.ToString(), new CommonTaskExecutor(notificationService,foodItemService) },
+                { Actions.UserPreference.ToString(), new EmployeeTaskExecutor(employeeService)  },
         };
         }
 
