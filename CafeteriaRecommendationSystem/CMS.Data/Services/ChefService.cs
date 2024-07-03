@@ -55,7 +55,7 @@ namespace CMS.Data.Services
             await FinalizeMealItems(dailyMenuRequest.Dinner, MealType.Dinner);
 
             await NotifyEmployeesForPlannedMenu(dailyMenuRequest);
-            await SetUserVotingToFalse();
+            
             return "Notifications for finalized menu has been sent successfully!";
         }
 
@@ -133,7 +133,7 @@ namespace CMS.Data.Services
             await PlanMeal(dailyMenuRequest.Breakfast, MealType.Breakfast);
             await PlanMeal(dailyMenuRequest.Lunch, MealType.Lunch);
             await PlanMeal(dailyMenuRequest.Dinner, MealType.Dinner);
-
+            await SetUserVotingToFalse();
             await NotifyEmployeesForPlannedMenu(dailyMenuRequest);
             return "Notifications to vote for planned menu has been sent!";
         }
@@ -147,9 +147,9 @@ namespace CMS.Data.Services
 
         public async Task<string> GetEmployeeVotes()
         {
-            if (!await HasFinalisedMenuForTomorrow())
+            if (!await HasPlannedMenuForTomorrow())
             {
-                throw new InvalidOperationException("Menu has not yet been finalizsed,hence employee voting has not yet started");
+                throw new InvalidOperationException("Menu has not yet planned,hence employee voting has not yet started");
             }
 
             Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == DateTime.Now.Date;
