@@ -2,10 +2,12 @@
 using CMS.Common.Models;
 using CMS.Common.Utils;
 using CMS.Data.Services.Interfaces;
+using Data_Access_Layer.Entities;
 using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -26,7 +28,7 @@ namespace Common.Utils
             try
             {
                 string response = string.Empty;
-
+                Expression<Func<WeeklyMenu, bool>> predicate;
                 switch (action)
                 {
                     case "SubmitFeedback":
@@ -35,8 +37,9 @@ namespace Common.Utils
                     case "VoteForMenu":
                         response = await employeeService.VoteInFavourForMenuItem((request));
                         break;
-                    case "ViewNextDayMenu":
-                        response = await employeeService.ViewDailyMenu(DateTime.Now, int.Parse(request));
+                    case "ViewRolledOutItems":
+                        predicate = data => data.CreatedDateTime.Date == DateTime.Now.Date;
+                        response = await employeeService.ViewDailyMenu(DateTime.Now, int.Parse(request),predicate);
                         break;
                     case "UserPreference":
                         response = await employeeService.SubmitUserPreference(request);
@@ -46,7 +49,8 @@ namespace Common.Utils
                         break;
                     case "ViewTodaysMenu":
                         DateTime yesterday = DateTime.Today.AddDays(-1);
-                        response = await employeeService.ViewDailyMenu(yesterday, int.Parse(request));
+                        predicate = data => data.CreatedDateTime.Date == yesterday.Date && data.IsSelected;
+                        response = await employeeService.ViewDailyMenu(yesterday, int.Parse(request), predicate);
                         break;
                 }
                 return ProtocolResponseHelper.CreateSuccessResponse(response);

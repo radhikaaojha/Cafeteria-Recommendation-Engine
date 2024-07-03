@@ -23,7 +23,7 @@ namespace Client
                              "3. Browse Menu of Cafeteria\n" +
                              "4. Update the price of a food item\n" +
                              "5. Update the availability status of a food item\n" +
-                             "6. View discarded menu item list\n" +
+                             "6. Generate discarded menu item list\n" +
                              "7. Roll out feedback questions for discarded item\n" +
                              "8. Remove discarded menu item\n" +
                              "9. Logout\n" +

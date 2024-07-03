@@ -22,7 +22,7 @@ namespace CMS.Common.Enums
         ViewVotes,
         SubmitFeedback,
         VoteForMenu,
-        ViewNextDayMenu,
+        ViewRolledOutItems,
         ViewTodaysMenu,
         ViewDiscardList,
         RollOutDetailedFeedbackQuestions,

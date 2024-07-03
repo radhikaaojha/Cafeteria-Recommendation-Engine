@@ -25,7 +25,7 @@ namespace Client
                              "4. Plan next day menu\n" +
                              "5. Finalize Menu Selection\n" +
                              "6. View recommendation from employees\n" +
-                             "7. View discarded menu item list\n" +
+                             "7. Generate discarded menu item list\n" +
                              "8. Remove discarded menu item\n" +
                              "9. Roll out detailed feedback questions for discarded item\n" +
                              "10. Logout\n" +

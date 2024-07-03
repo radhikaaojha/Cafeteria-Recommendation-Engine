@@ -44,7 +44,7 @@ namespace Client
                         request.Payload = JsonSerializer.Serialize(GetInputForFeedback(userId));
                         break;
                     case "5":
-                        request.Action = Actions.ViewNextDayMenu.ToString();
+                        request.Action = Actions.ViewRolledOutItems.ToString();
                         request.Payload = userId.ToString();
                         break;
                     case "6":
