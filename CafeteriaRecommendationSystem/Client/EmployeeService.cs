@@ -167,14 +167,35 @@ namespace Client
         }
         private static object GetInputForFeedback(int userId)
         {
+            bool isValidRating = false;
             FeedbackRequest feedbackRequest = new FeedbackRequest();
             feedbackRequest.UserId = userId;
             Console.WriteLine("Enter id of food item you wish to give feedback for");
             feedbackRequest.FoodItemId = int.Parse(Console.ReadLine());
             Console.WriteLine("Enter feedback");
             feedbackRequest.Comment = (Console.ReadLine());
-            Console.WriteLine("Enter rating between 0 to 5");
-            feedbackRequest.Rating = int.Parse(Console.ReadLine());
+            int rating;
+            do
+            {
+                Console.WriteLine("Enter rating between 0 to 5");
+                string input = Console.ReadLine();
+                if (int.TryParse(input, out rating))
+                {
+                    if (rating >= 0 && rating <= 5)
+                    {
+                        isValidRating = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Rating must be between 0 and 5.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid integer.");
+                }
+            } while (!isValidRating);
+            feedbackRequest.Rating = rating;
             return feedbackRequest;
         }
         public static bool ValidatePriority(List<UserPreferenceInput> userPreferences, int newPriority)

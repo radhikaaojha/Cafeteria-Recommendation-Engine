@@ -67,7 +67,7 @@ namespace Client
                         break;
                     default:
                         Console.WriteLine("No such option");
-                        break;
+                        continue;
 
                 }
                 return request;
