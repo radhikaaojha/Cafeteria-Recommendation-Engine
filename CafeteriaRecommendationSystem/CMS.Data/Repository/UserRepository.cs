@@ -42,6 +42,14 @@ namespace Data_Access_Layer.Repository
             await _context.SaveChangesAsync();
         }
 
+        public async Task SetVotingForAUser(bool status, int userId)
+        {
+            var user = _context.User.FirstOrDefault(u=>u.Id ==userId);   
+            user.HasVotedToday = status;
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task SubmitUserPreferences(List<UserPreferenceInput> userPreferences)
         {
             var userId = userPreferences.FirstOrDefault()?.UserId; 
