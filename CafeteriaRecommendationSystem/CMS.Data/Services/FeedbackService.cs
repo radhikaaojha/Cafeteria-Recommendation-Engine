@@ -4,6 +4,7 @@ using CMS.Common.Models;
 using CMS.Data.Entities;
 using CMS.Data.Repository.Interfaces;
 using CMS.Data.Services.Interfaces;
+using Common;
 using Data_Access_Layer.Entities;
 using Data_Access_Layer.Repository.Interfaces;
 using Microsoft.ML;
@@ -31,7 +32,7 @@ namespace CMS.Data.Services
             var foodReviews = _mapper.Map<List<FoodReview>>(feedbacksList);
 
             var context = new MLContext();
-            string dataPath = @"C:\Users\radhika.ojha\OneDrive - InTimeTec Visionsoft Pvt. Ltd.,\Desktop\Cafeteria Recommendation Engine\Cafeteria-Recommendation-Engine\CafeteriaRecommendationSystem\CMS.Data\Services\SentimentData.csv";
+            string dataPath = AppConstants.DataPathForTrainedModel;
             var data = context.Data.LoadFromTextFile<FoodReview>(dataPath, separatorChar: ',', hasHeader: true);
             var pipeline = context.Transforms.Text.FeaturizeText("Features", nameof(FoodReview.ReviewText)).Append(context.BinaryClassification.Trainers.SdcaLogisticRegression(labelColumnName: "Sentiment", featureColumnName: "Features"));
             var model = pipeline.Fit(data);
@@ -62,8 +63,6 @@ namespace CMS.Data.Services
 
         private static List<string> ExtractMajorSentiments(List<string> reviews, List<SentimentPrediction> predictions)
         {
-            List<string> PositiveKeywords = new List<string> { "yummy", "delicious", "tasty", "amazing", "good", "fresh", "yum" };
-            List<string> NegativeKeywords = new List<string> { "bad", "terrible", "awful", "spicy", "gross", "oily", "too sweet" };
             var keywordCounts = new Dictionary<string, int>();
 
             for (int i = 0; i < reviews.Count; i++)
@@ -71,19 +70,19 @@ namespace CMS.Data.Services
                 var review = reviews[i];
                 var prediction = predictions[i];
 
-                if (prediction.PredictedLabel && prediction.Probability >= 0.7)
+                if (prediction.PredictedLabel && prediction.Probability >= 0.65)
                 {
-                    UpdateKeywordCounts(review, PositiveKeywords, keywordCounts);
+                    UpdateKeywordCounts(review,AppConstants.PositiveKeywords, keywordCounts);
                 }
-                else if (!prediction.PredictedLabel && prediction.Probability >= 0.7)
+                else if (!prediction.PredictedLabel && prediction.Probability >= 0.65)
                 {
-                    UpdateKeywordCounts(review, NegativeKeywords, keywordCounts);
+                    UpdateKeywordCounts(review, AppConstants.NegativeKeywords, keywordCounts);
                 }
             }
             return keywordCounts
            .OrderByDescending(kv => kv.Value)
-            .ThenBy(kv => PositiveKeywords.IndexOf(kv.Key))
-            .ThenBy(kv => NegativeKeywords.IndexOf(kv.Key))
+            .ThenBy(kv => AppConstants.PositiveKeywords.IndexOf(kv.Key))
+            .ThenBy(kv => AppConstants.NegativeKeywords.IndexOf(kv.Key))
            .Select(kv => kv.Key)
            .ToList();
         }

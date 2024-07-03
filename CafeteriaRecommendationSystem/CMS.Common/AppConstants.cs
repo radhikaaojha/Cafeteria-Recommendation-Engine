@@ -22,5 +22,53 @@ namespace Common
         public const string FoodItemPriceUpdated = "Food item {0} price has been updated";
         public const string FoodItemStatusUpdated = "Food item {0} availability has been updated";
         public const string FoodItemRemoved = "Food item {0} has been discontinued.";
+        public const string DataPathForTrainedModel = @"C:\Users\radhika.ojha\OneDrive - InTimeTec Visionsoft Pvt. Ltd.,\Desktop\Cafeteria Recommendation Engine\Cafeteria-Recommendation-Engine\CafeteriaRecommendationSystem\CMS.Data\Services\SentimentData.csv";
+        public static List<string> NegativeKeywords = new()
+        {
+            "bad",
+            "terrible",
+            "awful",
+            "gross",
+            "oily",
+            "too sweet",
+            "bland",
+            "tasteless",
+            "disgusting",
+            "overcooked",
+            "undercooked",
+            "unappetizing",
+            "stale",
+            "dry",
+            "burnt",
+            "soggy",
+            "flavorless",
+            "inedible",
+            "unpleasant",
+            "yuck"
+        };
+        public static List<string> PositiveKeywords = new()
+        {
+            "yummy",
+            "delicious",
+            "tasty",
+            "amazing",
+            "good",
+            "fresh",
+            "savory",
+            "appetizing",
+            "scrumptious",
+            "mouthwatering",
+            "satisfying",
+            "flavorful",
+            "exquisite",
+            "delectable",
+            "succulent",
+            "perfect",
+            "excellent",
+            "wonderful",
+            "loved",
+            "pleasing"
+        };
+
     }
 }
