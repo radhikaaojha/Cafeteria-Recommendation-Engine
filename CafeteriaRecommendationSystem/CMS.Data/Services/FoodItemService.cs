@@ -161,6 +161,9 @@ namespace CMS.Data.Services
 
             var foodItems = await base.GetList<FoodItem>(null, null, new List<string> { "SentimentScore" }, 1, 0, predicate);
 
+            if (foodItems.Count == 0)
+                throw new InvalidOperationException("No discard item currently present,please generate discarded list");
+
             foreach (var foodItem in foodItems)
             {
                 string message = $"We are trying to improve your experience with {foodItem.Name}.Id :{foodItem.Id} Please provide your feedback and help us." +
