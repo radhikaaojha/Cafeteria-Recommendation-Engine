@@ -41,16 +41,15 @@ namespace CMS.Data.Services
             return "Feedback submitted succesfully";
         }
 
-        public async Task<string> ViewDailyMenu(DateTime date, int userId)
+        public async Task<string> ViewDailyMenu(DateTime date, int userId, Expression<Func<WeeklyMenu, bool>> predicate)
         {
-            Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == date.Date && data.IsSelected;
             var weeklyMenuItems = await _weeklyMenuService.GetList<WeeklyMenu>("FoodItem, FoodItem.FoodItemCharactersticMapping", null, null, 0, 0, predicate);
 
             if (date.Date.Date == DateTime.Today.Date && weeklyMenuItems.Count == 0)
                 return "Chef has not yet rolled out items for tomorrow menu";
-            
+
             if (weeklyMenuItems.Count == 0)
-                return "Menu has not yet been finalised";
+                return "Menu is not finalised yet";
 
             var user = await _userRepository.GetById(userId, "UserPreference");
 
@@ -126,20 +125,37 @@ namespace CMS.Data.Services
         {
             var votingMenuRequest = JsonSerializer.Deserialize<VotingMenuInput>(request);
 
-            await ValidateVotingItems(votingMenuRequest);
+            await ValidateVotingOfUser(votingMenuRequest);
 
             await VoteForMealItems(votingMenuRequest.Breakfast, votingMenuRequest.UserId);
             await VoteForMealItems(votingMenuRequest.Lunch, votingMenuRequest.UserId);
             await VoteForMealItems(votingMenuRequest.Dinner, votingMenuRequest.UserId);
-
+            await _userRepository.SetVotingForAUser(true, votingMenuRequest.UserId);
             return "Voting has been submitted sucessfully!";
         }
 
-        private async Task ValidateVotingItems(DailyMenuInput dailyMenuRequest)
+        private async Task ValidateVotingOfUser(VotingMenuInput dailyMenuRequest)
         {
+            if (await _userRepository.HasVotedToday(dailyMenuRequest.UserId))
+                throw new InvalidOperationException("User already voted for the day");
+
+            if (await IsMenuFinalised())
+                throw new InvalidOperationException("Menu is already finalised,no need to vote now");
+
             await ValidateItemsExistInWeeklyMenu(dailyMenuRequest.Breakfast);
             await ValidateItemsExistInWeeklyMenu(dailyMenuRequest.Lunch);
             await ValidateItemsExistInWeeklyMenu(dailyMenuRequest.Dinner);
+        }
+
+        private async Task<bool> IsMenuFinalised()
+        {
+            Expression<Func<WeeklyMenu, bool>> predicate = data =>
+              data.CreatedDateTime.Date == DateTime.Today.Date && data.IsSelected;
+
+            var menuItems = await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate);
+
+            if (menuItems.Count > 0) return true;
+            return false;
         }
 
         private async Task ValidateItemsExistInWeeklyMenu(List<string> items)
@@ -181,9 +197,6 @@ namespace CMS.Data.Services
                         menuItem.NumberOfVotes++;
                         await _weeklyMenuService.Update(menuItem.Id, menuItem);
                     }
-                    var user = await _userRepository.GetById(userId);
-                    user.HasVotedToday = true;
-                    await _userRepository.Update(user);
                 }
                 else
                 {
