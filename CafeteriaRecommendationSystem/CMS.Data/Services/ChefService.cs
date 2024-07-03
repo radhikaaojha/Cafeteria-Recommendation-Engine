@@ -96,21 +96,21 @@ namespace CMS.Data.Services
             var message = new System.Text.StringBuilder();
             if (plannedMenu.Breakfast.Count > 0)
             {
-                message.Append("The following items are decided to be made for breakfast:");
+                message.Append("The following items are planned to be made for breakfast:");
                 message.Append(string.Join(", ", plannedMenu.Breakfast));
                 message.Append(". ");
             }
 
             if (plannedMenu.Lunch.Count > 0)
             {
-                message.Append("The following items are decided to be made for lunch:");
+                message.Append("The following items are planned to be made for lunch:");
                 message.Append(string.Join(", ", plannedMenu.Lunch));
                 message.Append(". ");
             }
 
             if (plannedMenu.Dinner.Count > 0)
             {
-                message.Append("The following items are decided to be made for dinner:");
+                message.Append("The following items are planned to be made for dinner:");
                 message.Append(string.Join(", ", plannedMenu.Dinner));
                 message.Append(". ");
             }
