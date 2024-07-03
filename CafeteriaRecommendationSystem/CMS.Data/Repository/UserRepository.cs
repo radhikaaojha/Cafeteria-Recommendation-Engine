@@ -44,14 +44,43 @@ namespace Data_Access_Layer.Repository
 
         public async Task SubmitUserPreferences(List<UserPreferenceInput> userPreferences)
         {
-            var preferences = userPreferences.Select(up => new UserPreference
+            var userId = userPreferences.FirstOrDefault()?.UserId; 
+            if (userId != null)
             {
-                UserId = up.UserId,
-                CharacteristicId = (int)up.CharacteristicId,
-                Priority = up.Priority
-            }).ToList();
-            await _context.UserPreference.AddRangeAsync(preferences);
-            await _context.SaveChangesAsync();
+                var existingPreferences = await _context.UserPreference
+                    .Where(up => up.UserId == userId)
+                    .ToListAsync();
+
+                var preferences = userPreferences.Select(up => new UserPreference
+                {
+                    UserId = up.UserId,
+                    CharacteristicId = (int)up.CharacteristicId,
+                    Priority = up.Priority
+                }).ToList();
+
+                if (existingPreferences.Any())
+                {
+                    foreach (var preference in preferences)
+                    {
+                        var existingPreference = existingPreferences.FirstOrDefault(ep => ep.CharacteristicId == preference.CharacteristicId);
+                        if (existingPreference != null)
+                        {
+                            existingPreference.Priority = preference.Priority;
+                            _context.UserPreference.Update(existingPreference);
+                        }
+                        else
+                        {
+                            _context.UserPreference.Add(preference);
+                        }
+                    }
+                }
+                else
+                {
+                    await _context.UserPreference.AddRangeAsync(preferences);
+                }
+                await _context.SaveChangesAsync();
+            }
+
         }
     }
 

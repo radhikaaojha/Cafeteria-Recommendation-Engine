@@ -17,7 +17,7 @@ namespace CMS.Data.Services
         private IWeeklyMenuService _weeklyMenuService;
         private IFoodItemService _foodItemService;
         private IUserRepository _userRepository;
-        public EmployeeService(IFeedbackService feedbackService, INotificationService notificationService, 
+        public EmployeeService(IFeedbackService feedbackService, INotificationService notificationService,
             IWeeklyMenuService weeklyMenuService, IFoodItemService foodItemService,
             IUserRepository userRepository)
         {
@@ -37,7 +37,7 @@ namespace CMS.Data.Services
             await _feedbackService.Add(feedbackRequest);
 
             await UpdateSentimentAnalysis(feedbackRequest);
-           
+
             return "Feedback submitted succesfully";
         }
 
@@ -45,6 +45,9 @@ namespace CMS.Data.Services
         {
             Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == date.Date && data.IsSelected;
             var weeklyMenuItems = await _weeklyMenuService.GetList<WeeklyMenu>("FoodItem, FoodItem.FoodItemCharactersticMapping", null, null, 0, 0, predicate);
+
+            if (date.Date.Date == DateTime.Today.Date && weeklyMenuItems.Count == 0)
+                return "Chef has not yet rolled out items for tomorrow menu";
             
             if (weeklyMenuItems.Count == 0)
                 return "Menu has not yet been finalised";
@@ -96,7 +99,7 @@ namespace CMS.Data.Services
                 var preference = userPreferences.FirstOrDefault(p => p.CharacteristicId == characteristic.CharacteristicId);
                 if (preference != null)
                 {
-                    score += (userPreferences.Count - preference.Priority + 1); 
+                    score += (userPreferences.Count - preference.Priority + 1);
                 }
             }
             return score;
@@ -125,10 +128,10 @@ namespace CMS.Data.Services
 
             await ValidateVotingItems(votingMenuRequest);
 
-            await VoteForMealItems(votingMenuRequest.Breakfast,votingMenuRequest.UserId);
+            await VoteForMealItems(votingMenuRequest.Breakfast, votingMenuRequest.UserId);
             await VoteForMealItems(votingMenuRequest.Lunch, votingMenuRequest.UserId);
             await VoteForMealItems(votingMenuRequest.Dinner, votingMenuRequest.UserId);
-            
+
             return "Voting has been submitted sucessfully!";
         }
 
@@ -154,7 +157,7 @@ namespace CMS.Data.Services
             {
                 if (!existingItemIds.Contains(item))
                 {
-                    throw new InvalidInputException($"Item with ID {item} does not exist in today's menu.");
+                    throw new InvalidInputException($"Item with ID {item} does not exist in todays menu.");
                 }
             }
         }
@@ -165,7 +168,7 @@ namespace CMS.Data.Services
             {
                 int foodItemId = int.Parse(item);
 
-                if (!await _userRepository.HasVotedToday(userId)) 
+                if (!await _userRepository.HasVotedToday(userId))
                 {
                     Expression<Func<WeeklyMenu, bool>> predicate = data =>
                         data.CreatedDateTime.Date == DateTime.Today && data.FoodItemId == foodItemId;
@@ -199,7 +202,7 @@ namespace CMS.Data.Services
                 f.CreatedDateTime.Date == DateTime.Now.Date;
 
             var feedbackList = await _feedbackService.GetList<FoodItemFeedback>(null, null, null, 0, 0, feedbackPredicate);
-            
+
             if (feedbackList.Any())
             {
                 throw new InvalidOperationException("Feedback for this food item has already been submitted today");
@@ -223,13 +226,13 @@ namespace CMS.Data.Services
             if (foodItem == null)
                 throw new FoodItemNotFoundException("Food item with given id doesnt exist");
             if (foodItem.StatusId != (int)Status.Discarded)
-                throw new InvalidOperationException("Food item isn't in the discarded list so cannot submit detailed feedback");
+                throw new InvalidOperationException("Food item is not in the discarded list so cannot submit detailed feedback");
         }
 
         private async Task UpdateSentimentAnalysis(FeedbackRequest feedbackRequest)
         {
             var (rating, feedbacks) = await _feedbackService.AnalyzeFeedbackSentiments(feedbackRequest.FoodItemId);
-            await _foodItemService.UpdateSentimentResult(rating, feedbacks, feedbackRequest.FoodItemId);           
+            await _foodItemService.UpdateSentimentResult(rating, feedbacks, feedbackRequest.FoodItemId);
         }
     }
 }
