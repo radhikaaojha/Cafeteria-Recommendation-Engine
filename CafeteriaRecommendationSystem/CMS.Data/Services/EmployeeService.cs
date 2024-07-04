@@ -137,7 +137,7 @@ namespace CMS.Data.Services
         private async Task ValidateVotingOfUser(VotingMenuInput dailyMenuRequest)
         {
             if (await _userRepository.HasVotedToday(dailyMenuRequest.UserId))
-                throw new InvalidOperationException("User already voted for the day");
+                throw new InvalidOperationException("User already voted for last menu rolled out");
 
             if (await IsMenuFinalised())
                 throw new InvalidOperationException("Menu is already finalised,no need to vote now");
