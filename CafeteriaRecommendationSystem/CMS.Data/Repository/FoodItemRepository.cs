@@ -8,6 +8,7 @@ using Common.Enums;
 using FoodItemType = Common.Enums.FoodItemType;
 using Microsoft.EntityFrameworkCore;
 using CMS.Common.Exceptions;
+using Common;
 
 namespace CMS.Data.Repository
 {
@@ -70,7 +71,7 @@ namespace CMS.Data.Repository
         }
         private bool ContainsNegativeKeywords(string description)
         {
-            var negativeKeywords = new List<string> { "tasteless", "extremely bad experience", "very poor","poor","bad","not nice","didnt like","soggy","gross" };
+            List<string> negativeKeywords = AppConstants.NegativeKeywords;
             return negativeKeywords.Any(keyword => description.Contains(keyword, StringComparison.OrdinalIgnoreCase));
         }
     }
