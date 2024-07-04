@@ -11,6 +11,5 @@ namespace CMS.Data.Services.Interfaces
     public interface IWeeklyMenuService : ICrudBaseService<WeeklyMenu>
     {
         Task CRONWeeklyMenuCleanUp();
-        Task GetDailyMenu();
     }
 }

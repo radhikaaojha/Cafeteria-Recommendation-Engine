@@ -176,19 +176,6 @@ namespace CMS.Data.Services
             await _appActivityLogRepository.UpdateLastExecutionDate("DetailedFeedback", DateTime.Now);
             return "Detailed feedback questionnaire has been sent to all employees";
         }
-        private bool ContainsNegativeKeywords(string feedback)
-        {
-            var negativeKeywords = new List<string> { "Tasteless", "extremely bad experience", "very poor", "bad", "disgusting", "not good", "gross", "poor" };
-
-            foreach (var keyword in negativeKeywords)
-            {
-                if (feedback.Contains(keyword, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
     }
 }
 

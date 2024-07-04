@@ -26,16 +26,5 @@ namespace CMS.Data.Services
         {
             throw new NotImplementedException();
         }
-
-        public async Task GetDailyMenu()
-        {
-            Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == DateTime.Today && data.IsSelected;
-            //another DTO for menu that has price, comment, rating
-            //base.GetList() with predicate as todays date and shortlisted
-            //list of food item ids
-            //_feedbackService.GetAverageRatingByFoodItem(); for each food itrm
-            // _feedbackService.AnalyzeFeedbackSentiments(fodItemId); 
-            throw new NotImplementedException();
-        }
     }
 }
