@@ -24,7 +24,7 @@ namespace Common.Utils
                 var userCredentials = JsonSerializer.Deserialize<UserLogin>(jsonRequest);
                 var loginResponse = await _authenticateService.Login(userCredentials);
 
-                return ProtocolResponseHelper.CreateSuccessResponse(JsonSerializer.Serialize(loginResponse));
+                return ProtocolResponseHelper.CreateSuccessResponse(JsonSerializer.Serialize(loginResponse),action);
             }
             catch (UserNotFoundException e)
             {

@@ -22,39 +22,10 @@ namespace Client
                 using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true })
                 using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                 {
-                    var response = JsonSerializer.Deserialize<LoginResponse>(await Authenticate(writer, reader));
-                    Console.WriteLine($"{response.Message}");
-                    bool exitRequested = false;
-                    while (!exitRequested)
-                    {
-                        CustomProtocolDTO request = new();
-                        if (response.UserId == 0)
-                        {
-                            Environment.Exit(0);
-                            client.Close();
-                        }
-                        switch (response.RoleId.ToString())
-                        {
-                            case "1":
-                                request = await AdminService.ShowMenuForAdmin(response.UserId);
-                                break;
-                            case "2":
-                                request = await ChefService.ShowMenuForChef(response.UserId);
-                                break;
-                            case "3":
-                                request = await EmployeeService.ShowMenuForEmployee(response.UserId);
-                                break;
-                        }
-
-                        if (request.Action == Actions.Logout.ToString())
-                        {
-                            exitRequested = true;
-                            continue;
-                        }
-
-                        var result = await SendRequestAsync(writer, reader, request);
-                        FormatJson(result);
-                    }
+                    var response = (await Authenticate(writer, reader));
+                    var loginResponse = JsonSerializer.Deserialize<LoginResponse>(response.Response);
+                    Console.WriteLine($"{loginResponse.Message}");
+                    await ProcessUserRequests(loginResponse, writer, reader, client);
                 }
             }
             catch (Exception e)
@@ -66,7 +37,41 @@ namespace Client
                 client.Close();
             }
         }
-        private static async Task<string> Authenticate(StreamWriter writer, StreamReader reader)
+
+        private static async Task ProcessUserRequests(LoginResponse response, StreamWriter writer, StreamReader reader, TcpClient client)
+        {
+            bool exitRequested = false;
+            while (!exitRequested)
+            {
+                CustomProtocolDTO request = await GetRequestForUserRole(response);
+                if (request.Action == Actions.Logout.ToString())
+                {
+                    exitRequested = true;
+                    continue;
+                }
+
+                var result = await SendRequestAsync(writer, reader, request);
+                await HandleAction(result);
+            }
+        }
+
+        private static async Task<CustomProtocolDTO> GetRequestForUserRole(LoginResponse response)
+        {
+            if (response.UserId == 0)
+            {
+                Environment.Exit(0);
+            }
+
+            return response.RoleId switch
+            {
+                1 => await AdminService.ShowMenuForAdmin(response.UserId),
+                2 => await ChefService.ShowMenuForChef(response.UserId),
+                3 => await EmployeeService.ShowMenuForEmployee(response.UserId),
+                _ => throw new InvalidOperationException("Invalid RoleId")
+            };
+        }
+
+        private static async Task<CustomProtocolDTO> Authenticate(StreamWriter writer, StreamReader reader)
         {
             var (employeeId, name) = GetInputForLogin();
 
@@ -80,7 +85,7 @@ namespace Client
             return await SendRequestAsync(writer, reader, authRequest);
         }
 
-        private static async Task<string> SendRequestAsync(StreamWriter writer, StreamReader reader, CustomProtocolDTO request)
+        private static async Task<CustomProtocolDTO> SendRequestAsync(StreamWriter writer, StreamReader reader, CustomProtocolDTO request)
         {
             string requestString = JsonSerializer.Serialize(request, new JsonSerializerOptions
             {
@@ -89,10 +94,11 @@ namespace Client
             });
             await writer.WriteLineAsync(requestString.Length.ToString());
             await writer.WriteLineAsync(requestString);
-            return await HandleServerResponse(reader);
+            var response = await HandleServerResponse(reader);
+            return response;
         }
 
-        private static async Task<string> HandleServerResponse(StreamReader reader)
+        private static async Task<CustomProtocolDTO> HandleServerResponse(StreamReader reader)
         {
             CustomProtocolDTO response = new();
             while (true)
@@ -126,12 +132,11 @@ namespace Client
                         MaxDepth = 128
                     };
                     response = JsonSerializer.Deserialize<CustomProtocolDTO>(responseData);
-                    return response.Response;
+                    return response;
                 }
                 catch (JsonException ex)
                 {
                     Console.WriteLine($"Failed to deserialize JSON: {ex.Message}");
-                    return ex.Message;
                 }
 
             }
@@ -163,6 +168,19 @@ namespace Client
             var name = Console.ReadLine();
 
             return (employeeId, name);
+        }
+
+        private static async Task HandleAction(CustomProtocolDTO response)
+        {
+            switch (response.Action)
+            {
+                case "SomeAction":
+                    break;
+                // Add cases for other actions
+                default:
+                    FormatJson(response.Response);
+                    break;
+            }
         }
 
         public static void FormatJson(string json)

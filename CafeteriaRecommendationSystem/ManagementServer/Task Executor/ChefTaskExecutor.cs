@@ -40,7 +40,7 @@ namespace CMS.Common.Utils
                         response = await _chefService.GetTopRecommendations();
                         break;
                 }
-                return ProtocolResponseHelper.CreateSuccessResponse(response);
+                return ProtocolResponseHelper.CreateSuccessResponse(response, action);
             }
             catch (FoodItemNotFoundException ex)
             {

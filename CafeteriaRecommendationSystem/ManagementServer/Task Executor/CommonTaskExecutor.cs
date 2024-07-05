@@ -46,7 +46,7 @@ namespace Common.Utils
                         response = await _foodItemService.RemoveDiscardedFoodItem(request);
                         break;
                 }
-                return ProtocolResponseHelper.CreateSuccessResponse(response);
+                return ProtocolResponseHelper.CreateSuccessResponse(response, action);
             }
             catch (InvalidOperationException ex)
             {

@@ -40,7 +40,7 @@ namespace Common.Utils
                         response = await _adminService.UpdateAvailabilityStatusForFoodItem(request);
                         break;
                 }
-                return ProtocolResponseHelper.CreateSuccessResponse(response);
+                return ProtocolResponseHelper.CreateSuccessResponse(response,action);
             }
             catch(ApiException ex)
             {

@@ -10,12 +10,12 @@ namespace CMS.Common.Utils
 {
     public static class ProtocolResponseHelper
     {
-        public static string CreateSuccessResponse(string response)
+        public static string CreateSuccessResponse(string response,string action)
         {
             var successResponse = new CustomProtocolDTO
             {
                 Response = response,
-                Action = "Sucess"
+                Action = action
             };
 
             return JsonSerializer.Serialize(successResponse);

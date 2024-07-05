@@ -53,7 +53,7 @@ namespace Common.Utils
                         response = await _employeeService.ViewDailyMenu(yesterday, int.Parse(request), predicate);
                         break;
                 }
-                return ProtocolResponseHelper.CreateSuccessResponse(response);
+                return ProtocolResponseHelper.CreateSuccessResponse(response, action);
             }
             catch (FoodItemNotFoundException ex)
             {
