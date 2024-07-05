@@ -66,6 +66,16 @@ namespace CMS.Data.Services
             }
             await base.AddRange(addNotifications);
         }
+
+        public async Task RemoveReadNotifications()
+        {
+            Expression<Func<Notification, bool>> predicate = n => n.IsRead == true;
+            var readNotifications = await base.GetList<Notification>(null, null, null, 0, 0, predicate);
+
+            await base.DeleteRange(readNotifications);
+        }
+
+
         private string FormatNotificationMessage(string message)
         {
             return message.Replace("\r\n", "\n").Replace("\n", Environment.NewLine);

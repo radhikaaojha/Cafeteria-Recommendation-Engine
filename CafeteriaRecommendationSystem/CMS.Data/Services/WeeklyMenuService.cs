@@ -22,9 +22,15 @@ namespace CMS.Data.Services
             _feedbackService = feedbackService;
         }
 
-        public Task CRONWeeklyMenuCleanUp()
+        public async Task WeeklyMenuCleanUp()
         {
-            throw new NotImplementedException();
+            var oneWeekAgo = DateTime.Now.AddDays(-7);
+
+            Expression<Func<WeeklyMenu, bool>> predicate = wm => wm.CreatedDateTime.Date < oneWeekAgo.Date;
+
+            var currentWeekMenu = await base.GetList<WeeklyMenu>(null, null, null, 0, 0, predicate);
+
+            await base.DeleteRange(currentWeekMenu);
         }
     }
 }

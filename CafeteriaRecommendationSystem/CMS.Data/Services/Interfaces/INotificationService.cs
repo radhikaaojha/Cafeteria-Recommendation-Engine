@@ -14,5 +14,6 @@ namespace CMS.Data.Services.Interfaces
         Task<List<Notification>> GetNotificationsForUser(int userId);
         Task<string> ViewNotifications(int userId);
         Task SendBatchNotifications(string message, List<int> roleId, int notificationTypeId);
+        Task RemoveReadNotifications();
     }
 }

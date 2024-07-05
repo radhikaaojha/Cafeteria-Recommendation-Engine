@@ -59,10 +59,6 @@ namespace CMS.Data.Services
             return "Notifications for finalized menu has been sent successfully!";
         }
 
-        private async Task SetUserVotingToFalse()
-        {
-            await _userRepository.SetUserVoting(false);
-        }
 
         public async Task NotifyEmployeesForFinalizeedMenu(DailyMenuInput finalMenu)
         {
@@ -133,7 +129,6 @@ namespace CMS.Data.Services
             await PlanMeal(dailyMenuRequest.Breakfast, MealType.Breakfast);
             await PlanMeal(dailyMenuRequest.Lunch, MealType.Lunch);
             await PlanMeal(dailyMenuRequest.Dinner, MealType.Dinner);
-            await SetUserVotingToFalse();
             await NotifyEmployeesForPlannedMenu(dailyMenuRequest);
             return "Notifications to vote for planned menu has been sent!";
         }

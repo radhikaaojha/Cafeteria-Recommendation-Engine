@@ -16,6 +16,8 @@ using CMS.Data.Repository;
 using Common.Utils;
 using System.Net;
 using Microsoft.Extensions.Logging;
+using Hangfire;
+using Google.Protobuf.WellKnownTypes;
 
 namespace ManagementServer
 {
@@ -23,10 +25,10 @@ namespace ManagementServer
     {
         private static IServiceProvider _serviceProvider;
         private static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
-       {
+        {
            builder
                .AddFilter((category, level) => false); 
-       });
+        });
         public static async Task Main(string[] args)
         {
             var services = new ServiceCollection();
@@ -37,6 +39,8 @@ namespace ManagementServer
               })
               .Build();
             _serviceProvider = host.Services;
+            var recurringJobManager = _serviceProvider.GetRequiredService<IRecurringJobManager>();
+            ConfigureRecurringJobs(recurringJobManager);
             var authTaskExecutor = _serviceProvider.GetRequiredService<AuthenticationTaskExecutor>();
             var adminTaskExecutor = _serviceProvider.GetRequiredService<AdminTaskExecutor>();
             var employeeTaskExecutor = _serviceProvider.GetRequiredService<EmployeeTaskExecutor>();
@@ -51,7 +55,9 @@ namespace ManagementServer
 
         private static IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CMSDbContext>(options => options.UseSqlServer(AppConstants.ConnectionString).UseLoggerFactory(loggerFactory));
+            services.AddDbContext<CMSDbContext>(options => options.UseSqlServer(AppConstants.DatabaseConnectionString).UseLoggerFactory(loggerFactory));
+            services.AddHangfire(config =>config.UseSqlServerStorage(AppConstants.HangfireConnection));
+            services.AddHangfireServer();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped(typeof(ICrudBaseRepository<>), typeof(CrudBaseRepository<>));
             services.AddScoped(typeof(ICrudBaseService<>), typeof(CrudBaseService<>));
@@ -75,5 +81,30 @@ namespace ManagementServer
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             return services.BuildServiceProvider();
         }
+
+        public static void ConfigureRecurringJobs(IRecurringJobManager recurringJobManager)
+        {
+            var userRepo = _serviceProvider.GetRequiredService<IUserRepository>();
+            var weeklyMenuService = _serviceProvider.GetRequiredService<IWeeklyMenuService>();
+            var notificationService = _serviceProvider.GetRequiredService<INotificationService>();
+            recurringJobManager.AddOrUpdate(
+           "weekly-menu-cleanup",
+           () => weeklyMenuService.WeeklyMenuCleanUp(),
+           "0 0 * * 0"
+            );
+            recurringJobManager.AddOrUpdate(
+           "reset-voting-status",
+           () => userRepo.SetUsersVotingStatus(false),
+           "0 0 * * *");
+            recurringJobManager.AddOrUpdate(
+           "remove-read-notifications",
+           () => notificationService.RemoveReadNotifications(),
+           "0 0 * * *");
+            using (var Bgserver = new BackgroundJobServer())
+            {
+                Console.WriteLine("Hangfire Server started.");
+            }
+        }
+
     }
 }

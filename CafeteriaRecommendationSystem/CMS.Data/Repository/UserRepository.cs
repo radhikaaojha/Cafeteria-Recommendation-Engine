@@ -29,7 +29,7 @@ namespace Data_Access_Layer.Repository
             return await _context.User.AnyAsync(u => u.Id == userId && u.HasVotedToday);
         }
 
-        public async Task SetUserVoting(bool status)
+        public async Task SetUsersVotingStatus(bool status)
         {
             var users = await _context.User.ToListAsync(); 
 

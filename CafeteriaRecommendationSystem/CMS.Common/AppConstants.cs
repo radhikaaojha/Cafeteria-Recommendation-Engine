@@ -15,7 +15,8 @@ namespace Common
         public const string LoginFailed = "Unable to login user! Invalid name or employeeId";
         public const string InvalidInputMessage = "Invalid input. Operation aborted.";
         public const string FoodItemNotFoundMessage = "Food Item with specified ID doesnt exist.";
-        public const string ConnectionString = "Data Source=ITT-RADHIKA-O;Initial Catalog=CafeteriaManagementSystem;Integrated Security=True";
+        public const string DatabaseConnectionString = "Data Source=ITT-RADHIKA-O;Initial Catalog=CafeteriaManagementSystem;Integrated Security=True";
+        public const string HangfireConnection = "Data Source=ITT-RADHIKA-O;Initial Catalog=CafeteriaManagementSystem;Integrated Security=True";
         public const string FoodItemAdded = "A new Food item {0} has been added to the menu!";
         public static readonly List<int> ChefAndEmployeeRoles =new() { (int)Role.Employee, (int)Role.Chef };
         public static readonly List<int> Employee =new() { (int)Role.Employee };
