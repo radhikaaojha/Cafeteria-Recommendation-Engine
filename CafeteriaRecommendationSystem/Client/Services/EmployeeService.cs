@@ -2,7 +2,7 @@
 using CMS.Common.Models;
 using System.Text.Json;
 
-namespace Client
+namespace Client.Services
 {
     public static class EmployeeService
     {
@@ -175,7 +175,7 @@ namespace Client
             Console.WriteLine("Enter id of food item you wish to give feedback for");
             feedback.FoodItemId = int.Parse(Console.ReadLine());
             Console.WriteLine("Enter feedback");
-            feedback.Comment = (Console.ReadLine());
+            feedback.Comment = Console.ReadLine();
             int rating;
             do
             {

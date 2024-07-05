@@ -2,7 +2,7 @@
 using CMS.Common.Models;
 using System.Text.Json;
 
-namespace Client
+namespace Client.Services
 {
     public static class AdminService
     {
@@ -102,9 +102,9 @@ namespace Client
             foodItem.Name = Console.ReadLine();
 
             Console.Write("Enter item type Id: ");
-            foodItem.FoodItemTypeId = Int16.Parse(Console.ReadLine());
+            foodItem.FoodItemTypeId = short.Parse(Console.ReadLine());
             Console.Write("Enter item price: ");
-            foodItem.Price = Int16.Parse(Console.ReadLine());
+            foodItem.Price = short.Parse(Console.ReadLine());
 
             return foodItem;
 

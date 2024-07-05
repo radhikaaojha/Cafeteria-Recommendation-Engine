@@ -2,7 +2,7 @@
 using CMS.Common.Models;
 using System.Text.Json;
 
-namespace Client
+namespace Client.Services
 {
     public class ChefService
     {

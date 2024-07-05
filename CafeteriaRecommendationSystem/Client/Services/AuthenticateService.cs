@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Client
+namespace Client.Services
 {
     public static class AuthenticateService
     {
