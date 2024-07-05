@@ -18,10 +18,10 @@ namespace CMS.Common.Utils
 
     public class TaskExecutorFactory
     {
-        private readonly Dictionary<string, ITaskExecutor> taskExecutors;
+        private readonly Dictionary<string, ITaskExecutor> _taskExecutors;
         public TaskExecutorFactory(IAuthenticateService authenticateService,IAdminService adminService, IChefService chefService, IEmployeeService employeeService, INotificationService notificationService, IFoodItemService foodItemService)
         {
-            taskExecutors = new Dictionary<string, ITaskExecutor>
+            _taskExecutors = new Dictionary<string, ITaskExecutor>
         {
                 { Actions.Auth.ToString(), new AuthenticationTaskExecutor(authenticateService) },
                 { Actions.AddFoodItem.ToString(), new AdminTaskExecutor(adminService) },
@@ -48,7 +48,7 @@ namespace CMS.Common.Utils
 
         public ITaskExecutor GetTaskExecutor(string action)
         {
-            if (taskExecutors.TryGetValue(action, out ITaskExecutor taskExecutor))
+            if (_taskExecutors.TryGetValue(action, out ITaskExecutor taskExecutor))
             {
                 return taskExecutor;
             }

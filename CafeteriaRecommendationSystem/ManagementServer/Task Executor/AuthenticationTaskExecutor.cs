@@ -10,11 +10,11 @@ namespace Common.Utils
 {
     public class AuthenticationTaskExecutor : ITaskExecutor
     {
-        private IAuthenticateService authenticateService;
+        private IAuthenticateService _authenticateService;
 
         public AuthenticationTaskExecutor(IAuthenticateService authenticateService)
         {
-            this.authenticateService = authenticateService;
+            this._authenticateService = authenticateService;
         }
 
         public async Task<string> ExecuteTask(string action, string jsonRequest)
@@ -22,7 +22,7 @@ namespace Common.Utils
             try
             {
                 var userCredentials = JsonSerializer.Deserialize<UserLogin>(jsonRequest);
-                var loginResponse = await authenticateService.Login(userCredentials);
+                var loginResponse = await _authenticateService.Login(userCredentials);
 
                 return ProtocolResponseHelper.CreateSuccessResponse(JsonSerializer.Serialize(loginResponse));
             }

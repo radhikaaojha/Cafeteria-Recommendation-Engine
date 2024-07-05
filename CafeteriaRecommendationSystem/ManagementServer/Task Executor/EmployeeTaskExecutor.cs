@@ -16,11 +16,11 @@ namespace Common.Utils
 {
     public class EmployeeTaskExecutor : ITaskExecutor
     {
-        private IEmployeeService employeeService;
+        private IEmployeeService _employeeService;
 
         public EmployeeTaskExecutor(IEmployeeService employeeService)
         {
-            this.employeeService = employeeService;
+            this._employeeService = employeeService;
         }
 
         public async Task<string> ExecuteTask(string action, string request)
@@ -32,25 +32,25 @@ namespace Common.Utils
                 switch (action)
                 {
                     case "SubmitFeedback":
-                        response = await employeeService.GiveFeedback(request);
+                        response = await _employeeService.GiveFeedback(request);
                         break;
                     case "VoteForMenu":
-                        response = await employeeService.VoteInFavourForMenuItem((request));
+                        response = await _employeeService.VoteInFavourForMenuItem((request));
                         break;
                     case "ViewRolledOutItems":
                         predicate = data => data.CreatedDateTime.Date == DateTime.Now.Date;
-                        response = await employeeService.ViewDailyMenu(DateTime.Now, int.Parse(request),predicate);
+                        response = await _employeeService.ViewDailyMenu(DateTime.Now, int.Parse(request),predicate);
                         break;
                     case "UserPreference":
-                        response = await employeeService.SubmitUserPreference(request);
+                        response = await _employeeService.SubmitUserPreference(request);
                         break;
                     case "SubmitDetailedFeedback":
-                        response = await employeeService.SubmitDetailedFeedback(request);
+                        response = await _employeeService.SubmitDetailedFeedback(request);
                         break;
                     case "ViewTodaysMenu":
                         DateTime yesterday = DateTime.Today.AddDays(-1);
                         predicate = data => data.CreatedDateTime.Date == yesterday.Date && data.IsSelected;
-                        response = await employeeService.ViewDailyMenu(yesterday, int.Parse(request), predicate);
+                        response = await _employeeService.ViewDailyMenu(yesterday, int.Parse(request), predicate);
                         break;
                 }
                 return ProtocolResponseHelper.CreateSuccessResponse(response);

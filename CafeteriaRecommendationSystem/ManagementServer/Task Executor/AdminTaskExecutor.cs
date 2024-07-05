@@ -13,11 +13,11 @@ namespace Common.Utils
 {
     public class AdminTaskExecutor : ITaskExecutor
     {
-        private IAdminService adminService;
+        private IAdminService _adminService;
 
         public AdminTaskExecutor(IAdminService adminService)
         {
-            this.adminService = adminService;
+            this._adminService = adminService;
         }
 
         public async Task<string> ExecuteTask(string action, string request)
@@ -28,16 +28,16 @@ namespace Common.Utils
                 switch (action)
                 {
                     case "AddFoodItem":
-                        response = await adminService.AddFoodItem(request);
+                        response = await _adminService.AddFoodItem(request);
                         break;
                     case "RemoveFoodItem":
-                        response = await adminService.RemoveFoodItem(request);
+                        response = await _adminService.RemoveFoodItem(request);
                         break;
                     case "UpdateFoodItemPrice":
-                        response = await adminService.UpdatePriceForFoodItem(request);
+                        response = await _adminService.UpdatePriceForFoodItem(request);
                         break;
                     case "UpdateFoodItemStatus":
-                        response = await adminService.UpdateAvailabilityStatusForFoodItem(request);
+                        response = await _adminService.UpdateAvailabilityStatusForFoodItem(request);
                         break;
                 }
                 return ProtocolResponseHelper.CreateSuccessResponse(response);

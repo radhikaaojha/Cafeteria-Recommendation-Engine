@@ -12,11 +12,11 @@ namespace CMS.Common.Utils
 {
     public class ChefTaskExecutor : ITaskExecutor
     {
-        private IChefService chefService;
+        private IChefService _chefService;
 
         public ChefTaskExecutor(IChefService chefService)
         {
-            this.chefService = chefService;
+            this._chefService = chefService;
         }
 
         public async Task<string> ExecuteTask(string action, string request)
@@ -28,16 +28,16 @@ namespace CMS.Common.Utils
                 switch (action)
                 {
                     case "PlanNextDayMenu":
-                        response = await chefService.PlanDailyMenu(request);
+                        response = await _chefService.PlanDailyMenu(request);
                         break;
                     case "FinalizeMenu":
-                        response = await chefService.FinalizeMenuItems(request);
+                        response = await _chefService.FinalizeMenuItems(request);
                         break;
                     case "ViewVotes":
-                        response = await chefService.GetEmployeeVotes();
+                        response = await _chefService.GetEmployeeVotes();
                         break;
                     case "TopRecommendations":
-                        response = await chefService.GetTopRecommendations();
+                        response = await _chefService.GetTopRecommendations();
                         break;
                 }
                 return ProtocolResponseHelper.CreateSuccessResponse(response);
