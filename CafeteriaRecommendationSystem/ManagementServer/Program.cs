@@ -50,7 +50,7 @@ namespace ManagementServer
             var appActivityLog = _serviceProvider.GetRequiredService<IAppActivityLogRepository>();
             var clientRequestProcessor = new ClientRequestProcessor(taskExecutorFactory, serverResponseHandler, appActivityLog);
             var server = new Server(clientRequestProcessor);
-            await server.StartServer();
+            await server.Start();
         }
 
         private static IServiceProvider ConfigureServices(IServiceCollection services)
