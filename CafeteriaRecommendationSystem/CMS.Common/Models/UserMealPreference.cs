@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CMS.Common.Models
 {
-    public class VotingMenuInput : MenuInput
+    public class UserMealPreference : Menu
     {
         public int UserId {  get; set; }
     }

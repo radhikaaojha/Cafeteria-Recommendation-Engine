@@ -30,7 +30,7 @@ namespace CMS.Data.Services
 
         public async Task<string> GiveFeedback(string request)
         {
-            FeedbackRequest feedbackRequest = JsonSerializer.Deserialize<FeedbackRequest>(request);
+            Feedback feedbackRequest = JsonSerializer.Deserialize<Feedback>(request);
             await ValidateFeedbackRequest(feedbackRequest);
 
             await _feedbackService.Add(feedbackRequest);
@@ -58,7 +58,7 @@ namespace CMS.Data.Services
                 FoodItems = group.OrderByDescending(item => CalculatePreferenceScore(item.FoodItem, user.UserPreference)).ToList()
             }); ;
 
-            var viewNextDayMenu = new ViewNextDayMenu();
+            var viewNextDayMenu = new BrowseNextDayMenu();
 
             foreach (var group in groupedItems)
             {
@@ -112,7 +112,7 @@ namespace CMS.Data.Services
 
         public async Task<string> SubmitDetailedFeedback(string request)
         {
-            var feedbackRequest = JsonSerializer.Deserialize<DetailedFeedbackRequest>(request);
+            var feedbackRequest = JsonSerializer.Deserialize<Common.Models.DetailedFeedback>(request);
             await ValidateDetailedFeedbackRequest(feedbackRequest);
 
             await _feedbackService.SubmitDetailedFeedback(feedbackRequest);
@@ -122,7 +122,7 @@ namespace CMS.Data.Services
 
         public async Task<string> VoteInFavourForMenuItem(string request)
         {
-            var votingMenuRequest = JsonSerializer.Deserialize<VotingMenuInput>(request);
+            var votingMenuRequest = JsonSerializer.Deserialize<UserMealPreference>(request);
 
             await ValidateVotingOfUser(votingMenuRequest);
 
@@ -133,7 +133,7 @@ namespace CMS.Data.Services
             return "Voting has been submitted sucessfully!";
         }
 
-        private async Task ValidateVotingOfUser(VotingMenuInput dailyMenuRequest)
+        private async Task ValidateVotingOfUser(UserMealPreference dailyMenuRequest)
         {
             if (await _userRepository.HasVotedToday(dailyMenuRequest.UserId))
                 throw new InvalidOperationException("Voting for today has not yet started!");
@@ -204,7 +204,7 @@ namespace CMS.Data.Services
             }
         }
 
-        private async Task ValidateFeedbackRequest(FeedbackRequest request)
+        private async Task ValidateFeedbackRequest(Feedback request)
         {
             var yesterday = DateTime.Today.AddDays(-1);
 
@@ -232,7 +232,7 @@ namespace CMS.Data.Services
             }
         }
 
-        private async Task ValidateDetailedFeedbackRequest(DetailedFeedbackRequest request)
+        private async Task ValidateDetailedFeedbackRequest(Common.Models.DetailedFeedback request)
         {
             var foodItem = await _foodItemService.GetById<FoodItem>(request.FoodItemId);
             if (foodItem == null)
@@ -241,7 +241,7 @@ namespace CMS.Data.Services
                 throw new InvalidOperationException("Food item is not in the discarded list so cannot submit detailed feedback");
         }
 
-        private async Task UpdateSentimentAnalysis(FeedbackRequest feedbackRequest)
+        private async Task UpdateSentimentAnalysis(Feedback feedbackRequest)
         {
             var (rating, feedbacks) = await _feedbackService.AnalyzeFeedbackSentiments(feedbackRequest.FoodItemId);
             await _foodItemService.UpdateSentimentResult(rating, feedbacks, feedbackRequest.FoodItemId);

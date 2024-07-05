@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CMS.Common.Models
 {
-    public class ViewNextDayMenu
+    public class BrowseNextDayMenu
     {
         public List<RecommendedItem> Breakfast { get; set; } = new();
         public List<RecommendedItem> Lunch { get; set; } = new();

@@ -42,7 +42,7 @@ namespace Client
                         break;
                     case "4":
                         protocolRequest.Action = Actions.PlanNextDayMenu.ToString();
-                        protocolRequest.Payload = JsonSerializer.Serialize(GetInputForDailyMenu());
+                        protocolRequest.Payload = JsonSerializer.Serialize(GetInputForPlannedMenu());
                         break;
                     case "5":
                         protocolRequest.Action = Actions.FinalizeMenu.ToString();
@@ -79,64 +79,68 @@ namespace Client
             return Console.ReadLine();
         }
 
-        private static object GetInputForDailyMenu()
+        private static object GetInputForPlannedMenu()
         {
-            MenuInput dailyMenu = new();
-            dailyMenu.Breakfast = GetFoodItemIds("breakfast", 3, dailyMenu);
-            dailyMenu.Lunch = GetFoodItemIds("lunch", 3, dailyMenu);
-            dailyMenu.Dinner = GetFoodItemIds("dinner", 3, dailyMenu);
-            return dailyMenu;
+            Menu plannedMenu = new();
+            plannedMenu.Breakfast = GetFoodItemIds("breakfast", 3, plannedMenu);
+            plannedMenu.Lunch = GetFoodItemIds("lunch", 3, plannedMenu);
+            plannedMenu.Dinner = GetFoodItemIds("dinner", 3, plannedMenu);
+            return plannedMenu;
         }
-        static List<string> GetFoodItemIds(string mealType, int count, MenuInput menuInput)
-        {
-            while (true)
-            {
-                Console.WriteLine($"Enter Ids for {count} food items you plan to make for {mealType} separated by ','");
-                var input = Console.ReadLine();
 
-                if (string.IsNullOrWhiteSpace(input))
-                {
-                    Console.WriteLine("Invalid input. Please enter food item ID.");
-                    continue;
-                }
-
-                var ids = input.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(id => id.Trim()).Distinct().ToList();
-                if (ids.Any(id => !int.TryParse(id, out _)))
-                {
-                    Console.WriteLine("Invalid input. Food item IDs must be numeric.");
-                    continue;
-                }
-
-                if (ids.Count != ids.Distinct().Count())
-                {
-                    Console.WriteLine($"Invalid input. Please enter distinct IDs for {mealType}.");
-                    continue;
-                }
-
-                var allIds = new HashSet<string>(menuInput.Breakfast.Concat(menuInput.Lunch).Concat(menuInput.Dinner));
-                if (allIds.Intersect(ids).Any())
-                {
-                    Console.WriteLine($"Invalid input. IDs for {mealType} should be distinct from other meal types.");
-                    continue;
-                }
-
-                if (ids.Count == count)
-                {
-                    return ids;
-                }
-                else
-                {
-                    Console.WriteLine($"Invalid input. Please enter exactly {count} and distinct food item IDs separated by commas.");
-                }
-            }
-        }
         private static object GetInputForFinalMenu()
         {
-            MenuInput finalMenu = new();
+            Menu finalMenu = new();
             finalMenu.Breakfast = GetFoodItemIds("breakfast", 2, finalMenu);
             finalMenu.Lunch = GetFoodItemIds("lunch", 2, finalMenu);
             finalMenu.Dinner = GetFoodItemIds("dinner", 2, finalMenu);
             return finalMenu;
         }
+
+
+        static List<string> GetFoodItemIds(string mealType, int numberOfAllowedIFoodItems, Menu menu)
+        {
+            while (true)
+            {
+                Console.WriteLine($"Enter Ids for {numberOfAllowedIFoodItems} food items you plan to make for {mealType} separated by ','");
+                var foodItemsId = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(foodItemsId))
+                {
+                    Console.WriteLine("Invalid input. Please enter food item ID.");
+                    continue;
+                }
+
+                var foodItemIds = foodItemsId.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(id => id.Trim()).Distinct().ToList();
+                if (foodItemIds.Any(id => !int.TryParse(id, out _)))
+                {
+                    Console.WriteLine("Invalid input. Food item IDs must be numeric.");
+                    continue;
+                }
+
+                if (foodItemIds.Count != foodItemIds.Distinct().Count())
+                {
+                    Console.WriteLine($"Invalid input. Please enter distinct IDs for {mealType}.");
+                    continue;
+                }
+
+                var allFoodItemIds = new HashSet<string>(menu.Breakfast.Concat(menu.Lunch).Concat(menu.Dinner));
+                if (allFoodItemIds.Intersect(foodItemIds).Any())
+                {
+                    Console.WriteLine($"Invalid input. IDs for {mealType} should be distinct from other meal types.");
+                    continue;
+                }
+
+                if (foodItemIds.Count == numberOfAllowedIFoodItems)
+                {
+                    return foodItemIds;
+                }
+                else
+                {
+                    Console.WriteLine($"Invalid input. Please enter exactly {numberOfAllowedIFoodItems} and distinct food item IDs separated by commas.");
+                }
+            }
+        }
+
     }
 }

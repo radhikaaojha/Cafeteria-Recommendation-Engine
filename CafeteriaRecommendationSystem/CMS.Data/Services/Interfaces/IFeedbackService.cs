@@ -12,6 +12,6 @@ namespace CMS.Data.Services.Interfaces
     public interface IFeedbackService : ICrudBaseService<FoodItemFeedback>
     {
         Task<(float, string)> AnalyzeFeedbackSentiments(int foodItemId);
-        Task SubmitDetailedFeedback(DetailedFeedbackRequest detailedFeedbackRequest);
+        Task SubmitDetailedFeedback(DetailedFeedback detailedFeedbackRequest);
     }
 }

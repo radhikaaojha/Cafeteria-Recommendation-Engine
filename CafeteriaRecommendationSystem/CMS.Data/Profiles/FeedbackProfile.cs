@@ -13,8 +13,8 @@ namespace CMS.Data.Profiles
     public class FeedbackProfile : Profile
     {
         public FeedbackProfile() {
-            CreateMap<FoodItemFeedback, FeedbackRequest>().ReverseMap();
-            CreateMap<DetailedFoodItemFeedback, DetailedFeedbackRequest>().ReverseMap();
+            CreateMap<FoodItemFeedback, Feedback>().ReverseMap();
+            CreateMap<DetailedFoodItemFeedback, DetailedFeedback>().ReverseMap();
             CreateMap<FoodItemFeedback, FoodReview>()
                 .ForMember(dest => dest.ReviewText, opt => opt.MapFrom(src => src.Comment))
                 .ForMember(dest => dest.FoodItemId, opt => opt.MapFrom(src => src.FoodItemId))

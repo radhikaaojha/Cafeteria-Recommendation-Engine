@@ -111,9 +111,9 @@ namespace Client
             return preferences;
         }
 
-        public static DetailedFeedbackRequest GetInputForDetailedFeedback(int userId)
+        public static DetailedFeedback GetInputForDetailedFeedback(int userId)
         {
-            DetailedFeedbackRequest detailedFeedback = new();
+            DetailedFeedback detailedFeedback = new();
             Console.WriteLine("Enter id of food item you wish to give feedback for");
             detailedFeedback.FoodItemId = int.Parse(Console.ReadLine());
             Console.WriteLine("Note : Please press enter if you wish to leave it empty");
@@ -126,7 +126,7 @@ namespace Client
             Console.WriteLine($"Q3. Share your moms recipe");
             string answer3 = Console.ReadLine();
 
-            var feedback = new DetailedFeedbackRequest
+            var feedback = new DetailedFeedback
             {
                 UserId = userId,
                 FoodItemId = detailedFeedback.FoodItemId,
@@ -140,12 +140,12 @@ namespace Client
 
         private static object GetInputForVoting(int userId)
         {
-            VotingMenuInput votingMenu = new();
-            votingMenu.Breakfast = GetFoodItemId("breakfast");
-            votingMenu.Lunch = GetFoodItemId("lunch");
-            votingMenu.Dinner = GetFoodItemId("dinner");
-            votingMenu.UserId = userId;
-            return votingMenu;
+            UserMealPreference userMealPreference = new();
+            userMealPreference.Breakfast = GetFoodItemId("breakfast");
+            userMealPreference.Lunch = GetFoodItemId("lunch");
+            userMealPreference.Dinner = GetFoodItemId("dinner");
+            userMealPreference.UserId = userId;
+            return userMealPreference;
         }
 
         static List<string> GetFoodItemId(string mealType)
@@ -170,7 +170,7 @@ namespace Client
         private static object GetInputForFeedback(int userId)
         {
             bool isValidRating = false;
-            FeedbackRequest feedback = new FeedbackRequest();
+            Feedback feedback = new Feedback();
             feedback.UserId = userId;
             Console.WriteLine("Enter id of food item you wish to give feedback for");
             feedback.FoodItemId = int.Parse(Console.ReadLine());

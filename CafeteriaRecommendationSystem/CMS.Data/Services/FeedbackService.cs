@@ -55,9 +55,9 @@ namespace CMS.Data.Services
 
         }
 
-        public async Task SubmitDetailedFeedback(DetailedFeedbackRequest detailedFeedbackRequest)
+        public async Task SubmitDetailedFeedback(Common.Models.DetailedFeedback detailedFeedbackRequest)
         {
-           DetailedFoodItemFeedback detailedFoodItemFeedback = _mapper.Map<DetailedFoodItemFeedback>(detailedFeedbackRequest);
+            DetailedFoodItemFeedback detailedFoodItemFeedback = _mapper.Map<DetailedFoodItemFeedback>(detailedFeedbackRequest);
             await _feedbackRepository.SubmitDetailedFeedback(detailedFoodItemFeedback);
         }
 
