@@ -23,8 +23,7 @@ namespace ManagementServer
             TcpListener server = null;
             try
             {
-
-                IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
+                IPAddress ipAddress = IPAddress.Parse(AppConstants.SERVER_IP);
                 server = new TcpListener(ipAddress, AppConstants.PORT);
                 server.Start();
                 Console.WriteLine($"Server started on {ipAddress}:{AppConstants.PORT}");
