@@ -1,11 +1,6 @@
 ﻿using CMS.Common.Enums;
 using CMS.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Client
 {
@@ -13,7 +8,7 @@ namespace Client
     {
         public static async Task<CustomProtocolDTO> ShowMenuForAdmin(StreamWriter writer, StreamReader reader, int userId)
         {
-            while(true)
+            while (true)
             {
                 CustomProtocolDTO request = new CustomProtocolDTO();
                 Console.WriteLine(new string('-', 40));
@@ -71,7 +66,7 @@ namespace Client
 
                 }
                 return request;
-            }           
+            }
         }
 
         private static object GetInputForUpdateFoodItemStatus()

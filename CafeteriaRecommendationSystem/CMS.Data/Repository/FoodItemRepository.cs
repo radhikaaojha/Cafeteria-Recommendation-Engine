@@ -27,7 +27,7 @@ namespace CMS.Data.Repository
         {
             var foodItems = await _context.FoodItem.Include(f => f.FoodItemAvailabilityStatus)
                                                    .Include(f => f.FoodItemType)
-                                                   .Where(f => f.SentimentScore < 20)
+                                                   .Where(f => f.SentimentScore < 20 && f.StatusId == (int) Status.Available)
                                                    .OrderBy(f => f.SentimentScore)
                                                    .ToListAsync();
 

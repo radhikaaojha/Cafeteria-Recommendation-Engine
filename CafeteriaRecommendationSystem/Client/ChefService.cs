@@ -1,16 +1,11 @@
 ﻿using CMS.Common.Enums;
 using CMS.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Client
 {
     public class ChefService
-    { 
+    {
 
         public static async Task<CustomProtocolDTO> ShowMenuForChef(StreamWriter writer, StreamReader reader, int userId)
         {
@@ -30,7 +25,7 @@ namespace Client
                              "9. Roll out detailed feedback questions for discarded item\n" +
                              "10. Logout\n" +
                              "Enter the number corresponding to your choice ");
-                Console.WriteLine(new string('-', 40)); 
+                Console.WriteLine(new string('-', 40));
                 var requestString = Console.ReadLine();
                 request.UserId = userId.ToString();
                 switch (requestString)
@@ -87,7 +82,7 @@ namespace Client
         private static object GetInputForDailyMenu()
         {
             DailyMenuInput dailyMenuInput = new();
-            dailyMenuInput.Breakfast = GetFoodItemIds("breakfast",3, dailyMenuInput);
+            dailyMenuInput.Breakfast = GetFoodItemIds("breakfast", 3, dailyMenuInput);
             dailyMenuInput.Lunch = GetFoodItemIds("lunch", 3, dailyMenuInput);
             dailyMenuInput.Dinner = GetFoodItemIds("dinner", 3, dailyMenuInput);
             return dailyMenuInput;
@@ -125,7 +120,7 @@ namespace Client
                     continue;
                 }
 
-                if (ids.Count == count )
+                if (ids.Count == count)
                 {
                     return ids;
                 }
@@ -138,7 +133,7 @@ namespace Client
         private static object GetInputForFinalMenu()
         {
             DailyMenuInput dailyMenuInput = new();
-            dailyMenuInput.Breakfast = GetFoodItemIds("breakfast",2, dailyMenuInput);
+            dailyMenuInput.Breakfast = GetFoodItemIds("breakfast", 2, dailyMenuInput);
             dailyMenuInput.Lunch = GetFoodItemIds("lunch", 2, dailyMenuInput);
             dailyMenuInput.Dinner = GetFoodItemIds("dinner", 2, dailyMenuInput);
             return dailyMenuInput;
