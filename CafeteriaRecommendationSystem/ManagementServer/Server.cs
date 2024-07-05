@@ -10,11 +10,11 @@ namespace ManagementServer
 {
     public class Server
     {
-        private ClientRequestProcessor _clientRequestProcessor;
+        private ClientRequestHandler _clientRequestHandler;
 
-        public Server(ClientRequestProcessor clientRequestProcessor)
+        public Server(ClientRequestHandler clientRequestProcessor)
         {
-            this._clientRequestProcessor = clientRequestProcessor;
+            this._clientRequestHandler = clientRequestProcessor;
         }
 
         public async Task Start()
@@ -30,7 +30,7 @@ namespace ManagementServer
                 {
                     TcpClient client = server.AcceptTcpClient();
                     Console.WriteLine($"Client {client.Client.RemoteEndPoint} connected");
-                    Task.Run(() => _clientRequestProcessor.HandleClientRequest(client));
+                    Task.Run(() => _clientRequestHandler.HandleClientRequest(client));
                 }
             }
             catch (SocketException e)

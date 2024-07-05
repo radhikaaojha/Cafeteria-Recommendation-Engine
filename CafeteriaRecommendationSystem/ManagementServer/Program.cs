@@ -44,10 +44,9 @@ namespace ManagementServer
             var adminTaskExecutor = _serviceProvider.GetRequiredService<AdminTaskExecutor>();
             var employeeTaskExecutor = _serviceProvider.GetRequiredService<EmployeeTaskExecutor>();
             var chefTaskExecutor = _serviceProvider.GetRequiredService<ChefTaskExecutor>();
-            var serverResponseHandler = _serviceProvider.GetRequiredService<ServerResponseHandler>();
             var taskExecutorFactory = _serviceProvider.GetRequiredService<TaskExecutorFactory>();
             var appActivityLog = _serviceProvider.GetRequiredService<IAppActivityLogRepository>();
-            var clientRequestProcessor = new ClientRequestProcessor(taskExecutorFactory, serverResponseHandler, appActivityLog);
+            var clientRequestProcessor = new ClientRequestHandler(taskExecutorFactory, appActivityLog);
             var server = new Server(clientRequestProcessor);
             await server.Start();
         }
@@ -74,7 +73,6 @@ namespace ManagementServer
             services.AddScoped<TaskExecutorFactory>();
             services.AddScoped<AuthenticationTaskExecutor>();
             services.AddScoped<AdminTaskExecutor>();
-            services.AddScoped<ServerResponseHandler>();
             services.AddScoped<ChefTaskExecutor>();
             services.AddScoped<EmployeeTaskExecutor>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

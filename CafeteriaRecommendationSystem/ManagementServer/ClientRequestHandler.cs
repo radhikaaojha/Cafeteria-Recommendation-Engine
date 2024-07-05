@@ -12,17 +12,15 @@ using System.Threading.Tasks;
 
 namespace ManagementServer
 {
-    public class ClientRequestProcessor
+    public class ClientRequestHandler
     {
         private readonly TaskExecutorFactory _taskExecutorFactory;
         private IAppActivityLogRepository _appActivityLogRepository;
-        private readonly ServerResponseHandler _serverResponseHandler;
 
-        public ClientRequestProcessor(TaskExecutorFactory taskExecutorFactory, ServerResponseHandler serverResponseHandler, IAppActivityLogRepository appActivityLogRepository)
+        public ClientRequestHandler(TaskExecutorFactory taskExecutorFactory,IAppActivityLogRepository appActivityLogRepository)
         {
             this._taskExecutorFactory = taskExecutorFactory;
             _appActivityLogRepository = appActivityLogRepository;
-            this._serverResponseHandler = serverResponseHandler;
         }
 
         public async Task HandleClientRequest(TcpClient client)
@@ -75,19 +73,14 @@ namespace ManagementServer
             }
         }
 
-        private CustomProtocolDTO DeserializeRequest(string message)
-        {
-            return JsonSerializer.Deserialize<CustomProtocolDTO>(message);
-        }
-
         public async Task<string> ProcessClientRequest(CustomProtocolDTO request)
         {
-            var requestJSON = request.Payload; 
+            var requestJSON = request.Payload;
             var requestedAction = request.Action;
             var userId = request.UserId;
-            var response =  await PerformTheRequestedAction(userId,requestedAction, requestJSON);
+            var response = await PerformTheRequestedAction(userId, requestedAction, requestJSON);
 
-            return _serverResponseHandler.CreateResponseForClient(response);
+            return CreateResponseForClient(response);
         }
 
         private async Task<string> PerformTheRequestedAction(string userId,string action, string jsonRequest)
@@ -95,6 +88,22 @@ namespace ManagementServer
             var taskExecutor = _taskExecutorFactory.GetTaskExecutor(action);
             await _appActivityLogRepository.SaveActivityLogs(userId, action);
             return await taskExecutor.ExecuteTask(action,jsonRequest);
+        }
+
+        private CustomProtocolDTO DeserializeRequest(string message)
+        {
+            return JsonSerializer.Deserialize<CustomProtocolDTO>(message);
+        }
+
+        public string CreateResponseForClient(string responseData)
+        {
+            var customProtocolResponse = JsonSerializer.Deserialize<CustomProtocolDTO>(responseData);
+            return SerializeResponse(customProtocolResponse);
+        }
+
+        private string SerializeResponse(CustomProtocolDTO response)
+        {
+            return JsonSerializer.Serialize(response);
         }
     }
     
