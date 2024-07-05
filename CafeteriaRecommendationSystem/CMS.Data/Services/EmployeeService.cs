@@ -140,7 +140,7 @@ namespace CMS.Data.Services
                 throw new InvalidOperationException("Voting for today has not yet started!");
 
             if (await IsMenuFinalised())
-                throw new InvalidOperationException("Menu is already finalised,no need to vote now");
+                throw new InvalidOperationException("Menu is already finalised, Voting has been closed!");
 
             await ValidateItemsExistInWeeklyMenu(dailyMenuRequest.Breakfast);
             await ValidateItemsExistInWeeklyMenu(dailyMenuRequest.Lunch);
