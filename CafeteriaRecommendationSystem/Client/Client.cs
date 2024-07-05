@@ -36,17 +36,17 @@ namespace Client
                         switch (response.RoleId.ToString())
                         {
                             case "1":
-                                request = await AdminService.ShowMenuForAdmin(writer, reader, response.UserId);
+                                request = await AdminService.ShowMenuForAdmin(response.UserId);
                                 break;
                             case "2":
-                                request = await ChefService.ShowMenuForChef(writer, reader, response.UserId);
+                                request = await ChefService.ShowMenuForChef(response.UserId);
                                 break;
                             case "3":
-                                request = await EmployeeService.ShowMenuForEmployee(writer, reader, response.UserId);
+                                request = await EmployeeService.ShowMenuForEmployee(response.UserId);
                                 break;
                         }
 
-                        if (request.Action == "Logout")
+                        if (request.Action == Actions.Logout.ToString())
                         {
                             exitRequested = true;
                             continue;

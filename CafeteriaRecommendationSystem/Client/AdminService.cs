@@ -6,11 +6,11 @@ namespace Client
 {
     public static class AdminService
     {
-        public static async Task<CustomProtocolDTO> ShowMenuForAdmin(StreamWriter writer, StreamReader reader, int userId)
+        public static async Task<CustomProtocolDTO> ShowMenuForAdmin(int userId)
         {
             while (true)
             {
-                CustomProtocolDTO request = new CustomProtocolDTO();
+                CustomProtocolDTO protocolRequest = new CustomProtocolDTO();
                 Console.WriteLine(new string('-', 40));
                 Console.WriteLine("Select an option from the following:\n" +
                              "1. Add a new food item\n" +
@@ -24,69 +24,69 @@ namespace Client
                              "9. Logout\n" +
                              "Enter the number corresponding to your choice ");
                 Console.WriteLine(new string('-', 40));
-                var requestString = Console.ReadLine();
-                request.UserId = userId.ToString();
-                switch (requestString)
+                var userChoice = Console.ReadLine();
+                protocolRequest.UserId = userId.ToString();
+                switch (userChoice)
                 {
                     case "1":
-                        request.Action = Actions.AddFoodItem.ToString();
-                        request.Payload = JsonSerializer.Serialize(GetInputForAddMenuItem());
+                        protocolRequest.Action = Actions.AddFoodItem.ToString();
+                        protocolRequest.Payload = JsonSerializer.Serialize(GetInputForAddMenuItem());
                         break;
                     case "2":
-                        request.Action = Actions.RemoveFoodItem.ToString();
-                        request.Payload = GetInputForRemoveFoodItem();
+                        protocolRequest.Action = Actions.RemoveFoodItem.ToString();
+                        protocolRequest.Payload = GetInputForRemoveFoodItem();
                         break;
                     case "3":
-                        request.Action = Actions.BrowseMenu.ToString();
+                        protocolRequest.Action = Actions.BrowseMenu.ToString();
                         break;
                     case "4":
-                        request.Action = Actions.UpdateFoodItemPrice.ToString();
-                        request.Payload = JsonSerializer.Serialize(GetInputForUpdateFoodItemPrice());
+                        protocolRequest.Action = Actions.UpdateFoodItemPrice.ToString();
+                        protocolRequest.Payload = JsonSerializer.Serialize(GetInputForUpdateFoodItemPrice());
                         break;
                     case "5":
-                        request.Action = Actions.UpdateFoodItemStatus.ToString();
-                        request.Payload = JsonSerializer.Serialize(GetInputForUpdateFoodItemStatus());
+                        protocolRequest.Action = Actions.UpdateFoodItemStatus.ToString();
+                        protocolRequest.Payload = JsonSerializer.Serialize(GetInputForUpdateFoodItemStatus());
                         break;
                     case "6":
-                        request.Action = Actions.ViewDiscardList.ToString();
+                        protocolRequest.Action = Actions.ViewDiscardList.ToString();
                         break;
                     case "7":
-                        request.Action = Actions.RollOutDetailedFeedbackQuestions.ToString();
+                        protocolRequest.Action = Actions.RollOutDetailedFeedbackQuestions.ToString();
                         break;
                     case "8":
-                        request.Action = Actions.RemoveDiscardedFoodItem.ToString();
-                        request.Payload = GetInputForRemoveFoodItem();
+                        protocolRequest.Action = Actions.RemoveDiscardedFoodItem.ToString();
+                        protocolRequest.Payload = GetInputForRemoveFoodItem();
                         break;
                     case "9":
-                        request.Action = Actions.Logout.ToString();
+                        protocolRequest.Action = Actions.Logout.ToString();
                         break;
                     default:
                         Console.WriteLine("No such option");
                         continue;
 
                 }
-                return request;
+                return protocolRequest;
             }
         }
 
         private static object GetInputForUpdateFoodItemStatus()
         {
-            FoodItemStatusUpdate foodItemStatusUpdate = new();
+            FoodItemStatusUpdate foodItem = new();
             Console.WriteLine("Enter id of food item you wish to update status of");
-            foodItemStatusUpdate.FoodItemId = int.Parse(Console.ReadLine());
+            foodItem.FoodItemId = int.Parse(Console.ReadLine());
             Console.WriteLine("Enter status id");
-            foodItemStatusUpdate.StatusId = int.Parse(Console.ReadLine());
-            return foodItemStatusUpdate;
+            foodItem.StatusId = int.Parse(Console.ReadLine());
+            return foodItem;
         }
 
         private static object GetInputForUpdateFoodItemPrice()
         {
-            FoodItemPriceUpdate foodItemPriceUpdate = new();
+            FoodItemPriceUpdate foodItem = new();
             Console.WriteLine("Enter id of food item you wish to update price of");
-            foodItemPriceUpdate.FoodItemId = int.Parse(Console.ReadLine());
+            foodItem.FoodItemId = int.Parse(Console.ReadLine());
             Console.WriteLine("Enter price");
-            foodItemPriceUpdate.Price = decimal.Parse(Console.ReadLine());
-            return foodItemPriceUpdate;
+            foodItem.Price = decimal.Parse(Console.ReadLine());
+            return foodItem;
         }
 
         private static string GetInputForRemoveFoodItem()
@@ -97,16 +97,16 @@ namespace Client
 
         private static AddFoodItem GetInputForAddMenuItem()
         {
-            AddFoodItem addFoodItem = new AddFoodItem();
+            AddFoodItem foodItem = new AddFoodItem();
             Console.Write("Enter item name: ");
-            addFoodItem.Name = Console.ReadLine();
+            foodItem.Name = Console.ReadLine();
 
             Console.Write("Enter item type Id: ");
-            addFoodItem.FoodItemTypeId = Int16.Parse(Console.ReadLine());
+            foodItem.FoodItemTypeId = Int16.Parse(Console.ReadLine());
             Console.Write("Enter item price: ");
-            addFoodItem.Price = Int16.Parse(Console.ReadLine());
+            foodItem.Price = Int16.Parse(Console.ReadLine());
 
-            return addFoodItem;
+            return foodItem;
 
         }
     }

@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CMS.Common.Models
+namespace Client
 {
-    public class VotingMenuInput : MenuInput
+    public class ServerResponseProcessor
     {
-        public int UserId {  get; set; }
     }
 }

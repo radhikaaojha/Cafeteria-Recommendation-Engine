@@ -50,7 +50,7 @@ namespace Data_Access_Layer.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task SubmitUserPreferences(List<UserPreferenceInput> userPreferences)
+        public async Task SubmitUserPreferences(List<UserPreferences> userPreferences)
         {
             var userId = userPreferences.FirstOrDefault()?.UserId; 
             if (userId != null)

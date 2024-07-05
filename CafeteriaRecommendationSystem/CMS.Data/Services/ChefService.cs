@@ -36,7 +36,7 @@ namespace CMS.Data.Services
 
         public async Task<string> FinalizeMenuItems(string request)
         {
-            var dailyMenuRequest = JsonSerializer.Deserialize<DailyMenuInput>(request);
+            var dailyMenuRequest = JsonSerializer.Deserialize<MenuInput>(request);
 
             if (!await HasPlannedMenuForTomorrow())
             {
@@ -60,7 +60,7 @@ namespace CMS.Data.Services
         }
 
 
-        public async Task NotifyEmployeesForFinalizeedMenu(DailyMenuInput finalMenu)
+        public async Task NotifyEmployeesForFinalizeedMenu(MenuInput finalMenu)
         {
             var message = new System.Text.StringBuilder();
             if (finalMenu.Breakfast.Count > 0)
@@ -87,7 +87,7 @@ namespace CMS.Data.Services
             await _notificationService.SendBatchNotifications(message.ToString(), AppConstants.Employee, (int)NotificationType.FinalMenu);
         }
 
-        public async Task NotifyEmployeesForPlannedMenu(DailyMenuInput plannedMenu)
+        public async Task NotifyEmployeesForPlannedMenu(MenuInput plannedMenu)
         {
             var message = new System.Text.StringBuilder();
             if (plannedMenu.Breakfast.Count > 0)
@@ -117,7 +117,7 @@ namespace CMS.Data.Services
 
         public async Task<string> PlanDailyMenu(string request)
         {
-            var dailyMenuRequest = JsonSerializer.Deserialize<DailyMenuInput>(request);
+            var dailyMenuRequest = JsonSerializer.Deserialize<MenuInput>(request);
 
             if (await HasPlannedMenuForTomorrow())
             {
@@ -159,7 +159,7 @@ namespace CMS.Data.Services
             return JsonSerializer.Serialize(foodItemDtos);
         }
 
-        public async Task ValidateFoodItemIds(DailyMenuInput dailyMenuInput)
+        public async Task ValidateFoodItemIds(MenuInput dailyMenuInput)
         {
             Expression<Func<FoodItem, bool>> predicate = foodItem => foodItem.StatusId == (int)Status.Available;
 
@@ -224,7 +224,7 @@ namespace CMS.Data.Services
             }
         }
 
-        private async Task ValidateFoodItemsFromPlannedMenu(DailyMenuInput dailyMenuRequest)
+        private async Task ValidateFoodItemsFromPlannedMenu(MenuInput dailyMenuRequest)
         {
             var mealTypes = new Dictionary<List<string>, MealType>
             {

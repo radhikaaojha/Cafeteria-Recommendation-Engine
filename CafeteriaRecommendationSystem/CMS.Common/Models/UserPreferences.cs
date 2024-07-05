@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CMS.Common.Models
 {
-    public class UserPreferenceInput
+    public class UserPreferences
     {
         public FoodCharacterstic CharacteristicId { get; set; }
         public int Priority { get; set; }

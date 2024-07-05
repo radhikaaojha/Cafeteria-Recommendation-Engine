@@ -6,11 +6,11 @@ namespace Client
 {
     public static class EmployeeService
     {
-        public static async Task<CustomProtocolDTO> ShowMenuForEmployee(StreamWriter writer, StreamReader reader, int userId)
+        public static async Task<CustomProtocolDTO> ShowMenuForEmployee(int userId)
         {
             while (true)
             {
-                CustomProtocolDTO request = new CustomProtocolDTO();
+                CustomProtocolDTO protocolRequest = new CustomProtocolDTO();
                 Console.WriteLine(new string('-', 40));
                 Console.WriteLine("Select an option from the following:\n" +
                              "1. Vote for menu\n" +
@@ -24,56 +24,56 @@ namespace Client
                              "9. Logout\n" +
                              "Enter the number corresponding to your choice ");
                 Console.WriteLine(new string('-', 40));
-                var requestString = Console.ReadLine();
-                request.UserId = userId.ToString();
-                switch (requestString)
+                var userChoice = Console.ReadLine();
+                protocolRequest.UserId = userId.ToString();
+                switch (userChoice)
                 {
                     case "1":
-                        request.Action = Actions.VoteForMenu.ToString();
-                        request.Payload = JsonSerializer.Serialize(GetInputForVoting(userId));
+                        protocolRequest.Action = Actions.VoteForMenu.ToString();
+                        protocolRequest.Payload = JsonSerializer.Serialize(GetInputForVoting(userId));
                         break;
                     case "2":
-                        request.Action = Actions.ViewNotifications.ToString();
-                        request.Payload = userId.ToString();
+                        protocolRequest.Action = Actions.ViewNotifications.ToString();
+                        protocolRequest.Payload = userId.ToString();
                         break;
                     case "3":
-                        request.Action = Actions.BrowseMenu.ToString();
+                        protocolRequest.Action = Actions.BrowseMenu.ToString();
                         break;
                     case "4":
-                        request.Action = Actions.SubmitFeedback.ToString();
-                        request.Payload = JsonSerializer.Serialize(GetInputForFeedback(userId));
+                        protocolRequest.Action = Actions.SubmitFeedback.ToString();
+                        protocolRequest.Payload = JsonSerializer.Serialize(GetInputForFeedback(userId));
                         break;
                     case "5":
-                        request.Action = Actions.ViewRolledOutItems.ToString();
-                        request.Payload = userId.ToString();
+                        protocolRequest.Action = Actions.ViewRolledOutItems.ToString();
+                        protocolRequest.Payload = userId.ToString();
                         break;
                     case "6":
-                        request.Action = Actions.ViewTodaysMenu.ToString();
-                        request.Payload = userId.ToString();
+                        protocolRequest.Action = Actions.ViewTodaysMenu.ToString();
+                        protocolRequest.Payload = userId.ToString();
                         break;
                     case "7":
-                        request.Action = Actions.SubmitDetailedFeedback.ToString();
-                        request.Payload = JsonSerializer.Serialize(GetInputForDetailedFeedback(userId));
+                        protocolRequest.Action = Actions.SubmitDetailedFeedback.ToString();
+                        protocolRequest.Payload = JsonSerializer.Serialize(GetInputForDetailedFeedback(userId));
                         break;
                     case "8":
-                        request.Action = Actions.UserPreference.ToString();
-                        request.Payload = JsonSerializer.Serialize(CollectUserPreferences(userId));
+                        protocolRequest.Action = Actions.UserPreference.ToString();
+                        protocolRequest.Payload = JsonSerializer.Serialize(GetInputForUserPreferences(userId));
                         break;
                     case "9":
-                        request.Action = Actions.Logout.ToString();
+                        protocolRequest.Action = Actions.Logout.ToString();
                         break;
                     default:
                         Console.WriteLine("No such option");
                         continue;
 
                 }
-                return request;
+                return protocolRequest;
             }
         }
 
-        public static List<UserPreferenceInput> CollectUserPreferences(int userId)
+        public static List<UserPreferences> GetInputForUserPreferences(int userId)
         {
-            var preferences = new List<UserPreferenceInput>();
+            var preferences = new List<UserPreferences>();
             var characteristicIds = Enum.GetValues(typeof(FoodCharacterstic)).Cast<FoodCharacterstic>().ToList();
 
             foreach (var characteristicId in characteristicIds)
@@ -100,7 +100,7 @@ namespace Client
                     }
                 } while (!isValidPriority);
 
-                preferences.Add(new UserPreferenceInput
+                preferences.Add(new UserPreferences
                 {
                     UserId = userId,
                     CharacteristicId = characteristicId,
@@ -113,14 +113,14 @@ namespace Client
 
         public static DetailedFeedbackRequest GetInputForDetailedFeedback(int userId)
         {
-            DetailedFeedbackRequest detailedFeedbackRequest = new();
+            DetailedFeedbackRequest detailedFeedback = new();
             Console.WriteLine("Enter id of food item you wish to give feedback for");
-            detailedFeedbackRequest.FoodItemId = int.Parse(Console.ReadLine());
-
-            Console.WriteLine($"Q1. What didn’t you like about {detailedFeedbackRequest.FoodItemId}?");
+            detailedFeedback.FoodItemId = int.Parse(Console.ReadLine());
+            Console.WriteLine("Note : Please press enter if you wish to leave it empty");
+            Console.WriteLine($"Q1. What didn’t you like about {detailedFeedback.FoodItemId}?");
             string answer1 = Console.ReadLine();
 
-            Console.WriteLine($"Q2. How would you like {detailedFeedbackRequest.FoodItemId} to taste?");
+            Console.WriteLine($"Q2. How would you like {detailedFeedback.FoodItemId} to taste?");
             string answer2 = Console.ReadLine();
 
             Console.WriteLine($"Q3. Share your moms recipe");
@@ -129,7 +129,7 @@ namespace Client
             var feedback = new DetailedFeedbackRequest
             {
                 UserId = userId,
-                FoodItemId = detailedFeedbackRequest.FoodItemId,
+                FoodItemId = detailedFeedback.FoodItemId,
                 Answer1 = answer1,
                 Answer2 = answer2,
                 Answer3 = answer3
@@ -140,13 +140,14 @@ namespace Client
 
         private static object GetInputForVoting(int userId)
         {
-            VotingMenuInput votingMenuInput = new();
-            votingMenuInput.Breakfast = GetFoodItemId("breakfast");
-            votingMenuInput.Lunch = GetFoodItemId("lunch");
-            votingMenuInput.Dinner = GetFoodItemId("dinner");
-            votingMenuInput.UserId = userId;
-            return votingMenuInput;
+            VotingMenuInput votingMenu = new();
+            votingMenu.Breakfast = GetFoodItemId("breakfast");
+            votingMenu.Lunch = GetFoodItemId("lunch");
+            votingMenu.Dinner = GetFoodItemId("dinner");
+            votingMenu.UserId = userId;
+            return votingMenu;
         }
+
         static List<string> GetFoodItemId(string mealType)
         {
             while (true)
@@ -165,15 +166,16 @@ namespace Client
                 }
             }
         }
+
         private static object GetInputForFeedback(int userId)
         {
             bool isValidRating = false;
-            FeedbackRequest feedbackRequest = new FeedbackRequest();
-            feedbackRequest.UserId = userId;
+            FeedbackRequest feedback = new FeedbackRequest();
+            feedback.UserId = userId;
             Console.WriteLine("Enter id of food item you wish to give feedback for");
-            feedbackRequest.FoodItemId = int.Parse(Console.ReadLine());
+            feedback.FoodItemId = int.Parse(Console.ReadLine());
             Console.WriteLine("Enter feedback");
-            feedbackRequest.Comment = (Console.ReadLine());
+            feedback.Comment = (Console.ReadLine());
             int rating;
             do
             {
@@ -195,12 +197,8 @@ namespace Client
                     Console.WriteLine("Invalid input. Please enter a valid integer.");
                 }
             } while (!isValidRating);
-            feedbackRequest.Rating = rating;
-            return feedbackRequest;
-        }
-        public static bool ValidatePriority(List<UserPreferenceInput> userPreferences, int newPriority)
-        {
-            return userPreferences.Any(up => up.Priority == newPriority);
+            feedback.Rating = rating;
+            return feedback;
         }
     }
 }

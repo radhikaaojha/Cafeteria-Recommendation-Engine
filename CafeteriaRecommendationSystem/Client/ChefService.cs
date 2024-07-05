@@ -7,11 +7,11 @@ namespace Client
     public class ChefService
     {
 
-        public static async Task<CustomProtocolDTO> ShowMenuForChef(StreamWriter writer, StreamReader reader, int userId)
+        public static async Task<CustomProtocolDTO> ShowMenuForChef(int userId)
         {
             while (true)
             {
-                CustomProtocolDTO request = new CustomProtocolDTO();
+                CustomProtocolDTO protocolRequest = new CustomProtocolDTO();
                 Console.WriteLine(new string('-', 40));
                 Console.WriteLine("Select an option from the following:\n" +
                              "1. View top recommendations\n" +
@@ -26,50 +26,50 @@ namespace Client
                              "10. Logout\n" +
                              "Enter the number corresponding to your choice ");
                 Console.WriteLine(new string('-', 40));
-                var requestString = Console.ReadLine();
-                request.UserId = userId.ToString();
-                switch (requestString)
+                var userChoice = Console.ReadLine();
+                protocolRequest.UserId = userId.ToString();
+                switch (userChoice)
                 {
                     case "1":
-                        request.Action = Actions.TopRecommendations.ToString();
+                        protocolRequest.Action = Actions.TopRecommendations.ToString();
                         break;
                     case "2":
-                        request.Action = Actions.ViewNotifications.ToString();
-                        request.Payload = userId.ToString();
+                        protocolRequest.Action = Actions.ViewNotifications.ToString();
+                        protocolRequest.Payload = userId.ToString();
                         break;
                     case "3":
-                        request.Action = Actions.BrowseMenu.ToString();
+                        protocolRequest.Action = Actions.BrowseMenu.ToString();
                         break;
                     case "4":
-                        request.Action = Actions.PlanNextDayMenu.ToString();
-                        request.Payload = JsonSerializer.Serialize(GetInputForDailyMenu());
+                        protocolRequest.Action = Actions.PlanNextDayMenu.ToString();
+                        protocolRequest.Payload = JsonSerializer.Serialize(GetInputForDailyMenu());
                         break;
                     case "5":
-                        request.Action = Actions.FinalizeMenu.ToString();
-                        request.Payload = JsonSerializer.Serialize(GetInputForFinalMenu());
+                        protocolRequest.Action = Actions.FinalizeMenu.ToString();
+                        protocolRequest.Payload = JsonSerializer.Serialize(GetInputForFinalMenu());
                         break;
                     case "6":
-                        request.Action = Actions.ViewVotes.ToString();
+                        protocolRequest.Action = Actions.ViewVotes.ToString();
                         break;
                     case "7":
-                        request.Action = Actions.ViewDiscardList.ToString();
+                        protocolRequest.Action = Actions.ViewDiscardList.ToString();
                         break;
                     case "8":
-                        request.Action = Actions.RemoveDiscardedFoodItem.ToString();
-                        request.Payload = GetInputForRemoveFoodItem();
+                        protocolRequest.Action = Actions.RemoveDiscardedFoodItem.ToString();
+                        protocolRequest.Payload = GetInputForRemoveFoodItem();
                         break;
                     case "9":
-                        request.Action = Actions.RollOutDetailedFeedbackQuestions.ToString();
+                        protocolRequest.Action = Actions.RollOutDetailedFeedbackQuestions.ToString();
                         break;
                     case "10":
-                        request.Action = Actions.Logout.ToString();
+                        protocolRequest.Action = Actions.Logout.ToString();
                         break;
                     default:
                         Console.WriteLine("No such option");
                         continue;
 
                 }
-                return request;
+                return protocolRequest;
             }
         }
 
@@ -81,13 +81,13 @@ namespace Client
 
         private static object GetInputForDailyMenu()
         {
-            DailyMenuInput dailyMenuInput = new();
-            dailyMenuInput.Breakfast = GetFoodItemIds("breakfast", 3, dailyMenuInput);
-            dailyMenuInput.Lunch = GetFoodItemIds("lunch", 3, dailyMenuInput);
-            dailyMenuInput.Dinner = GetFoodItemIds("dinner", 3, dailyMenuInput);
-            return dailyMenuInput;
+            MenuInput dailyMenu = new();
+            dailyMenu.Breakfast = GetFoodItemIds("breakfast", 3, dailyMenu);
+            dailyMenu.Lunch = GetFoodItemIds("lunch", 3, dailyMenu);
+            dailyMenu.Dinner = GetFoodItemIds("dinner", 3, dailyMenu);
+            return dailyMenu;
         }
-        static List<string> GetFoodItemIds(string mealType, int count, DailyMenuInput menuInput)
+        static List<string> GetFoodItemIds(string mealType, int count, MenuInput menuInput)
         {
             while (true)
             {
@@ -132,11 +132,11 @@ namespace Client
         }
         private static object GetInputForFinalMenu()
         {
-            DailyMenuInput dailyMenuInput = new();
-            dailyMenuInput.Breakfast = GetFoodItemIds("breakfast", 2, dailyMenuInput);
-            dailyMenuInput.Lunch = GetFoodItemIds("lunch", 2, dailyMenuInput);
-            dailyMenuInput.Dinner = GetFoodItemIds("dinner", 2, dailyMenuInput);
-            return dailyMenuInput;
+            MenuInput finalMenu = new();
+            finalMenu.Breakfast = GetFoodItemIds("breakfast", 2, finalMenu);
+            finalMenu.Lunch = GetFoodItemIds("lunch", 2, finalMenu);
+            finalMenu.Dinner = GetFoodItemIds("dinner", 2, finalMenu);
+            return finalMenu;
         }
     }
 }

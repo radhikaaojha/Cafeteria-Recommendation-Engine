@@ -7,7 +7,7 @@ using Tensorflow;
 
 namespace CMS.Common.Models
 {
-    public class DailyMenuInput
+    public class MenuInput
     {
         public List<string> Breakfast { get; set; } = new();
         public List<string> Lunch { get; set; } = new();
