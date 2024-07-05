@@ -24,7 +24,7 @@ namespace ManagementServer
     public class Program
     {
         private static IServiceProvider _serviceProvider;
-        private static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+        private static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder =>
         {
            builder
                .AddFilter((category, level) => false); 
@@ -55,7 +55,7 @@ namespace ManagementServer
 
         private static IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CMSDbContext>(options => options.UseSqlServer(AppConstants.DatabaseConnectionString).UseLoggerFactory(loggerFactory));
+            services.AddDbContext<CMSDbContext>(options => options.UseSqlServer(AppConstants.DatabaseConnectionString).UseLoggerFactory(_loggerFactory));
             services.AddHangfire(config =>config.UseSqlServerStorage(AppConstants.HangfireConnection));
             services.AddHangfireServer();
             services.AddScoped<IUserRepository, UserRepository>();

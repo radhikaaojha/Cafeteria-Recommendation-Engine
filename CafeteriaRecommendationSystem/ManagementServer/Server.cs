@@ -1,6 +1,5 @@
-﻿using CMS.Common.Exceptions;
-using CMS.Common.Models;
-using Common.Models;
+﻿using CMS.Common.Models;
+using Common;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
@@ -11,13 +10,12 @@ namespace ManagementServer
 {
     public class Server
     {
-        private const int PORT = 8000;
-        private static readonly ConcurrentDictionary<string, TcpClient> connectedClients = new ConcurrentDictionary<string, TcpClient>();
-        private ClientRequestProcessor clientRequestProcessor;
+        private static readonly ConcurrentDictionary<string, TcpClient> _connectedClients = new ConcurrentDictionary<string, TcpClient>();
+        private ClientRequestProcessor _clientRequestProcessor;
 
         public Server(ClientRequestProcessor clientRequestProcessor)
         {
-            this.clientRequestProcessor = clientRequestProcessor;
+            this._clientRequestProcessor = clientRequestProcessor;
         }
 
         public async Task StartServer()
@@ -27,13 +25,13 @@ namespace ManagementServer
             {
 
                 IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
-                server = new TcpListener(ipAddress, PORT);
+                server = new TcpListener(ipAddress, AppConstants.PORT);
                 server.Start();
-                Console.WriteLine($"Server started on {ipAddress}:{PORT}");
+                Console.WriteLine($"Server started on {ipAddress}:{AppConstants.PORT}");
                 while (true)
                 {
                     TcpClient client = server.AcceptTcpClient();
-                    connectedClients.TryAdd(client.Client.RemoteEndPoint.ToString(), client);
+                    _connectedClients.TryAdd(client.Client.RemoteEndPoint.ToString(), client);
                     Console.WriteLine($"Client {client.Client.RemoteEndPoint.ToString()} connected");
                     Task.Run(() => HandleClientRequest(client));
                 }
@@ -73,7 +71,7 @@ namespace ManagementServer
                             string requestString = new string(dataBuffer);
 
                             var request = DeserializeRequest(requestString);
-                            var response = await clientRequestProcessor.ProcessClientRequest(request);
+                            var response = await _clientRequestProcessor.ProcessClientRequest(request);
 
                             byte[] responseBytes = Encoding.UTF8.GetBytes(response);
                             await writer.WriteLineAsync(responseBytes.Length.ToString());
@@ -83,7 +81,7 @@ namespace ManagementServer
                         catch (IOException e)
                         {
                             Console.WriteLine($"Client {client.Client.RemoteEndPoint} disconnected: {e.Message}");
-                            connectedClients.TryRemove(client.Client.RemoteEndPoint.ToString(), out _);
+                            _connectedClients.TryRemove(client.Client.RemoteEndPoint.ToString(), out _);
                             break;
                         }
                     }

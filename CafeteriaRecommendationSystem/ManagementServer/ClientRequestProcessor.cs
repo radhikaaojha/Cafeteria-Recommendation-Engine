@@ -13,15 +13,15 @@ namespace ManagementServer
 {
     public class ClientRequestProcessor
     {
-        private readonly TaskExecutorFactory taskExecutorFactory;
+        private readonly TaskExecutorFactory _taskExecutorFactory;
         private IAppActivityLogRepository _appActivityLogRepository;
-        private readonly ServerResponseHandler serverResponseHandler;
+        private readonly ServerResponseHandler _serverResponseHandler;
 
         public ClientRequestProcessor(TaskExecutorFactory taskExecutorFactory, ServerResponseHandler serverResponseHandler, IAppActivityLogRepository appActivityLogRepository)
         {
-            this.taskExecutorFactory = taskExecutorFactory;
+            this._taskExecutorFactory = taskExecutorFactory;
             _appActivityLogRepository = appActivityLogRepository;
-            this.serverResponseHandler = serverResponseHandler;
+            this._serverResponseHandler = serverResponseHandler;
         }
 
         public async Task<string> ProcessClientRequest(CustomProtocolDTO request)
@@ -31,12 +31,12 @@ namespace ManagementServer
             var userId = request.UserId;
             var response =  await PerformTheRequestedAction(userId,requestedAction, requestJSON);
 
-            return serverResponseHandler.CreateResponseForClient(response);
+            return _serverResponseHandler.CreateResponseForClient(response);
         }
 
         private async Task<string> PerformTheRequestedAction(string userId,string action, string jsonRequest)
         {
-            var taskExecutor = taskExecutorFactory.GetTaskExecutor(action);
+            var taskExecutor = _taskExecutorFactory.GetTaskExecutor(action);
             await _appActivityLogRepository.SaveActivityLogs(userId, action);
             return await taskExecutor.ExecuteTask(action,jsonRequest);
         }
