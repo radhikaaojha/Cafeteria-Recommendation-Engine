@@ -130,14 +130,14 @@ namespace CMS.Data.Services
             await VoteForMealItems(votingMenuRequest.Breakfast, votingMenuRequest.UserId);
             await VoteForMealItems(votingMenuRequest.Lunch, votingMenuRequest.UserId);
             await VoteForMealItems(votingMenuRequest.Dinner, votingMenuRequest.UserId);
-            await _userRepository.SetVotingForAUser(true, votingMenuRequest.UserId);
+            await _userRepository.SetVotingStatusForAUser(true, votingMenuRequest.UserId);
             return "Voting has been submitted sucessfully!";
         }
 
         private async Task ValidateVotingOfUser(VotingMenuInput dailyMenuRequest)
         {
             if (await _userRepository.HasVotedToday(dailyMenuRequest.UserId))
-                throw new InvalidOperationException("User already voted for last menu rolled out");
+                throw new InvalidOperationException("Either the User already voted for last menu rolled out or Voting for today has not yet started!");
 
             if (await IsMenuFinalised())
                 throw new InvalidOperationException("Menu is already finalised,no need to vote now");

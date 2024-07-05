@@ -15,7 +15,7 @@ namespace Data_Access_Layer.Repository.Interfaces
         Task<bool> HasVotedToday(int userId);
         Task SetUserVoting(bool status);
         Task SubmitUserPreferences(List<UserPreferenceInput> userPreferences);
-        Task SetVotingForAUser(bool status, int userId);
+        Task SetVotingStatusForAUser(bool status, int userId);
     }
 
 }
