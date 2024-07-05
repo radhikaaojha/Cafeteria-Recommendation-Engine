@@ -26,8 +26,7 @@ namespace ManagementServer
         private static IServiceProvider _serviceProvider;
         private static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder =>
         {
-           builder
-               .AddFilter((category, level) => false); 
+           builder.AddFilter((category, level) => false); 
         });
         public static async Task Main(string[] args)
         {

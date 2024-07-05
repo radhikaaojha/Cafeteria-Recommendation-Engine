@@ -61,6 +61,11 @@ namespace ManagementServer
                             Console.WriteLine($"Client {client.Client.RemoteEndPoint} disconnected: {e.Message}");
                             break;
                         }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"Client {client.Client.RemoteEndPoint} disconnected: {e.Message}");
+                            break;
+                        }
                     }
                 }
             }
