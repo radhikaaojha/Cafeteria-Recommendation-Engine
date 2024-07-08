@@ -45,6 +45,9 @@ namespace Common.Utils
                     case "RemoveDiscardedFoodItem":
                         response = await _foodItemService.RemoveDiscardedFoodItem(request);
                         break;
+                    case "Logout":
+                        response = "Logging out user!";
+                        break;
                 }
                 return ProtocolResponseHelper.CreateSuccessResponse(response, action);
             }

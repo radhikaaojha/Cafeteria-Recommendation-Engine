@@ -23,7 +23,6 @@ namespace Client
                 if (request.Action == Actions.Logout.ToString())
                 {
                     exitRequested = true;
-                    continue;
                 }
                 var serverCommunicationService = new ServerCommunicationService(writer, reader);
                 var result = await serverCommunicationService.SendRequestAsync(writer, reader, request);
