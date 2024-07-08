@@ -46,7 +46,7 @@ namespace CMS.Data.Repository
                        foodItem.StatusId == (int)Status.Available &&
                        !_context.WeeklyMenu.Any(weeklyMenu =>
                            weeklyMenu.FoodItemId == foodItem.Id &&
-                           weeklyMenu.IsSelected && weeklyMenu.CreatedDateTime.Date == yesterday);
+                           weeklyMenu.IsSelected && weeklyMenu.CreatedDateTime.Date != yesterday);
 
             var allAvailableFoodItems  = await base.GetList("FoodItemFeedback", null, new List<string> { "SentimentScore DESC" }, 15, 0, predicate);
             var mainCourseOptions = allAvailableFoodItems.Where(fi => fi.FoodItemTypeId == (int)FoodItemType.MainCourses).Take(5).ToList();
