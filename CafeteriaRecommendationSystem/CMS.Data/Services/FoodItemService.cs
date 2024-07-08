@@ -161,7 +161,7 @@ namespace CMS.Data.Services
                 throw new InvalidOperationException("Detailed feedback has already been rolled out for this month.");
             }
 
-            Expression<Func<FoodItem, bool>> predicate = data => data.StatusId == (int)Status.Discarded;
+            Expression<Func<FoodItem, bool>> predicate = data => data.StatusId == (int)Status.Discarded && data.ModifiedDateTime.Month == DateTime.Now.Month && data.ModifiedDateTime.Year == DateTime.Now.Year; ;
 
             var foodItems = await base.GetList<FoodItem>(null, null, new List<string> { "SentimentScore" }, 1, 0, predicate);
 
