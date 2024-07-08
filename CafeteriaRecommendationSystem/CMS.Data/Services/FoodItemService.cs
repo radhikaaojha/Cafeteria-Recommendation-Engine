@@ -101,7 +101,7 @@ namespace CMS.Data.Services
             await base.Update(foodItem.Id, foodItem);
         }
 
-        public async Task<string> BrowseMenu()
+        public async Task<string> ViewMenu()
         {
             var foodItems = await base.GetList<FoodItem>("FoodItemAvailabilityStatus, FoodItemType", null, null, 0, 0, null);
             var foodItemDtos = foodItems.Select(fi => new ViewFoodItem

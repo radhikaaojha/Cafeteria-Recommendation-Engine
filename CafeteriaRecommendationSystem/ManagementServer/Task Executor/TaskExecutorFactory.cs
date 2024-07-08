@@ -28,7 +28,7 @@ namespace CMS.Common.Utils
                 { Actions.RemoveFoodItem.ToString(), new AdminTaskExecutor(adminService) },
                 { Actions.UpdateFoodItemPrice.ToString(), new AdminTaskExecutor(adminService) },
                 { Actions.UpdateFoodItemStatus.ToString(), new AdminTaskExecutor(adminService) },
-                { Actions.BrowseMenu.ToString(), new CommonTaskExecutor(notificationService, foodItemService) },
+                { Actions.ViewMenu.ToString(), new CommonTaskExecutor(notificationService, foodItemService) },
                 { Actions.TopRecommendations.ToString(), new ChefTaskExecutor(chefService) },
                 { Actions.PlanNextDayMenu.ToString(), new ChefTaskExecutor(chefService) },
                 { Actions.FinalizeMenu.ToString(), new ChefTaskExecutor(chefService) },

@@ -1,11 +1,13 @@
 ﻿using CMS.Common.Models;
+using System.Globalization;
 using System.Text.Json;
 
 namespace Client
 {
     public static class ClientResponseHandler
     {
-        public static void BrowseMenu(string response)
+        
+        public static void ViewMenu(string response)
         {
             List<ViewFoodItem> menus = JsonSerializer.Deserialize<List<ViewFoodItem>>(response);
             Console.WriteLine("--------------------------------------------------------------------------------------------");
@@ -14,7 +16,7 @@ namespace Client
 
             foreach (var menu in menus)
             {
-                Console.WriteLine($"| {menu.Id,4} | {menu.Name,-18} | {menu.Price,9:C2} | {menu.Description,-25} | {menu.SentimentScore,9} | {menu.AvailabilityStatus,-12} | {menu.FoodItemType,-8} |");
+                Console.WriteLine($"| {menu.Id,4} | {menu.Name,-18} | Rs.{menu.Price} | {menu.Description,-25} | {menu.SentimentScore,9} | {menu.AvailabilityStatus,-12} | {menu.FoodItemType,-8} |");
             }
 
             Console.WriteLine("--------------------------------------------------------------------------------------------");
@@ -70,7 +72,7 @@ namespace Client
 
         public static void ShowDailyMenu(string response)
         {
-            var rolledOutFoodItems = JsonSerializer.Deserialize<BrowseNextDayMenu>(response);
+            var rolledOutFoodItems = JsonSerializer.Deserialize<ViewNextDayMenu>(response);
 
             Console.WriteLine("--------------------------------------------------------------------------------");
             
@@ -96,7 +98,7 @@ namespace Client
             Console.WriteLine("|  ID  |        Name        |   Price   |        Description        | Sentiment | Availability | ItemType |");
             Console.WriteLine("--------------------------------------------------------------------------------------------");
 
-            Console.WriteLine($"| {discardedFoodItem.Id,4} | {discardedFoodItem.Name,-18} | {discardedFoodItem.Price,9:C2} | {discardedFoodItem.Description,-25} | {discardedFoodItem.SentimentScore,9} | {discardedFoodItem.AvailabilityStatus,-12} | {discardedFoodItem.FoodItemType,-8} |");
+            Console.WriteLine($"| {discardedFoodItem.Id,4} | {discardedFoodItem.Name,-18} | Rs.{discardedFoodItem.Price} | {discardedFoodItem.Description,-25} | {discardedFoodItem.SentimentScore,9} | {discardedFoodItem.AvailabilityStatus,-12} | {discardedFoodItem.FoodItemType,-8} |");
 
             Console.WriteLine("--------------------------------------------------------------------------------");
 

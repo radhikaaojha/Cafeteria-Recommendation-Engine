@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CMS.Common.Models
 {
-    public class FoodItemStatusUpdate
+    public class UpdateFoodItemStatus
     {
         public int FoodItemId { get; set; }
         public int StatusId { get; set; }

@@ -11,7 +11,7 @@ namespace Data_Access_Layer.Repository.Interfaces
 {
     public interface IUserRepository : ICrudBaseRepository<User>
     {
-        Task<User> AuthenticateUser(UserLogin userLogin);
+        Task<User> AuthenticateUser(LoginRequest userLogin);
         Task<bool> HasVotedToday(int userId);
         Task SetUsersVotingStatus(bool status);
         Task SubmitUserPreferences(List<UserPreferences> userPreferences);

@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace CMS.Common.Models
 {
-    public class FoodItemPriceUpdate
+    public class UpdateFoodItemPrice
     {
         public int FoodItemId { get; set; }
         public decimal Price { get; set; }

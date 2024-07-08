@@ -52,8 +52,8 @@ namespace Client
             {
                 switch (response.Action)
                 {
-                    case "BrowseMenu":
-                        ClientResponseHandler.BrowseMenu(response.Response);
+                    case "ViewMenu":
+                        ClientResponseHandler.ViewMenu(response.Response);
                         break;
                     case "TopRecommendations":
                         ClientResponseHandler.ShowTopRecommendations(response.Response);

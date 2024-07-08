@@ -13,7 +13,7 @@ namespace CMS.Common.Enums
         RemoveFoodItem,
         UpdateFoodItemPrice,
         UpdateFoodItemStatus,
-        BrowseMenu,
+        ViewMenu,
         Logout,
         TopRecommendations,
         ViewNotifications,

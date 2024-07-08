@@ -19,7 +19,7 @@ namespace CafeteriaRecommendationSystem.Services
             _userRepository = userRepository;
         }
 
-        public async Task<LoginResponse> Login(UserLogin userLogin)
+        public async Task<LoginResponse> Login(LoginRequest userLogin)
         {
             var user = await _userRepository.AuthenticateUser(userLogin);
             if (user == null)

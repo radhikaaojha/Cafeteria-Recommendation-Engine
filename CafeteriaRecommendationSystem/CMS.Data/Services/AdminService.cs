@@ -59,7 +59,7 @@ namespace CMS.Data.Services
 
         public async Task<string> UpdateAvailabilityStatusForFoodItem(string input)
         {
-            var foodItemInput = JsonSerializer.Deserialize<FoodItemStatusUpdate>(input);
+            var foodItemInput = JsonSerializer.Deserialize<UpdateFoodItemStatus>(input);
 
             if (!Enum.IsDefined(typeof(Status), foodItemInput.StatusId))
             {
@@ -86,7 +86,7 @@ namespace CMS.Data.Services
 
         public async Task<string> UpdatePriceForFoodItem(string input)
         {
-            var foodItemInput = JsonSerializer.Deserialize<FoodItemPriceUpdate>(input);
+            var foodItemInput = JsonSerializer.Deserialize<UpdateFoodItemPrice>(input);
 
             if (!foodItemInput.IsValid())
             {

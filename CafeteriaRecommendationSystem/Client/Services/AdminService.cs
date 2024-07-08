@@ -15,7 +15,7 @@ namespace Client.Services
                 Console.WriteLine("Select an option from the following:\n" +
                              "1. Add a new food item\n" +
                              "2. Remove food item\n" +
-                             "3. Browse Menu of Cafeteria\n" +
+                             "3. View Menu of Cafeteria\n" +
                              "4. Update the price of a food item\n" +
                              "5. Update the availability status of a food item\n" +
                              "6. Generate discarded menu item list\n" +
@@ -37,7 +37,7 @@ namespace Client.Services
                         protocolRequest.Payload = GetInputForRemoveFoodItem();
                         break;
                     case "3":
-                        protocolRequest.Action = Actions.BrowseMenu.ToString();
+                        protocolRequest.Action = Actions.ViewMenu.ToString();
                         break;
                     case "4":
                         protocolRequest.Action = Actions.UpdateFoodItemPrice.ToString();
@@ -71,7 +71,7 @@ namespace Client.Services
 
         private static object GetInputForUpdateFoodItemStatus()
         {
-            FoodItemStatusUpdate foodItem = new();
+            UpdateFoodItemStatus foodItem = new();
             Console.WriteLine("Enter id of food item you wish to update status of");
             foodItem.FoodItemId = int.Parse(Console.ReadLine());
             Console.WriteLine("Enter status id");
@@ -81,7 +81,7 @@ namespace Client.Services
 
         private static object GetInputForUpdateFoodItemPrice()
         {
-            FoodItemPriceUpdate foodItem = new();
+            UpdateFoodItemPrice foodItem = new();
             Console.WriteLine("Enter id of food item you wish to update price of");
             foodItem.FoodItemId = int.Parse(Console.ReadLine());
             Console.WriteLine("Enter price");

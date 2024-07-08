@@ -14,8 +14,8 @@ namespace CMS.Data.Profiles
         public FoodItemProfile()
         {
             CreateMap<AddFoodItem, FoodItem>().ReverseMap();
-            CreateMap<FoodItemPriceUpdate, FoodItem>().ReverseMap();
-            CreateMap<FoodItemStatusUpdate, FoodItem>().ReverseMap();
+            CreateMap<UpdateFoodItemPrice, FoodItem>().ReverseMap();
+            CreateMap<UpdateFoodItemStatus, FoodItem>().ReverseMap();
             CreateMap<ViewFoodItem, FoodItem>().ReverseMap();
             CreateMap<RecommendedItem, FoodItem>().ReverseMap();
         } 

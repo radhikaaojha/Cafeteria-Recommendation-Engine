@@ -16,7 +16,7 @@ namespace Client.Services
                 Console.WriteLine("Select an option from the following:\n" +
                              "1. View top recommendations\n" +
                              "2. View Notifications\n" +
-                             "3. Browse Menu of Cafeteria\n" +
+                             "3. View Menu of Cafeteria\n" +
                              "4. Plan next day menu\n" +
                              "5. Finalize Menu Selection\n" +
                              "6. View recommendation from employees\n" +
@@ -38,7 +38,7 @@ namespace Client.Services
                         protocolRequest.Payload = userId.ToString();
                         break;
                     case "3":
-                        protocolRequest.Action = Actions.BrowseMenu.ToString();
+                        protocolRequest.Action = Actions.ViewMenu.ToString();
                         break;
                     case "4":
                         protocolRequest.Action = Actions.PlanNextDayMenu.ToString();

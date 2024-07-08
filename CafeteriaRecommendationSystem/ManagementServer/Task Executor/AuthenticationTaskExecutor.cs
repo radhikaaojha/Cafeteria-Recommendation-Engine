@@ -21,7 +21,7 @@ namespace Common.Utils
         {
             try
             {
-                var userCredentials = JsonSerializer.Deserialize<UserLogin>(jsonRequest);
+                var userCredentials = JsonSerializer.Deserialize<LoginRequest>(jsonRequest);
                 var loginResponse = await _authenticateService.Login(userCredentials);
 
                 return ProtocolResponseHelper.CreateSuccessResponse(JsonSerializer.Serialize(loginResponse),action);

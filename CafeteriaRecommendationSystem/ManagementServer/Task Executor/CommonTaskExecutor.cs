@@ -30,8 +30,8 @@ namespace Common.Utils
 
                 switch (action)
                 {
-                    case "BrowseMenu":
-                        response = await _foodItemService.BrowseMenu();
+                    case "ViewMenu":
+                        response = await _foodItemService.ViewMenu();
                         break;
                     case "ViewNotifications":
                         response = await _notificationService.ViewNotifications(int.Parse(request));

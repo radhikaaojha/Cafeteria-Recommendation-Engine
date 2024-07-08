@@ -58,7 +58,7 @@ namespace CMS.Data.Services
                 FoodItems = group.OrderByDescending(item => CalculatePreferenceScore(item.FoodItem, user.UserPreference)).ToList()
             }); ;
 
-            var viewNextDayMenu = new BrowseNextDayMenu();
+            var viewNextDayMenu = new ViewNextDayMenu();
 
             foreach (var group in groupedItems)
             {

@@ -12,6 +12,6 @@ namespace CafeteriaRecommendationSystem.Services.Interfaces
 {
     public interface IAuthenticateService 
     {
-        Task<LoginResponse> Login(UserLogin userLogin);
+        Task<LoginResponse> Login(LoginRequest userLogin);
     }
 }
