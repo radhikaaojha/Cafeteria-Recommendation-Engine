@@ -75,13 +75,13 @@ namespace Client
             Console.WriteLine("--------------------------------------------------------------------------------");
             
             Console.WriteLine("Breakfast:");
-            DisplayMeal(rolledOutFoodItems.Breakfast);
+            ShowFoodItemsByMealType(rolledOutFoodItems.Breakfast);
 
             Console.WriteLine("\nLunch:");
-            DisplayMeal(rolledOutFoodItems.Lunch);
+            ShowFoodItemsByMealType(rolledOutFoodItems.Lunch);
 
             Console.WriteLine("\nDinner:");
-            DisplayMeal(rolledOutFoodItems.Dinner);
+            ShowFoodItemsByMealType(rolledOutFoodItems.Dinner);
 
             Console.WriteLine("--------------------------------------------------------------------------------");
 
@@ -102,9 +102,9 @@ namespace Client
 
         }
 
-        private static void DisplayMeal(List<RecommendedItem> mealItems)
+        private static void ShowFoodItemsByMealType(List<RecommendedItem> foodItems)
         {
-            if (mealItems.Count == 0)
+            if (foodItems.Count == 0)
             {
                 Console.WriteLine("No items available.");
                 return;
@@ -114,7 +114,7 @@ namespace Client
             Console.WriteLine("|  ID  |        Name        |        Description        | Sentiment Score |");
             Console.WriteLine("--------------------------------------------------------------------------------");
 
-            foreach (var item in mealItems)
+            foreach (var item in foodItems)
             {
                 Console.WriteLine("| {0,-4} | {1,-18} | {2,-24} | {3,-15:N2} |", item.Id, Truncate(item.Name, 18), Truncate(item.Description, 24), item.SentimentScore);
             }
