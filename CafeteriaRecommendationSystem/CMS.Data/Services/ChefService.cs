@@ -204,7 +204,7 @@ namespace CMS.Data.Services
         {
             foreach (var item in mealItems)
             {
-                var weeklyMenuRequest = new WeeklyMenuRequest
+                var weeklyMenuRequest = new SelectedFoodItem
                 {
                     FoodItemId = int.Parse(item),
                     MealTypeId = (int)mealType

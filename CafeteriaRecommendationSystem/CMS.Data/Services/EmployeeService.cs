@@ -105,7 +105,7 @@ namespace CMS.Data.Services
 
         public async Task<string> SubmitUserPreference(string request)
         {
-            var userPreference = JsonSerializer.Deserialize<List<UserPreferences>>(request);
+            var userPreference = JsonSerializer.Deserialize<List<UserCharactersticPreference>>(request);
             await _userRepository.SubmitUserPreferences(userPreference);
             return "User preference has been recorded successfully";
         }

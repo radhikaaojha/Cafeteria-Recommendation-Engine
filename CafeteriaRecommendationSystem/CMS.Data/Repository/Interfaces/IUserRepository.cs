@@ -14,7 +14,7 @@ namespace Data_Access_Layer.Repository.Interfaces
         Task<User> AuthenticateUser(LoginRequest userLogin);
         Task<bool> HasVotedToday(int userId);
         Task SetUsersVotingStatus(bool status);
-        Task SubmitUserPreferences(List<UserPreferences> userPreferences);
+        Task SubmitUserPreferences(List<UserCharactersticPreference> userPreferences);
         Task SetVotingStatusForAUser(bool status, int userId);
     }
 

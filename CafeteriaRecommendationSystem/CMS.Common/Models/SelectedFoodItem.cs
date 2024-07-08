@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CMS.Common.Models
 {
-    public class WeeklyMenuRequest
+    public class SelectedFoodItem
     {
         public bool IsSelected { get; set; } = false;
         public int MealTypeId { get; set; }

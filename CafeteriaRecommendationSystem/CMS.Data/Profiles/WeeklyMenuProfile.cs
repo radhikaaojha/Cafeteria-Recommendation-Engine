@@ -12,7 +12,7 @@ namespace CMS.Data.Profiles
     public class WeeklyMenuProfile : Profile
     {
         public WeeklyMenuProfile() { 
-            CreateMap<WeeklyMenu, WeeklyMenuRequest>().ReverseMap();
+            CreateMap<WeeklyMenu, SelectedFoodItem>().ReverseMap();
             CreateMap<WeeklyMenu, FoodItemVotingStats>().ReverseMap();
         }
     }

@@ -71,9 +71,9 @@ namespace Client.Services
             }
         }
 
-        public static List<UserPreferences> GetInputForUserPreferences(int userId)
+        public static List<UserCharactersticPreference> GetInputForUserPreferences(int userId)
         {
-            var preferences = new List<UserPreferences>();
+            var preferences = new List<UserCharactersticPreference>();
             var characteristicIds = Enum.GetValues(typeof(FoodCharacterstic)).Cast<FoodCharacterstic>().ToList();
 
             foreach (var characteristicId in characteristicIds)
@@ -100,7 +100,7 @@ namespace Client.Services
                     }
                 } while (!isValidPriority);
 
-                preferences.Add(new UserPreferences
+                preferences.Add(new UserCharactersticPreference
                 {
                     UserId = userId,
                     CharacteristicId = characteristicId,
