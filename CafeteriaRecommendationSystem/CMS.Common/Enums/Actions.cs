@@ -24,10 +24,11 @@ namespace CMS.Common.Enums
         VoteForMenu,
         ViewRolledOutItems,
         ViewTodaysMenu,
-        ViewDiscardList,
+        GenerateDiscardList,
         RollOutDetailedFeedbackQuestions,
         SubmitDetailedFeedback,
         RemoveDiscardedFoodItem,
-        UserPreference
+        UserPreference,
+        DiscardFoodItem
     }
 }

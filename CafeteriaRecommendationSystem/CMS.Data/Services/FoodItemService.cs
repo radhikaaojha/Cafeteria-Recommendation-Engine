@@ -22,6 +22,7 @@ namespace CMS.Data.Services
         private readonly IAppActivityLogRepository _appActivityLogRepository;
         private readonly INotificationService _notificationService;
         private ILogger<FoodItemService> _logger;
+        private IMapper _mapper;
         public FoodItemService(IFoodItemRepository foodItemRepository, ICrudBaseRepository<FoodItem> repository,
             IMapper mapper, ILogger<FoodItemService> logger,
             IAppActivityLogRepository appActivityLogRepository, INotificationService notificationService) : base(repository, mapper)
@@ -30,6 +31,7 @@ namespace CMS.Data.Services
             _logger = logger;
             _notificationService = notificationService;
             _appActivityLogRepository = appActivityLogRepository;
+            _mapper = mapper;
         }
 
         public async Task<FoodItem> UpdatePrice(int foodItemId, decimal newPrice)
@@ -79,6 +81,29 @@ namespace CMS.Data.Services
             return $"Removed {foodItem.Name} successfully";
         }
 
+        public async Task<string> DiscardFoodItem(string request)
+        {
+            var foodItemId = JsonSerializer.Deserialize<int>(request);
+
+            if (!await _appActivityLogRepository.HasTaskExecutedThisMonth("GenerateDiscardList"))
+                throw new InvalidOperationException("Discard food item list wasnt generated for this month.");
+
+            if (await _appActivityLogRepository.HasTaskExecutedThisMonth("DiscardFoodItem"))
+                throw new InvalidOperationException("We have already discarded a food item in this month.");
+
+            var foodItem = await base.GetById<FoodItem>(foodItemId);
+
+            if (foodItem == null)
+                throw new FoodItemNotFoundException("Food Item with given id doesnt exist", null, _logger);
+
+            foodItem.StatusId = (int)Status.Discarded;
+            await base.Update(foodItem.Id, foodItem);
+
+            await _appActivityLogRepository.UpdateLastExecutionDate("DiscardFoodItem", DateTime.Now);
+
+            return $"Discarded {foodItem.Name} successfully";
+        }
+
         public async Task<bool> DoesFoodItemWithSameNameExists(string name)
         {
             return await _foodItemRepository.DoesFoodItemWithSameNameExists(name);
@@ -103,51 +128,30 @@ namespace CMS.Data.Services
 
         public async Task<string> ViewMenu()
         {
-            var foodItems = await base.GetList<FoodItem>("FoodItemAvailabilityStatus, FoodItemType", null, null, 0, 0, null);
-            var foodItemDtos = foodItems.Select(fi => new ViewFoodItem
-            {
-                Id = fi.Id,
-                Name = fi.Name,
-                Price = fi.Price,
-                AvailabilityStatus = fi.FoodItemAvailabilityStatus?.Name,
-                FoodItemType = fi.FoodItemType?.Name,
-                Description = fi.Description,
-                SentimentScore = fi.SentimentScore
-            }).ToList();
+            var foodItemsList = await base.GetList<FoodItem>("FoodItemAvailabilityStatus, FoodItemType", null, null, 0, 0, null);
+            var foodItems = _mapper.Map<List<ViewFoodItem>>(foodItemsList);
             var options = new JsonSerializerOptions
             {
                 ReferenceHandler = ReferenceHandler.Preserve,
                 MaxDepth = 128
             };
-            return JsonSerializer.Serialize(foodItemDtos);
+            return JsonSerializer.Serialize(foodItems);
         }
 
-        public async Task<string> ViewDiscardedFoodItem()
+        public async Task<string> GenerateDiscardedFoodItemList()
         {
             if (await _appActivityLogRepository.HasTaskExecutedThisMonth("GenerateDiscardList"))
             {
                 throw new InvalidOperationException("Discarded Food items List can only be generated once a month.");
             }
 
-            var discardedFoodItem = await _foodItemRepository.GetDiscardedFoodItem();
+            var discardedFoodItems = await _foodItemRepository.GetDiscardedFoodItems();
 
-            var discardedFoodItemDto = new ViewFoodItem
-            {
-                Id = discardedFoodItem.Id,
-                Name = discardedFoodItem.Name,
-                Price = discardedFoodItem.Price,
-                AvailabilityStatus = discardedFoodItem.FoodItemAvailabilityStatus?.Name,
-                FoodItemType = discardedFoodItem.FoodItemType?.Name,
-                Description = discardedFoodItem.Description,
-                SentimentScore = discardedFoodItem.SentimentScore
-            };
-
-            discardedFoodItem.StatusId = (int)Status.Discarded;
-            await base.Update(discardedFoodItem.Id, discardedFoodItemDto);
+            var discardedFoodItemsList = _mapper.Map<List<ViewFoodItem>>(discardedFoodItems);
 
             await _appActivityLogRepository.UpdateLastExecutionDate("GenerateDiscardList", DateTime.Now);
 
-            return JsonSerializer.Serialize(discardedFoodItemDto);
+            return JsonSerializer.Serialize(discardedFoodItemsList);
         }
 
         public async Task<string> RollOutFeedbackQuestionnaireForDiscardedItem()
@@ -162,7 +166,7 @@ namespace CMS.Data.Services
             var foodItems = await base.GetList<FoodItem>(null, null, new List<string> { "SentimentScore" }, 1, 0, predicate);
 
             if (foodItems.Count == 0)
-                throw new InvalidOperationException("No discard item currently present,please generate discarded list first");
+                throw new InvalidOperationException("No food item has been discarded yet!");
 
             foreach (var foodItem in foodItems)
             {

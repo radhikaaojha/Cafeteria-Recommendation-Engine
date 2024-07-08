@@ -16,8 +16,11 @@ namespace CMS.Data.Profiles
             CreateMap<AddFoodItem, FoodItem>().ReverseMap();
             CreateMap<UpdateFoodItemPrice, FoodItem>().ReverseMap();
             CreateMap<UpdateFoodItemStatus, FoodItem>().ReverseMap();
-            CreateMap<ViewFoodItem, FoodItem>().ReverseMap();
+            CreateMap<FoodItem, ViewFoodItem> ()
+             .ForMember(dest => dest.AvailabilityStatus, opt => opt.MapFrom(src => src.FoodItemAvailabilityStatus != null ? src.FoodItemAvailabilityStatus.Name : null))
+            .ForMember(dest => dest.FoodItemType, opt => opt.MapFrom(src => src.FoodItemType != null ? src.FoodItemType.Name : null))
+            .ReverseMap();
             CreateMap<RecommendedItem, FoodItem>().ReverseMap();
-        } 
+        }
     }
 }

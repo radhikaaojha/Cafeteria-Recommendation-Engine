@@ -12,6 +12,6 @@ namespace CMS.Data.Repository.Interfaces
     {
         Task<bool> DoesFoodItemWithSameNameExists(string name);
         Task<List<FoodItem>> GetNextDayMenuRecommendation();
-        Task<FoodItem> GetDiscardedFoodItem();
+        Task<List<FoodItem>> GetDiscardedFoodItems();
     }
 }

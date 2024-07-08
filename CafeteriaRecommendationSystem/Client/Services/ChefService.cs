@@ -23,7 +23,8 @@ namespace Client.Services
                              "7. Generate discarded menu item list\n" +
                              "8. Remove discarded menu item\n" +
                              "9. Roll out detailed feedback questions for discarded item\n" +
-                             "10. Logout\n" +
+                             "10. Discard food item\n" +
+                             "11. Logout\n" +
                              "Enter the number corresponding to your choice ");
                 Console.WriteLine(new string('-', 40));
                 var userChoice = Console.ReadLine();
@@ -52,16 +53,20 @@ namespace Client.Services
                         protocolRequest.Action = Actions.ViewVotes.ToString();
                         break;
                     case "7":
-                        protocolRequest.Action = Actions.ViewDiscardList.ToString();
+                        protocolRequest.Action = Actions.GenerateDiscardList.ToString();
                         break;
                     case "8":
                         protocolRequest.Action = Actions.RemoveDiscardedFoodItem.ToString();
-                        protocolRequest.Payload = GetInputForRemoveFoodItem();
+                        protocolRequest.Payload = GetInputForFoodItemId();
                         break;
                     case "9":
                         protocolRequest.Action = Actions.RollOutDetailedFeedbackQuestions.ToString();
                         break;
                     case "10":
+                        protocolRequest.Action = Actions.DiscardFoodItem.ToString();
+                        protocolRequest.Payload = GetInputForFoodItemId();
+                        break;
+                    case "11":
                         protocolRequest.Action = Actions.Logout.ToString();
                         break;
                     default:
@@ -73,9 +78,9 @@ namespace Client.Services
             }
         }
 
-        private static string GetInputForRemoveFoodItem()
+        private static string GetInputForFoodItemId()
         {
-            Console.WriteLine("Enter id of food item you wish to remove");
+            Console.WriteLine("Enter id of food item:");
             return Console.ReadLine();
         }
 

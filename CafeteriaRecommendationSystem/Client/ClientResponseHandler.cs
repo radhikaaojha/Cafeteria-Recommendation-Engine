@@ -91,15 +91,17 @@ namespace Client
 
         public static void ShowDiscardFoodItemList(string response)
         {
-            var discardedFoodItem = JsonSerializer.Deserialize<ViewFoodItem>(response);
+            var discardedFoodItems = JsonSerializer.Deserialize<List<ViewFoodItem>>(response);
 
             Console.WriteLine("--------------------------------------------------------------------------------");
             Console.WriteLine("--------------------------------------------------------------------------------------------");
             Console.WriteLine("|  ID  |        Name        |   Price   |        Description        | Sentiment | Availability | ItemType |");
             Console.WriteLine("--------------------------------------------------------------------------------------------");
 
-            Console.WriteLine($"| {discardedFoodItem.Id,4} | {discardedFoodItem.Name,-18} | Rs.{discardedFoodItem.Price} | {discardedFoodItem.Description,-25} | {discardedFoodItem.SentimentScore,9} | {discardedFoodItem.AvailabilityStatus,-12} | {discardedFoodItem.FoodItemType,-8} |");
-
+            foreach(var discardedFoodItem in discardedFoodItems)
+            {
+                Console.WriteLine($"| {discardedFoodItem.Id,4} | {discardedFoodItem.Name,-18} | Rs.{discardedFoodItem.Price} | {discardedFoodItem.Description,-25} | {discardedFoodItem.SentimentScore,9} | {discardedFoodItem.AvailabilityStatus,-12} | {discardedFoodItem.FoodItemType,-8} |");
+            }
             Console.WriteLine("--------------------------------------------------------------------------------");
 
         }

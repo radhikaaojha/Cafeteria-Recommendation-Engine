@@ -70,7 +70,7 @@ namespace Client
                     case "ViewTodaysMenu":
                         ClientResponseHandler.ShowDailyMenu(response.Response);
                         break;
-                    case "ViewDiscardList":
+                    case "GenerateDiscardList":
                         ClientResponseHandler.ShowDiscardFoodItemList(response.Response);
                         break;
                     default:

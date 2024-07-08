@@ -23,7 +23,7 @@ namespace CMS.Data.Repository
             return _context.FoodItem.Any(foodItem => foodItem.Name.ToLower() == name.ToLower());
         }
         
-        public async Task<FoodItem> GetDiscardedFoodItem()
+        public async Task<List<FoodItem>> GetDiscardedFoodItems()
         {
             var foodItems = await _context.FoodItem.Include(f => f.FoodItemAvailabilityStatus)
                                                    .Include(f => f.FoodItemType)
@@ -31,12 +31,12 @@ namespace CMS.Data.Repository
                                                    .OrderBy(f => f.SentimentScore)
                                                    .ToListAsync();
 
-            var discardedFoodItem = foodItems.FirstOrDefault(f => ContainsNegativeKeywords(f.Description));
+            var discardedFoodItems = foodItems.Where(f => ContainsNegativeKeywords(f.Description)).ToList();
 
-            if (discardedFoodItem == null)
+            if (discardedFoodItems.Count() == 0)
                 throw new FoodItemNotFoundException("No food item elgibile for discard menu item list");
 
-            return discardedFoodItem;
+            return discardedFoodItems;
         }
 
         public async Task<List<FoodItem>> GetNextDayMenuRecommendation()

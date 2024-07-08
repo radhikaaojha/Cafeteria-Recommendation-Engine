@@ -38,10 +38,11 @@ namespace CMS.Common.Utils
                 { Actions.VoteForMenu.ToString(), new EmployeeTaskExecutor(employeeService) },
                 { Actions.ViewRolledOutItems.ToString(), new EmployeeTaskExecutor(employeeService) },
                 { Actions.ViewTodaysMenu.ToString(), new EmployeeTaskExecutor(employeeService) },
-                { Actions.ViewDiscardList.ToString(), new CommonTaskExecutor(notificationService,foodItemService) },
+                { Actions.GenerateDiscardList.ToString(), new CommonTaskExecutor(notificationService,foodItemService) },
                 { Actions.RollOutDetailedFeedbackQuestions.ToString(), new CommonTaskExecutor(notificationService,foodItemService) },
                 { Actions.SubmitDetailedFeedback.ToString(), new EmployeeTaskExecutor(employeeService) },
                 { Actions.RemoveDiscardedFoodItem.ToString(), new CommonTaskExecutor(notificationService,foodItemService) },
+                { Actions.DiscardFoodItem.ToString(), new CommonTaskExecutor(notificationService,foodItemService) },
                 { Actions.UserPreference.ToString(), new EmployeeTaskExecutor(employeeService)  },
                 { Actions.Logout.ToString(),  new CommonTaskExecutor(notificationService,foodItemService) },
         };

@@ -36,11 +36,14 @@ namespace Common.Utils
                     case "ViewNotifications":
                         response = await _notificationService.ViewNotifications(int.Parse(request));
                         break;
-                    case "ViewDiscardList":
-                        response = await _foodItemService.ViewDiscardedFoodItem();
+                    case "GenerateDiscardList":
+                        response = await _foodItemService.GenerateDiscardedFoodItemList();
                         break;
                     case "RollOutDetailedFeedbackQuestions":
                         response = await _foodItemService.RollOutFeedbackQuestionnaireForDiscardedItem();
+                        break;
+                    case "DiscardFoodItem":
+                        response = await _foodItemService.DiscardFoodItem(request);
                         break;
                     case "RemoveDiscardedFoodItem":
                         response = await _foodItemService.RemoveDiscardedFoodItem(request);

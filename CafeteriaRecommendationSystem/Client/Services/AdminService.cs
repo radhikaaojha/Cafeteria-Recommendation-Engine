@@ -20,8 +20,9 @@ namespace Client.Services
                              "5. Update the availability status of a food item\n" +
                              "6. Generate discarded menu item list\n" +
                              "7. Roll out feedback questions for discarded item\n" +
-                             "8. Remove discarded menu item\n" +
-                             "9. Logout\n" +
+                             "8. Remove discarded food item\n" +
+                             "9. Discard food item\n" +
+                             "10. Logout\n" +
                              "Enter the number corresponding to your choice ");
                 Console.WriteLine(new string('-', 40));
                 var userChoice = Console.ReadLine();
@@ -34,7 +35,7 @@ namespace Client.Services
                         break;
                     case "2":
                         protocolRequest.Action = Actions.RemoveFoodItem.ToString();
-                        protocolRequest.Payload = GetInputForRemoveFoodItem();
+                        protocolRequest.Payload = GetInputForFoodItemId();
                         break;
                     case "3":
                         protocolRequest.Action = Actions.ViewMenu.ToString();
@@ -48,16 +49,20 @@ namespace Client.Services
                         protocolRequest.Payload = JsonSerializer.Serialize(GetInputForUpdateFoodItemStatus());
                         break;
                     case "6":
-                        protocolRequest.Action = Actions.ViewDiscardList.ToString();
+                        protocolRequest.Action = Actions.GenerateDiscardList.ToString();
                         break;
                     case "7":
                         protocolRequest.Action = Actions.RollOutDetailedFeedbackQuestions.ToString();
                         break;
                     case "8":
                         protocolRequest.Action = Actions.RemoveDiscardedFoodItem.ToString();
-                        protocolRequest.Payload = GetInputForRemoveFoodItem();
+                        protocolRequest.Payload = GetInputForFoodItemId();
                         break;
                     case "9":
+                        protocolRequest.Action = Actions.DiscardFoodItem.ToString();
+                        protocolRequest.Payload = GetInputForFoodItemId();
+                        break; 
+                    case "10":
                         protocolRequest.Action = Actions.Logout.ToString();
                         break;
                     default:
@@ -89,9 +94,9 @@ namespace Client.Services
             return foodItem;
         }
 
-        private static string GetInputForRemoveFoodItem()
+        private static string GetInputForFoodItemId()
         {
-            Console.WriteLine("Enter id of food item you wish to remove");
+            Console.WriteLine("Enter id of food item :");
             return Console.ReadLine();
         }
 
