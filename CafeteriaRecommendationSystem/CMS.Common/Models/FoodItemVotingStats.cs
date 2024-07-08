@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace CMS.Common.Models
 {
-    public class EmployeeVotingView
+    public class FoodItemVotingStats
     {
+        public int FoodItemId { get; set; }
         public string Name { get; set; }
         public int NumberOfVotes { get; set; }
         public string MealType { get; set; }

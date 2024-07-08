@@ -45,10 +45,10 @@ namespace CMS.Data.Services
             var weeklyMenuItems = await _weeklyMenuService.GetList<WeeklyMenu>("FoodItem, FoodItem.FoodItemCharactersticMapping", null, null, 0, 0, predicate);
 
             if (date.Date.Date == DateTime.Today.Date && weeklyMenuItems.Count == 0)
-                return "Chef has not yet rolled out items for tomorrow menu";
+                throw new InvalidOperationException("Chef has not yet rolled out items for tomorrow menu");
 
             if (weeklyMenuItems.Count == 0)
-                return "Menu is not finalised yet";
+                throw new InvalidOperationException("Menu is not finalised yet");
 
             var user = await _userRepository.GetById(userId, "UserPreference");
 
@@ -135,11 +135,11 @@ namespace CMS.Data.Services
 
         private async Task ValidateVotingOfUser(UserMealPreference dailyMenuRequest)
         {
-            if (await _userRepository.HasVotedToday(dailyMenuRequest.UserId))
-                throw new InvalidOperationException("Voting for today has not yet started!");
-
             if (await IsMenuFinalised())
                 throw new InvalidOperationException("Menu is already finalised, Voting has been closed!");
+
+            if (await _userRepository.HasVotedToday(dailyMenuRequest.UserId))
+                throw new InvalidOperationException("Voting for today has been submitted already");
 
             await ValidateItemsExistInWeeklyMenu(dailyMenuRequest.Breakfast);
             await ValidateItemsExistInWeeklyMenu(dailyMenuRequest.Lunch);

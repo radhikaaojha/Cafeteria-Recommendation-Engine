@@ -149,8 +149,9 @@ namespace CMS.Data.Services
 
             Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == DateTime.Now.Date;
             var foodItems = await _weeklyMenuService.GetList<WeeklyMenu>("FoodItem, MealType", null, null, 10, 0, predicate);
-            var foodItemDtos = foodItems.Select(fi => new EmployeeVotingView
+            var foodItemDtos = foodItems.Select(fi => new FoodItemVotingStats
             {
+                FoodItemId = fi.FoodItemId,
                 Name = fi.FoodItem.Name,
                 NumberOfVotes = fi.NumberOfVotes,
                 MealType = fi.MealType.Name

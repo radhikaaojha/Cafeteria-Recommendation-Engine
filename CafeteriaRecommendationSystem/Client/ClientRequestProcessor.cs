@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Client
@@ -48,53 +49,42 @@ namespace Client
 
         private static async Task HandleAction(CustomProtocolDTO response)
         {
-            switch (response.Action)
+            try
             {
-                case "SomeAction":
-                    break;
-                // Add cases for other actions
-                default:
-                    FormatJson(response.Response);
-                    break;
+                switch (response.Action)
+                {
+                    case "BrowseMenu":
+                        ClientResponseHandler.BrowseMenu(response.Response);
+                        break;
+                    case "TopRecommendations":
+                        ClientResponseHandler.ShowTopRecommendations(response.Response);
+                        break;
+                    case "ViewNotifications":
+                        ClientResponseHandler.ShowNotifications(response.Response);
+                        break;
+                    case "ViewVotes":
+                        ClientResponseHandler.ShowVotesForFoodItem(response.Response);
+                        break;
+                    case "ViewRolledOutItems":
+                        ClientResponseHandler.ShowDailyMenu(response.Response);
+                        break;
+                    case "ViewTodaysMenu":
+                        ClientResponseHandler.ShowDailyMenu(response.Response);
+                        break;
+                    case "ViewDiscardList":
+                        ClientResponseHandler.ShowDiscardFoodItemList(response.Response);
+                        break;
+                    default:
+                        Console.WriteLine(response.Response);
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
 
-        public static void FormatJson(string json)
-        {
-            bool inQuotes = false;
-            int indentLevel = 0;
-            string currentLine = "";
-
-            foreach (char c in json)
-            {
-                if (c == '"')
-                {
-                    inQuotes = !inQuotes;
-                }
-
-                if (!inQuotes && (c == ',' || c == '{' || c == '}'))
-                {
-                    if (c == '{')
-                    {
-                        indentLevel++;
-                    }
-
-                    currentLine += c;
-                    currentLine += Environment.NewLine;
-
-                    if (c == '}')
-                    {
-                        indentLevel--;
-                        currentLine += new string(' ', indentLevel * 4);
-                    }
-                }
-                else
-                {
-                    currentLine += c;
-                }
-            }
-
-            Console.WriteLine(currentLine);
-        }
+      
     }
 }

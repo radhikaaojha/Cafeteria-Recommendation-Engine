@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CMS.Common.Models
 {
-    public class BrowseMenu
+    public class ViewFoodItem
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -104,7 +104,7 @@ namespace CMS.Data.Services
         public async Task<string> BrowseMenu()
         {
             var foodItems = await base.GetList<FoodItem>("FoodItemAvailabilityStatus, FoodItemType", null, null, 0, 0, null);
-            var foodItemDtos = foodItems.Select(fi => new BrowseMenu
+            var foodItemDtos = foodItems.Select(fi => new ViewFoodItem
             {
                 Id = fi.Id,
                 Name = fi.Name,
@@ -131,7 +131,7 @@ namespace CMS.Data.Services
 
             var discardedFoodItem = await _foodItemRepository.GetDiscardedFoodItem();
 
-            var discardedFoodItemDto = new BrowseMenu
+            var discardedFoodItemDto = new ViewFoodItem
             {
                 Id = discardedFoodItem.Id,
                 Name = discardedFoodItem.Name,
@@ -162,7 +162,7 @@ namespace CMS.Data.Services
             var foodItems = await base.GetList<FoodItem>(null, null, new List<string> { "SentimentScore" }, 1, 0, predicate);
 
             if (foodItems.Count == 0)
-                throw new InvalidOperationException("No discard item currently present,please generate discarded list");
+                throw new InvalidOperationException("No discard item currently present,please generate discarded list first");
 
             foreach (var foodItem in foodItems)
             {
