@@ -19,7 +19,7 @@ namespace Client
             bool exitRequested = false;
             while (!exitRequested)
             {
-                CustomProtocolDTO request = await GetRequestForUserRole(response);
+                CustomProtocol request = await GetRequestForUserRole(response);
                 if (request.Action == Actions.Logout.ToString())
                 {
                     exitRequested = true;
@@ -30,7 +30,7 @@ namespace Client
             }
         }
 
-        private static async Task<CustomProtocolDTO> GetRequestForUserRole(LoginResponse response)
+        private static async Task<CustomProtocol> GetRequestForUserRole(LoginResponse response)
         {
             if (response.UserId == 0)
             {
@@ -46,7 +46,7 @@ namespace Client
             };
         }
 
-        private static async Task HandleAction(CustomProtocolDTO response)
+        private static async Task HandleAction(CustomProtocol response)
         {
             try
             {

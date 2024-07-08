@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CMS.Common.Models
 {
-    public class CustomProtocolDTO
+    public class CustomProtocol
     {
         public string Payload { get; set; }
         public string Action { get; set; }

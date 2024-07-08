@@ -73,7 +73,7 @@ namespace ManagementServer
             }
         }
 
-        public async Task<string> ProcessClientRequest(CustomProtocolDTO request)
+        public async Task<string> ProcessClientRequest(CustomProtocol request)
         {
             var requestJSON = request.Payload;
             var requestedAction = request.Action;
@@ -90,18 +90,18 @@ namespace ManagementServer
             return await taskExecutor.ExecuteTask(action,jsonRequest);
         }
 
-        private CustomProtocolDTO DeserializeRequest(string message)
+        private CustomProtocol DeserializeRequest(string message)
         {
-            return JsonSerializer.Deserialize<CustomProtocolDTO>(message);
+            return JsonSerializer.Deserialize<CustomProtocol>(message);
         }
 
         public string CreateResponseForClient(string responseData)
         {
-            var customProtocolResponse = JsonSerializer.Deserialize<CustomProtocolDTO>(responseData);
+            var customProtocolResponse = JsonSerializer.Deserialize<CustomProtocol>(responseData);
             return SerializeResponse(customProtocolResponse);
         }
 
-        private string SerializeResponse(CustomProtocolDTO response)
+        private string SerializeResponse(CustomProtocol response)
         {
             return JsonSerializer.Serialize(response);
         }

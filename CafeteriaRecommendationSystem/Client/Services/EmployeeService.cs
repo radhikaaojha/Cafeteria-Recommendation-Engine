@@ -6,11 +6,11 @@ namespace Client.Services
 {
     public static class EmployeeService
     {
-        public static async Task<CustomProtocolDTO> ShowMenuForEmployee(int userId)
+        public static async Task<CustomProtocol> ShowMenuForEmployee(int userId)
         {
             while (true)
             {
-                CustomProtocolDTO protocolRequest = new CustomProtocolDTO();
+                CustomProtocol protocolRequest = new CustomProtocol();
                 Console.WriteLine(new string('-', 40));
                 Console.WriteLine("Select an option from the following:\n" +
                              "1. Vote for menu\n" +

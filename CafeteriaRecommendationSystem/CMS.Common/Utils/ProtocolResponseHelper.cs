@@ -12,7 +12,7 @@ namespace CMS.Common.Utils
     {
         public static string CreateSuccessResponse(string response,string action)
         {
-            var successResponse = new CustomProtocolDTO
+            var successResponse = new CustomProtocol
             {
                 Response = response,
                 Action = action
@@ -22,7 +22,7 @@ namespace CMS.Common.Utils
         }
         public static string CreateFailureResponse(string response)
         {
-            var successResponse = new CustomProtocolDTO
+            var successResponse = new CustomProtocol
             {
                 Response = response,
                 Action = "Exception"

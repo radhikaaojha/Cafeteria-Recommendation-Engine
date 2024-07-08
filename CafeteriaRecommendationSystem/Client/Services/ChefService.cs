@@ -7,11 +7,11 @@ namespace Client.Services
     public class ChefService
     {
 
-        public static async Task<CustomProtocolDTO> ShowMenuForChef(int userId)
+        public static async Task<CustomProtocol> ShowMenuForChef(int userId)
         {
             while (true)
             {
-                CustomProtocolDTO protocolRequest = new CustomProtocolDTO();
+                CustomProtocol protocolRequest = new CustomProtocol();
                 Console.WriteLine(new string('-', 40));
                 Console.WriteLine("Select an option from the following:\n" +
                              "1. View top recommendations\n" +

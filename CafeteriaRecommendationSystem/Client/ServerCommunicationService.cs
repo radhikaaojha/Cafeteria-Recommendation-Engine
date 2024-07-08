@@ -18,7 +18,7 @@ namespace Client
             _reader = reader;
         }
 
-        public async Task<CustomProtocolDTO> SendRequestAsync(StreamWriter writer, StreamReader reader, CustomProtocolDTO request)
+        public async Task<CustomProtocol> SendRequestAsync(StreamWriter writer, StreamReader reader, CustomProtocol request)
         {
             string requestString = JsonSerializer.Serialize(request, new JsonSerializerOptions
             {
@@ -31,9 +31,9 @@ namespace Client
             return response;
         }
 
-        private async Task<CustomProtocolDTO> HandleServerResponse(StreamReader reader)
+        private async Task<CustomProtocol> HandleServerResponse(StreamReader reader)
         {
-            CustomProtocolDTO response = new();
+            CustomProtocol response = new();
             while (true)
             {
                 string lengthString = await reader.ReadLineAsync();
@@ -64,7 +64,7 @@ namespace Client
                         ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve,
                         MaxDepth = 128
                     };
-                    response = JsonSerializer.Deserialize<CustomProtocolDTO>(responseData);
+                    response = JsonSerializer.Deserialize<CustomProtocol>(responseData);
                     return response;
                 }
                 catch (JsonException ex)

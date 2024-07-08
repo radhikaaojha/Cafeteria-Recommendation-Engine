@@ -11,11 +11,11 @@ namespace Client.Services
 {
     public static class AuthenticateService
     {
-        public static async Task<CustomProtocolDTO> Authenticate(StreamWriter writer, StreamReader reader)
+        public static async Task<CustomProtocol> Authenticate(StreamWriter writer, StreamReader reader)
         {
             var (employeeId, name) = GetInputForLogin();
 
-            CustomProtocolDTO authRequest = new CustomProtocolDTO
+            CustomProtocol authRequest = new CustomProtocol
             {
                 UserId = employeeId,
                 Action = Actions.Auth.ToString(),

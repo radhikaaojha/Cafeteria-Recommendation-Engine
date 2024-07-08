@@ -6,11 +6,11 @@ namespace Client.Services
 {
     public static class AdminService
     {
-        public static async Task<CustomProtocolDTO> ShowMenuForAdmin(int userId)
+        public static async Task<CustomProtocol> ShowMenuForAdmin(int userId)
         {
             while (true)
             {
-                CustomProtocolDTO protocolRequest = new CustomProtocolDTO();
+                CustomProtocol protocolRequest = new CustomProtocol();
                 Console.WriteLine(new string('-', 40));
                 Console.WriteLine("Select an option from the following:\n" +
                              "1. Add a new food item\n" +

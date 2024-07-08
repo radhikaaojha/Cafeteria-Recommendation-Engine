@@ -31,7 +31,7 @@ namespace Common.Utils
                 LoginResponse exceptionResponse = new();
                 exceptionResponse.Message = e.Message;
                 var exceptionResponseJson = JsonSerializer.Serialize(exceptionResponse);
-                CustomProtocolDTO customProtocolDTO = new CustomProtocolDTO();
+                CustomProtocol customProtocolDTO = new CustomProtocol();
                 customProtocolDTO.Response = exceptionResponseJson;
                 return JsonSerializer.Serialize(customProtocolDTO);
             }
