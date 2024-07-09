@@ -11,7 +11,7 @@ namespace Client
 {
     public class Client
     {
-        public static async Task Main(string[] args)
+        public async Task StartClient()
         {
             TcpClient client = new();
             try
