@@ -36,46 +36,35 @@ namespace CMS.Data.Services
             _logger = logger;
         }
 
-        public async Task<string> AddFoodItem(string input)
+        public async Task<string> AddFoodItem(string foodItemRequest)
         {
-            var foodItem = JsonSerializer.Deserialize<AddFoodItem>(input);
+            var addFoodItemRequestModel = JsonSerializer.Deserialize<AddFoodItem>(foodItemRequest);
 
-            if (!foodItem.IsValid())
-            {
-                throw new InvalidInputException("Invalid food item data provided!", null, _logger);
-            }
+            await ValidateAddFoodItemRequest(addFoodItemRequestModel);
 
-            if (await _foodItemService.DoesFoodItemWithSameNameExists(foodItem.Name))
-            {
-                throw new FoodItemExistsException("Food item with the same name already exists!",null,_logger);
-            }
+            await _foodItemService.Add(addFoodItemRequestModel);
 
-            await _foodItemService.Add(foodItem);
+            await NotifyForUpdate((int)NotificationType.NewFoodItemAdded, addFoodItemRequestModel.Name);
 
-            await NotifyForUpdate((int)NotificationType.NewFoodItemAdded, foodItem.Name);
-
-            return $"Food item {foodItem.Name} added to menu successfully";
+            return $"Food item {addFoodItemRequestModel.Name} added to menu successfully";
         }
 
-        public async Task<string> UpdateAvailabilityStatusForFoodItem(string input)
+        public async Task<string> UpdateAvailabilityStatusForFoodItem(string updateFoodItemStatusRequest)
         {
-            var foodItemInput = JsonSerializer.Deserialize<UpdateFoodItemStatus>(input);
+            var updateFoodItemStatusModel = JsonSerializer.Deserialize<UpdateFoodItemStatus>(updateFoodItemStatusRequest);
 
-            if (!Enum.IsDefined(typeof(Status), foodItemInput.StatusId))
-            {
-                throw new InvalidInputException($"Invalid status ID: {foodItemInput.StatusId}.", null, _logger);
-            }
-
-            var foodItem = await _foodItemService.UpdateStatus(foodItemInput.FoodItemId, foodItemInput.StatusId);
+            await ValidateUpdateStatusRequest(updateFoodItemStatusModel);
+            
+            var foodItem = await _foodItemService.UpdateStatus(updateFoodItemStatusModel.FoodItemId, updateFoodItemStatusModel.StatusId);
 
             await NotifyForUpdate((int)NotificationType.FoodItemAvailabilityUpdated, foodItem.Name);
 
             return $"Food item {foodItem.Name} status has been updated successfully";
         }
 
-        public async Task<string> RemoveFoodItem(string request)
+        public async Task<string> RemoveFoodItem(string removeFoodItemRequest)
         {
-            var foodItemId = JsonSerializer.Deserialize<int>(request);
+            var foodItemId = JsonSerializer.Deserialize<int>(removeFoodItemRequest);
 
             var foodItem = await _foodItemService.UpdateStatus(foodItemId, (int)Status.Removed);
 
@@ -84,16 +73,13 @@ namespace CMS.Data.Services
             return $"Food item {foodItem.Name} status has been discontinued successfully";
         }
 
-        public async Task<string> UpdatePriceForFoodItem(string input)
+        public async Task<string> UpdatePriceForFoodItem(string updateFoodItemPriceRequest)
         {
-            var foodItemInput = JsonSerializer.Deserialize<UpdateFoodItemPrice>(input);
+            var updateFoodItemPriceRequestModel = JsonSerializer.Deserialize<UpdateFoodItemPrice>(updateFoodItemPriceRequest);
 
-            if (!foodItemInput.IsValid())
-            {
-                throw new InvalidInputException("Food item price must be greater than 0!", null, _logger);
-            }
-
-            var foodItem = await _foodItemService.UpdatePrice(foodItemInput.FoodItemId, foodItemInput.Price);
+            await ValidateUpdatePriceRequest(updateFoodItemPriceRequestModel);
+            
+            var foodItem = await _foodItemService.UpdatePrice(updateFoodItemPriceRequestModel.FoodItemId, updateFoodItemPriceRequestModel.Price);
 
             await NotifyForUpdate((int)NotificationType.FoodItemPriceUpdated, foodItem.Name);
 
@@ -137,5 +123,31 @@ namespace CMS.Data.Services
             await _notificationService.SendBatchNotifications(notificationMessage, AppConstants.ChefAndEmployeeRoles, notificationTypeId);
         }
 
+        private async Task ValidateAddFoodItemRequest(AddFoodItem addFoodItemRequestModel)
+        {
+            if (!addFoodItemRequestModel.IsValid())
+            {
+                throw new InvalidInputException("Invalid food item data provided!", null, _logger);
+            }
+
+            if (await _foodItemService.DoesFoodItemWithSameNameExists(addFoodItemRequestModel.Name))
+            {
+                throw new FoodItemExistsException("Food item with the same name already exists!", null, _logger);
+            }
+        }
+        private async Task ValidateUpdateStatusRequest(UpdateFoodItemStatus updateFoodItemStatusModel)
+        {
+            if (!Enum.IsDefined(typeof(Status), updateFoodItemStatusModel.StatusId))
+            {
+                throw new InvalidInputException($"Invalid status ID: {updateFoodItemStatusModel.StatusId}.", null, _logger);
+            }
+        }
+        private async Task ValidateUpdatePriceRequest(UpdateFoodItemPrice updateFoodItemPriceRequestModel)
+        {
+            if (!updateFoodItemPriceRequestModel.IsValid())
+            {
+                throw new InvalidInputException("Food item price must be greater than 0!", null, _logger);
+            }
+        }
     }
 }
