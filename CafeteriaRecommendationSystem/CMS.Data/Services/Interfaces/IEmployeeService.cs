@@ -11,10 +11,10 @@ namespace CMS.Data.Services.Interfaces
 {
     public interface IEmployeeService
     {
-        Task<string> GiveFeedback(string request);
+        Task<string> SubmitFeedback(string request);
         Task<string> ViewDailyMenu(DateTime date,int userId, Expression<Func<WeeklyMenu, bool>> predicate);
         Task<string> VoteInFavourForMenuItem(string request);
         Task<string> SubmitDetailedFeedback(string request);
-        Task<string> SubmitUserPreference(string request);
+        Task<string> SubmitUserCharactersticPreference(string request);
     }
 }

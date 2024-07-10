@@ -72,7 +72,7 @@ namespace Client
 
         public static void ShowDailyMenu(string response)
         {
-            var rolledOutFoodItems = JsonSerializer.Deserialize<ViewNextDayMenu>(response);
+            var rolledOutFoodItems = JsonSerializer.Deserialize<ViewMenu>(response);
 
             Console.WriteLine("--------------------------------------------------------------------------------");
             
