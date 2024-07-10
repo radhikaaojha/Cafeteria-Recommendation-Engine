@@ -46,18 +46,9 @@ namespace CMS.Data.Services
 
         private async Task<(float, string)> AnalyzeFeedbackSentiments(int foodItemId)
         {
-            Expression<Func<FoodItemFeedback, bool>> predicate = data => data.FoodItemId == foodItemId;
-
-            var feedbacksList = await _feedbackService.GetList<FoodItemFeedback>(null, null, null, 0, 0, predicate);
-
-            var foodReviews = _mapper.Map<List<FoodReview>>(feedbacksList);
-
-            var context = new MLContext();
-            string dataPath = AppConstants.DataPathForTrainedModel;
-            var data = context.Data.LoadFromTextFile<FoodReview>(dataPath, separatorChar: ',', hasHeader: true);
-            var pipeline = context.Transforms.Text.FeaturizeText("Features", nameof(FoodReview.ReviewText)).Append(context.BinaryClassification.Trainers.SdcaLogisticRegression(labelColumnName: "Sentiment", featureColumnName: "Features"));
-            var model = pipeline.Fit(data);
-            var predictor = context.Model.CreatePredictionEngine<FoodReview, SentimentPrediction>(model);
+            var foodReviews = await GetFeedbackListForFoodItem(foodItemId);
+           
+            var predictor = TrainModel();
 
             var sentiments = foodReviews.Select(review => new
             {
@@ -65,15 +56,33 @@ namespace CMS.Data.Services
                 Prediction = predictor.Predict(review)
             }).ToList();
 
-            var groupedByFoodItem = sentiments.First().Review.FoodItemId;
-            var reviews = sentiments.Select(g => g.Review.ReviewText).ToList();
+            var foodItemReview = sentiments.Select(g => g.Review.ReviewText).ToList();
 
-            var averageProbability = sentiments.Average(g => g.Prediction.Probability) * 100;
+            var foodItemAverageProbaility = sentiments.Average(g => g.Prediction.Probability) * 100;
 
-            var majorSentiments = ExtractMajorSentiments(reviews, sentiments.Select(g => g.Prediction).ToList());
-            var sentiment = (string.Join(", ", majorSentiments));
-            return (averageProbability, sentiment);
+            var majorSentiments = ExtractMajorSentiments(foodItemReview, sentiments.Select(g => g.Prediction).ToList());
 
+            var foodItemSentimentSummary = (string.Join(", ", majorSentiments));
+
+            return (foodItemAverageProbaility, foodItemSentimentSummary);
+
+        }
+
+        private async Task<List<FoodReview>> GetFeedbackListForFoodItem(int foodItemId)
+        {
+            Expression<Func<FoodItemFeedback, bool>> predicate = data => data.FoodItemId == foodItemId;
+            var feedbacksList = await _feedbackService.GetList<FoodItemFeedback>(null, null, null, 0, 0, predicate);
+            return _mapper.Map<List<FoodReview>>(feedbacksList);
+        }
+
+        private PredictionEngine<FoodReview, SentimentPrediction> TrainModel()
+        {
+            var context = new MLContext();
+            string dataPath = AppConstants.DataPathForTrainedModel;
+            var data = context.Data.LoadFromTextFile<FoodReview>(dataPath, separatorChar: ',', hasHeader: true);
+            var pipeline = context.Transforms.Text.FeaturizeText("Features", nameof(FoodReview.ReviewText)).Append(context.BinaryClassification.Trainers.SdcaLogisticRegression(labelColumnName: "Sentiment", featureColumnName: "Features"));
+            var model = pipeline.Fit(data);
+            return context.Model.CreatePredictionEngine<FoodReview, SentimentPrediction>(model);
         }
 
         private async Task UpdateSentimentResult(float score, string feedback, int foodItemId)
