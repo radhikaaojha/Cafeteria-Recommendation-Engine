@@ -53,10 +53,10 @@ namespace CMS.Data.Services
         {
             Expression<Func<User, bool>> predicate = data => roleIds.Contains(data.RoleId);
             var users = await _userRepository.GetList(null,null,null,0,0,predicate);
-            List<AddNotification> addNotifications = new();
+            List<AddNotification> notifications = new();
             foreach(var user in users)
             {
-                addNotifications.Add(new AddNotification
+                notifications.Add(new AddNotification
                 {
                     Message = message,
                     IsRead = false,
@@ -64,7 +64,7 @@ namespace CMS.Data.Services
                     NotificationTypeId = notificationTypeId
                 });
             }
-            await base.AddRange(addNotifications);
+            await base.AddRange(notifications);
         }
 
         public async Task RemoveReadNotifications()
