@@ -1,4 +1,5 @@
-﻿using Data_Access_Layer.Entities;
+﻿using CMS.Common.Models;
+using Data_Access_Layer.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,6 @@ namespace CMS.Data.Services.Interfaces
     public interface ISentimentAnalyzerService
     {
         Task<List<FoodItem>> GetTopRecommendationForChef();
+        Task UpdateSentimentAnalysis(Feedback feedbackRequest);
     }
 }

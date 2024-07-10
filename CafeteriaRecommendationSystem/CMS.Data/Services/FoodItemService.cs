@@ -91,18 +91,6 @@ namespace CMS.Data.Services
             return await _foodItemRepository.DoesFoodItemWithSameNameExists(name);
         }
 
-        public async Task UpdateSentimentResult(float score, string feedback, int foodItemId)
-        {
-            var foodItem = await base.GetById<FoodItem>(foodItemId);
-
-            if (foodItem == null)
-                throw new FoodItemNotFoundException("Food Item with given id doesnt exist", null, _logger);
-
-            foodItem.SentimentScore = (decimal)score;
-            foodItem.Description = feedback;
-            await base.Update(foodItem.Id, foodItem);
-        }
-
         public async Task<string> ViewMenu()
         {
             var foodItemsList = await base.GetList<FoodItem>("FoodItemAvailabilityStatus, FoodItemType", null, null, 0, 0, null);

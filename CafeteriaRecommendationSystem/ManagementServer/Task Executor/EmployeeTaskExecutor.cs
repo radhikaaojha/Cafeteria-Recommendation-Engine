@@ -32,7 +32,7 @@ namespace Common.Utils
                 switch (action)
                 {
                     case "SubmitFeedback":
-                        response = await _employeeService.GiveFeedback(request);
+                        response = await _employeeService.SubmitFeedback(request);
                         break;
                     case "VoteForMenu":
                         response = await _employeeService.VoteInFavourForMenuItem((request));
@@ -42,7 +42,7 @@ namespace Common.Utils
                         response = await _employeeService.ViewDailyMenu(DateTime.Now, int.Parse(request),predicate);
                         break;
                     case "UserPreference":
-                        response = await _employeeService.SubmitUserPreference(request);
+                        response = await _employeeService.SubmitUserCharactersticPreference(request);
                         break;
                     case "SubmitDetailedFeedback":
                         response = await _employeeService.SubmitDetailedFeedback(request);
