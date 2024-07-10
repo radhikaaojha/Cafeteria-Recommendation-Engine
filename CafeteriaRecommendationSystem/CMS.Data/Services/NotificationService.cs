@@ -21,12 +21,12 @@ namespace CMS.Data.Services
 
         public async Task<string> ViewNotifications(int userId)
         {
-            var notificationModel = _mapper.Map<List<ViewNotification>>(await GetNotificationsForUser(userId));
-            foreach (var notification in notificationModel)
+            var notificationDto = _mapper.Map<List<ViewNotification>>(await GetNotificationsForUser(userId));
+            foreach (var notification in notificationDto)
             {
                 notification.Message = FormatNotificationMessage(notification.Message);
             }
-            return JsonSerializer.Serialize(notificationModel);
+            return JsonSerializer.Serialize(notificationDto);
         }
 
         public async Task<List<Notification>> GetNotificationsForUser(int userId)

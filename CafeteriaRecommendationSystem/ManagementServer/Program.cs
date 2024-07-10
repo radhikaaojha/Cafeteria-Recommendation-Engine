@@ -67,9 +67,11 @@ namespace ManagementServer
             services.AddScoped<IFoodItemService, FoodItemService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IWeeklyMenuService, WeeklyMenuService>();
+            services.AddScoped<ISentimentAnalyzerService, SentimentAnalyzerService>();
             services.AddScoped<IFoodItemRepository, FoodItemRepository>();
             services.AddScoped<IAppActivityLogRepository, ActivityLogRepository>();
             services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+            services.AddScoped<ISentimentAnalyzerRepository, SentimentAnalyzerRepository>();
             services.AddScoped<TaskExecutorFactory>();
             services.AddScoped<AuthenticationTaskExecutor>();
             services.AddScoped<AdminTaskExecutor>();

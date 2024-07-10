@@ -109,11 +109,6 @@ namespace CMS.Data.Services
             return await _foodItemRepository.DoesFoodItemWithSameNameExists(name);
         }
 
-        public async Task<List<FoodItem>> GetTopRecommendationForChef()
-        {
-            return await _foodItemRepository.GetNextDayMenuRecommendation();
-        }
-
         public async Task UpdateSentimentResult(float score, string feedback, int foodItemId)
         {
             var foodItem = await base.GetById<FoodItem>(foodItemId);

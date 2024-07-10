@@ -28,7 +28,7 @@ namespace CMS.Common.Utils
                 switch (action)
                 {
                     case "PlanNextDayMenu":
-                        response = await _chefService.PlanDailyMenu(request);
+                        response = await _chefService.PlanMenuForNextDay(request);
                         break;
                     case "FinalizeMenu":
                         response = await _chefService.FinalizeMenuItems(request);

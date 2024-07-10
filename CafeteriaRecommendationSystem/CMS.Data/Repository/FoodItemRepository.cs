@@ -39,36 +39,6 @@ namespace CMS.Data.Repository
             return discardedFoodItems;
         }
 
-        public async Task<List<FoodItem>> GetNextDayMenuRecommendation()
-        {
-            DateTime yesterday = DateTime.Now.AddDays(-1);
-            Expression<Func<FoodItem, bool>> predicate = foodItem =>
-                       foodItem.StatusId == (int)Status.Available &&
-                       !_context.WeeklyMenu.Any(weeklyMenu =>
-                           weeklyMenu.FoodItemId == foodItem.Id &&
-                           weeklyMenu.IsSelected && weeklyMenu.CreatedDateTime.Date == yesterday.Date);
-
-            var allAvailableFoodItems  = await base.GetList("FoodItemFeedback", null, new List<string> { "SentimentScore DESC" }, 15, 0, predicate);
-            var mainCourseOptions = allAvailableFoodItems.Where(fi => fi.FoodItemTypeId == (int)FoodItemType.MainCourses).Take(5).ToList();
-            var otherItemOptions = allAvailableFoodItems
-                                   .Where(fi => fi.FoodItemTypeId != (int)FoodItemType.MainCourses)
-                                   .GroupBy(fi => fi.FoodItemTypeId)
-                                   .SelectMany(g => g.Take(2))
-                                   .Take(10)
-                                   .ToList();
-            if (otherItemOptions.Count < 10)
-            {
-                otherItemOptions.AddRange(
-                    allAvailableFoodItems
-                    .Except(mainCourseOptions)
-                    .Except(otherItemOptions)
-                    .Take(10 - otherItemOptions.Count)
-                );
-            }
-            var combinedOptions = mainCourseOptions.Concat(otherItemOptions).OrderByDescending(u=>u.SentimentScore).ToList();
-
-            return combinedOptions;
-        }
         private bool ContainsNegativeKeywords(string description)
         {
             List<string> negativeKeywords = AppConstants.NegativeKeywords;

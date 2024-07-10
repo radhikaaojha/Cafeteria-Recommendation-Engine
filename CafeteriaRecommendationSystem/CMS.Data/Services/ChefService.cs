@@ -15,52 +15,39 @@ namespace CMS.Data.Services
 {
     public class ChefService : IChefService
     {
-        private IFeedbackService _feedbackService;
         private IFoodItemService _foodItemService;
         private INotificationService _notificationService;
         private IWeeklyMenuService _weeklyMenuService;
-        private IUserRepository _userRepository;
+        private ISentimentAnalyzerService _sentimentAnalyzerService;
         private IMapper mapper;
-        public ChefService(IFeedbackService feedbackService, INotificationService notificationService,
+        public ChefService(INotificationService notificationService,
             IFoodItemService foodItemService, IWeeklyMenuService weeklyMenuService,
-            IMapper mapper,
-            IUserRepository userRepository)
+            ISentimentAnalyzerService sentimentAnalyzerService,
+            IMapper mapper)
         {
-            _feedbackService = feedbackService;
             _notificationService = notificationService;
             _foodItemService = foodItemService;
             _weeklyMenuService = weeklyMenuService;
-            _userRepository = userRepository;
+            _sentimentAnalyzerService = sentimentAnalyzerService;
             this.mapper = mapper;
         }
 
-        public async Task<string> FinalizeMenuItems(string request)
+        public async Task<string> FinalizeMenuItems(string finalisedMenuItemRequest)
         {
-            var dailyMenuRequest = JsonSerializer.Deserialize<Menu>(request);
+            var finalisedMenuItems = JsonSerializer.Deserialize<Menu>(finalisedMenuItemRequest);
 
-            if (!await HasPlannedMenuForTomorrow())
-            {
-                throw new InvalidOperationException("Cannot finalise menu if not already planned for tomorrow.");
-            }
+            await ValidateFoodItemsForFinalMenu(finalisedMenuItems);
 
-            if (await HasFinalisedMenuForTomorrow())
-            {
-                throw new InvalidOperationException("Menu has already been finalised for tomorrow");
-            }
+            await FinalizeFoodItems(finalisedMenuItems.Breakfast);
+            await FinalizeFoodItems(finalisedMenuItems.Lunch);
+            await FinalizeFoodItems(finalisedMenuItems.Dinner);
 
-            await ValidateFoodItemsFromPlannedMenu(dailyMenuRequest);
+            await NotifyEmployeesForFinalizedMenu(finalisedMenuItems);
 
-            await FinalizeMealItems(dailyMenuRequest.Breakfast, MealType.Breakfast);
-            await FinalizeMealItems(dailyMenuRequest.Lunch, MealType.Lunch);
-            await FinalizeMealItems(dailyMenuRequest.Dinner, MealType.Dinner);
-
-            await NotifyEmployeesForPlannedMenu(dailyMenuRequest);
-            
             return "Notifications for finalized menu has been sent successfully!";
         }
 
-
-        public async Task NotifyEmployeesForFinalizeedMenu(Menu finalMenu)
+        public async Task NotifyEmployeesForFinalizedMenu(Menu finalMenu)
         {
             var message = new System.Text.StringBuilder();
             if (finalMenu.Breakfast.Count > 0)
@@ -115,29 +102,24 @@ namespace CMS.Data.Services
             await _notificationService.SendBatchNotifications(message.ToString(), AppConstants.Employee, (int)NotificationType.FoodItemVoting);
         }
 
-        public async Task<string> PlanDailyMenu(string request)
+        public async Task<string> PlanMenuForNextDay(string plannedMenuItemRequest)
         {
-            var dailyMenuRequest = JsonSerializer.Deserialize<Menu>(request);
+            var plannedFoodItems = JsonSerializer.Deserialize<Menu>(plannedMenuItemRequest);
 
-            if (await HasPlannedMenuForTomorrow())
-            {
-                throw new InvalidOperationException("Menu has already been planned for tomorrow.");
-            }
+            await ValidateFoodItemsForPlannedMenu(plannedFoodItems);
 
-            await ValidateFoodItemIds(dailyMenuRequest);
-
-            await PlanMeal(dailyMenuRequest.Breakfast, MealType.Breakfast);
-            await PlanMeal(dailyMenuRequest.Lunch, MealType.Lunch);
-            await PlanMeal(dailyMenuRequest.Dinner, MealType.Dinner);
-            await NotifyEmployeesForPlannedMenu(dailyMenuRequest);
+            await PlanFoodItemsByMealType(plannedFoodItems.Breakfast, MealType.Breakfast);
+            await PlanFoodItemsByMealType(plannedFoodItems.Lunch, MealType.Lunch);
+            await PlanFoodItemsByMealType(plannedFoodItems.Dinner, MealType.Dinner);
+            await NotifyEmployeesForPlannedMenu(plannedFoodItems);
             return "Notifications to vote for planned menu has been sent!";
         }
 
         public async Task<string> GetTopRecommendations()
         {
-            var foodItems = await _foodItemService.GetTopRecommendationForChef();
-            var recommendedItems = mapper.Map<List<RecommendedItem>>(foodItems);
-            return JsonSerializer.Serialize(recommendedItems);
+            var recommendedFoodItems = await _sentimentAnalyzerService.GetTopRecommendationForChef();
+            var recommendedItemsDto = mapper.Map<List<RecommendedItem>>(recommendedFoodItems);
+            return JsonSerializer.Serialize(recommendedItemsDto);
         }
 
         public async Task<string> GetEmployeeVotes()
@@ -148,32 +130,32 @@ namespace CMS.Data.Services
             }
 
             Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == DateTime.Now.Date;
-            var foodItems = await _weeklyMenuService.GetList<WeeklyMenu>("FoodItem, MealType", null, null, 10, 0, predicate);
-            var foodItemDtos = foodItems.Select(fi => new FoodItemVotingStats
-            {
-                FoodItemId = fi.FoodItemId,
-                Name = fi.FoodItem.Name,
-                NumberOfVotes = fi.NumberOfVotes,
-                MealType = fi.MealType.Name
-            }).ToList();
+            var plannedFoodItemsWithVotes = await _weeklyMenuService.GetList<WeeklyMenu>("FoodItem, MealType", null, null, 0, 0, predicate);
 
-            return JsonSerializer.Serialize(foodItemDtos);
+            var plannedFoodItemsWithVotesDto = mapper.Map<List<FoodItemVotingStats>>(plannedFoodItemsWithVotes);
+
+            return JsonSerializer.Serialize(plannedFoodItemsWithVotesDto);
         }
 
-        public async Task ValidateFoodItemIds(Menu dailyMenuInput)
+        public async Task ValidateFoodItemsForPlannedMenu(Menu plannedFoodItems)
         {
+            if (await HasPlannedMenuForTomorrow())
+            {
+                throw new InvalidOperationException("Menu has already been planned for tomorrow.");
+            }
+
             Expression<Func<FoodItem, bool>> predicate = foodItem => foodItem.StatusId == (int)Status.Available;
 
             var allAvailableFoodItems = await _foodItemService.GetList<FoodItem>(null, null, null, 0, 0, predicate);
 
-            ValidateMealItems(dailyMenuInput.Breakfast, "Breakfast", allAvailableFoodItems);
-            ValidateMealItems(dailyMenuInput.Lunch, "Lunch", allAvailableFoodItems);
-            ValidateMealItems(dailyMenuInput.Dinner, "Dinner", allAvailableFoodItems);
+            ValidateFoodItemsAvailability(plannedFoodItems.Breakfast, "Breakfast", allAvailableFoodItems);
+            ValidateFoodItemsAvailability(plannedFoodItems.Lunch, "Lunch", allAvailableFoodItems);
+            ValidateFoodItemsAvailability(plannedFoodItems.Dinner, "Dinner", allAvailableFoodItems);
         }
 
-        private void ValidateMealItems(List<string> mealItems, string mealType, List<FoodItem> allAvailableFoodItems)
+        private void ValidateFoodItemsAvailability(List<string> foodItems, string mealType, List<FoodItem> allAvailableFoodItems)
         {
-            foreach (var itemId in mealItems.ToList())
+            foreach (var itemId in foodItems.ToList())
             {
                 if (!allAvailableFoodItems.Any(fi => fi.Id.ToString() == itemId))
                 {
@@ -186,68 +168,78 @@ namespace CMS.Data.Services
         {
             var today = DateTime.Today.Date;
             Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == today;
-            var existingMenu = await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate);
+            var plannedMenu = await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate);
 
-            return existingMenu.Any();
+            return plannedMenu.Any();
         }
 
         private async Task<bool> HasFinalisedMenuForTomorrow()
         {
             var today = DateTime.Today.Date;
             Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == today && data.IsSelected;
-            var existingMenu = await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate);
+            var finalisedMenu = await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate);
 
-            return existingMenu.Any();
+            return finalisedMenu.Any();
         }
 
-        private async Task PlanMeal(List<string> mealItems, MealType mealType)
+        private async Task PlanFoodItemsByMealType(List<string> foodItems, MealType mealType)
         {
-            foreach (var item in mealItems)
+            foreach (var item in foodItems)
             {
-                var weeklyMenuRequest = new SelectedFoodItem
+                var foodItem = new SelectedFoodItem
                 {
                     FoodItemId = int.Parse(item),
                     MealTypeId = (int)mealType
                 };
-                await _weeklyMenuService.Add(weeklyMenuRequest);
+                await _weeklyMenuService.Add(foodItem);
             }
         }
 
-        private async Task FinalizeMealItems(List<string> mealItems, MealType mealType)
+        private async Task FinalizeFoodItems(List<string> foodItems)
         {
-            foreach (var item in mealItems)
+            foreach (var item in foodItems)
             {
                 Expression<Func<WeeklyMenu, bool>> predicate = data => data.CreatedDateTime.Date == DateTime.Now.Date && data.FoodItemId == int.Parse(item);
-                var mealItem = (await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate))
+                var foodItem = (await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate))
                         .FirstOrDefault();
-                mealItem.IsSelected = true;
-                await _weeklyMenuService.Update(mealItem.Id, mealItem);
+                foodItem.IsSelected = true;
+                await _weeklyMenuService.Update(foodItem.Id, foodItem);
             }
         }
 
-        private async Task ValidateFoodItemsFromPlannedMenu(Menu dailyMenuRequest)
+        private async Task ValidateFoodItemsForFinalMenu(Menu finalisedMenuItems)
         {
+            if (!await HasPlannedMenuForTomorrow())
+            {
+                throw new InvalidOperationException("Cannot finalise menu if not already planned for tomorrow.");
+            }
+
+            if (await HasFinalisedMenuForTomorrow())
+            {
+                throw new InvalidOperationException("Menu has already been finalised for tomorrow");
+            }
+
             var mealTypes = new Dictionary<List<string>, MealType>
             {
-                { dailyMenuRequest.Breakfast, MealType.Breakfast },
-                { dailyMenuRequest.Lunch, MealType.Lunch },
-                { dailyMenuRequest.Dinner, MealType.Dinner }
+                { finalisedMenuItems.Breakfast, MealType.Breakfast },
+                { finalisedMenuItems.Lunch, MealType.Lunch },
+                { finalisedMenuItems.Dinner, MealType.Dinner }
             };
 
-            foreach (var (mealItems, mealType) in mealTypes)
+            foreach (var (foodItems, mealType) in mealTypes)
             {
-                foreach (var item in mealItems)
+                foreach (var foodItem in foodItems)
                 {
-                    int foodItemId = int.Parse(item);
+                    int foodItemId = int.Parse(foodItem);
 
                     Expression<Func<WeeklyMenu, bool>> predicate = menu =>
                         menu.FoodItemId == foodItemId &&
                         menu.MealTypeId == (int)mealType &&
                         menu.CreatedDateTime.Date == DateTime.Today.Date;
 
-                    var menuEntry = await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate);
+                    var plannedFoodItem = await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 1, 0, predicate);
 
-                    if (menuEntry.Count == 0)
+                    if (plannedFoodItem.Count == 0)
                     {
                         throw new InvalidOperationException($"Food item with ID {foodItemId} was not planned for {mealType} today.");
                     }
