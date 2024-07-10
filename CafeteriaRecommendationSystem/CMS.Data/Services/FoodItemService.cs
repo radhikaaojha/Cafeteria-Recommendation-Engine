@@ -58,21 +58,12 @@ namespace CMS.Data.Services
             return foodItem;
         }
 
-        public async Task<string> RemoveDiscardedFoodItem(string request)
+        public async Task<string> RemoveDiscardedFoodItem(string discardedFoodItemId)
         {
-            var foodItemId = JsonSerializer.Deserialize<int>(request);
+            var foodItemId = JsonSerializer.Deserialize<int>(discardedFoodItemId);
 
-            if (await _appActivityLogRepository.HasTaskExecutedThisMonth("RemoveDiscardedFoodItem"))
-                throw new InvalidOperationException("Discarded Food item can only be removed once a month.");
-
-            var foodItem = await base.GetById<FoodItem>(foodItemId);
-
-            if (foodItem == null)
-                throw new FoodItemNotFoundException("Food Item with given id doesnt exist", null, _logger);
-
-            if (foodItem.StatusId != (int)Status.Discarded)
-                throw new FoodItemNotFoundException("Food Item doesnt exist in discarded list", null, _logger);
-
+            var foodItem = await ValidateRemovalOfDiscardedFoodItem(foodItemId);
+            
             foodItem.StatusId = (int)Status.Removed;
             await base.Update(foodItem.Id, foodItem);
 
@@ -81,21 +72,12 @@ namespace CMS.Data.Services
             return $"Removed {foodItem.Name} successfully";
         }
 
-        public async Task<string> DiscardFoodItem(string request)
+        public async Task<string> DiscardFoodItem(string discardFoodItemId)
         {
-            var foodItemId = JsonSerializer.Deserialize<int>(request);
+            var foodItemId = JsonSerializer.Deserialize<int>(discardFoodItemId);
 
-            if (!await _appActivityLogRepository.HasTaskExecutedThisMonth("GenerateDiscardList"))
-                throw new InvalidOperationException("Discard food item list wasnt generated for this month.");
-
-            if (await _appActivityLogRepository.HasTaskExecutedThisMonth("DiscardFoodItem"))
-                throw new InvalidOperationException("We have already discarded a food item in this month.");
-
-            var foodItem = await base.GetById<FoodItem>(foodItemId);
-
-            if (foodItem == null)
-                throw new FoodItemNotFoundException("Food Item with given id doesnt exist", null, _logger);
-
+            var foodItem = await ValidateDiscardingOfFoodItem(foodItemId);
+           
             foodItem.StatusId = (int)Status.Discarded;
             await base.Update(foodItem.Id, foodItem);
 
@@ -174,6 +156,38 @@ namespace CMS.Data.Services
 
             await _appActivityLogRepository.UpdateLastExecutionDate("DetailedFeedback", DateTime.Now);
             return "Detailed feedback questionnaire has been sent to all employees";
+        }
+
+        private async Task<FoodItem> ValidateRemovalOfDiscardedFoodItem(int foodItemId)
+        {
+            if (await _appActivityLogRepository.HasTaskExecutedThisMonth("RemoveDiscardedFoodItem"))
+                throw new InvalidOperationException("Discarded Food item can only be removed once a month.");
+
+            var foodItem = await base.GetById<FoodItem>(foodItemId);
+
+            if (foodItem == null)
+                throw new FoodItemNotFoundException("Food Item with given id doesnt exist", null, _logger);
+
+            if (foodItem.StatusId != (int)Status.Discarded)
+                throw new FoodItemNotFoundException("Food Item is not yet discarded!", null, _logger);
+
+            return foodItem;
+        }
+
+        private async Task<FoodItem> ValidateDiscardingOfFoodItem(int foodItemId)
+        {
+            if (!await _appActivityLogRepository.HasTaskExecutedThisMonth("GenerateDiscardList"))
+                throw new InvalidOperationException("Discard food item list wasnt generated for this month.");
+
+            if (await _appActivityLogRepository.HasTaskExecutedThisMonth("DiscardFoodItem"))
+                throw new InvalidOperationException("We have already discarded a food item in this month.");
+
+            var foodItem = await base.GetById<FoodItem>(foodItemId);
+
+            if (foodItem == null)
+                throw new FoodItemNotFoundException("Food Item with given id doesnt exist", null, _logger);
+
+            return foodItem;
         }
     }
 }
