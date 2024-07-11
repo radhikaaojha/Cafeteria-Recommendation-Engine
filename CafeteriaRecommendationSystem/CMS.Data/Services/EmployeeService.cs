@@ -47,7 +47,7 @@ namespace CMS.Data.Services
 
             ValidateMenu(date, foodItems);
 
-            var menu = GetDailyMenuByUserPreference(userId, foodItems);
+            var menu = await GetDailyMenuByUserPreference(userId, foodItems);
 
             return JsonSerializer.Serialize(menu);
         }
@@ -90,9 +90,9 @@ namespace CMS.Data.Services
             if (await _userRepository.HasVotedToday(dailyMenuRequest.UserId))
                 throw new InvalidOperationException("Voting for today has been submitted already");
 
-            await ValidateItemsExistenceInPlannedMenu(dailyMenuRequest.Breakfast);
-            await ValidateItemsExistenceInPlannedMenu(dailyMenuRequest.Lunch);
-            await ValidateItemsExistenceInPlannedMenu(dailyMenuRequest.Dinner);
+            await ValidateItemsExistenceInPlannedMenuByMealType(dailyMenuRequest.Breakfast, 1);
+            await ValidateItemsExistenceInPlannedMenuByMealType(dailyMenuRequest.Lunch, 2);
+            await ValidateItemsExistenceInPlannedMenuByMealType(dailyMenuRequest.Dinner, 3);
         }
 
         private async Task<bool> IsMenuFinalised()
@@ -106,12 +106,12 @@ namespace CMS.Data.Services
             return false;
         }
 
-        private async Task ValidateItemsExistenceInPlannedMenu(List<string> foodItems)
+        private async Task ValidateItemsExistenceInPlannedMenuByMealType(List<string> foodItems, int mealTypeId)
         {
             var itemIds = foodItems.Select(int.Parse).ToList();
 
             Expression<Func<WeeklyMenu, bool>> predicate = data =>
-                data.CreatedDateTime.Date == DateTime.Today.Date && itemIds.Contains(data.FoodItemId);
+                data.CreatedDateTime.Date == DateTime.Today.Date && itemIds.Contains(data.FoodItemId) && data.MealTypeId == mealTypeId;
 
             var plannedItemsForTomorrow = await _weeklyMenuService.GetList<WeeklyMenu>(null, null, null, 0, 0, predicate);
 
